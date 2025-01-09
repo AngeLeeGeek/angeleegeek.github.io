@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>'readme2' | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="这个错误主要涉及 tempdb 空间或系统表问题，让我们逐步检查和解决：  首先检查 tempdb 的空间使用情况：  1234567891011121314151617-- 检查tempdb文件大小和可用空间SELECT name AS [File Name],   ..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/5752c416/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '\'readme2\'',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">79</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/58860e96dc1d3f00010ad1e2_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">'readme2'</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">'readme2'</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-01-09T13:18:32.000Z" title="发表于 2025-01-09 21:18:32">2025-01-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T13:18:42.467Z" title="更新于 2025-01-09 21:18:42">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>这个错误主要涉及 tempdb 空间或系统表问题，让我们逐步检查和解决：</p>
+<ol>
+<li><strong>首先检查 tempdb 的空间使用情况</strong>：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 检查tempdb文件大小和可用空间</span></span><br><span class="line"><span class="keyword">SELECT</span> name <span class="keyword">AS</span> [File Name],</span><br><span class="line">    physical_name <span class="keyword">AS</span> [Physical Name],</span><br><span class="line">    size<span class="operator">/</span><span class="number">128.0</span> <span class="keyword">AS</span> [Total Size <span class="keyword">in</span> MB],</span><br><span class="line">    size<span class="operator">/</span><span class="number">128.0</span> <span class="operator">-</span> <span class="built_in">CAST</span>(FILEPROPERTY(name, <span class="string">&#x27;SpaceUsed&#x27;</span>) <span class="keyword">AS</span> <span class="type">INT</span>)<span class="operator">/</span><span class="number">128.0</span> <span class="keyword">AS</span> [Available Space <span class="keyword">in</span> MB],</span><br><span class="line">    [file_id],</span><br><span class="line">    [type_desc]</span><br><span class="line"><span class="keyword">FROM</span> tempdb.sys.database_files;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 检查当前tempdb使用情况</span></span><br><span class="line"><span class="keyword">SELECT</span> session_id,</span><br><span class="line">    request_id,</span><br><span class="line">    space_used_kb<span class="operator">/</span><span class="number">1024</span> <span class="keyword">as</span> space_used_mb,</span><br><span class="line">    space_used_kb<span class="operator">/</span><span class="number">1024.0</span><span class="operator">/</span><span class="number">1024.0</span> <span class="keyword">as</span> space_used_gb</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_db_session_space_usage</span><br><span class="line"><span class="keyword">WHERE</span> space_used_kb <span class="operator">&gt;</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> space_used_kb <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<p>正常标准：</p>
+<ul>
+<li>tempdb 应该至少有 20%的可用空间</li>
+<li>单个会话不应该占用过多 tempdb 空间</li>
+</ul>
+<ol start="2">
+<li><strong>检查 tempdb 的配置</strong>：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 检查tempdb文件数量和初始大小设置</span></span><br><span class="line"><span class="keyword">SELECT</span> [name], [physical_name],</span><br><span class="line">    [size]<span class="operator">/</span><span class="number">128.0</span> <span class="keyword">AS</span> [Size_MB],</span><br><span class="line">    [growth]<span class="operator">/</span><span class="number">128.0</span> <span class="keyword">AS</span> [Growth_MB],</span><br><span class="line">    [max_size],</span><br><span class="line">    [is_percent_growth]</span><br><span class="line"><span class="keyword">FROM</span> tempdb.sys.database_files;</span><br></pre></td></tr></table></figure>
+
+<p>建议配置：</p>
+<ul>
+<li>tempdb 文件数量 &#x3D; CPU 核心数（最多 8 个）</li>
+<li>初始大小应该足够大，避免自动增长</li>
+<li>文件大小应该相同</li>
+<li>使用固定大小增长而不是百分比</li>
+</ul>
+<ol start="3">
+<li><strong>如果 tempdb 空间不足，可以进行以下操作</strong>：</li>
+</ol>
+<p>a. 增加 tempdb 文件大小：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 增加现有tempdb文件大小</span></span><br><span class="line">USE master;</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">ALTER</span> DATABASE tempdb</span><br><span class="line">MODIFY FILE (NAME <span class="operator">=</span> <span class="string">&#x27;tempdev&#x27;</span>, SIZE <span class="operator">=</span> 新大小MB);</span><br></pre></td></tr></table></figure>
+
+<p>b. 添加新的 tempdb 文件：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 添加新的tempdb数据文件</span></span><br><span class="line">USE master;</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">ALTER</span> DATABASE tempdb</span><br><span class="line"><span class="keyword">ADD</span> FILE (</span><br><span class="line">    NAME <span class="operator">=</span> <span class="string">&#x27;tempdev2&#x27;</span>,</span><br><span class="line">    FILENAME <span class="operator">=</span> <span class="string">&#x27;D:\SQL\tempdb2.mdf&#x27;</span>,</span><br><span class="line">    SIZE <span class="operator">=</span> 初始大小MB,</span><br><span class="line">    FILEGROWTH <span class="operator">=</span> 增长大小MB</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>检查是否有大量临时对象占用空间</strong>：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 检查临时对象</span></span><br><span class="line"><span class="keyword">SELECT</span> obj.name,</span><br><span class="line">    obj.create_date,</span><br><span class="line">    OBJECT_SCHEMA_NAME(obj.object_id) <span class="keyword">as</span> schema_name,</span><br><span class="line">    obj.type_desc</span><br><span class="line"><span class="keyword">FROM</span> tempdb.sys.objects obj</span><br><span class="line"><span class="keyword">WHERE</span> obj.is_ms_shipped <span class="operator">=</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> obj.create_date <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>检查当前运行的进程</strong>：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 检查可能占用大量tempdb空间的查询</span></span><br><span class="line"><span class="keyword">SELECT</span> r.session_id,</span><br><span class="line">    r.command,</span><br><span class="line">    r.status,</span><br><span class="line">    r.wait_type,</span><br><span class="line">    r.wait_time,</span><br><span class="line">    OBJECT_NAME(t.objectid) <span class="keyword">as</span> object_name,</span><br><span class="line">    t.text</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_exec_requests r</span><br><span class="line"><span class="keyword">CROSS</span> APPLY sys.dm_exec_sql_text(r.sql_handle) t</span><br><span class="line"><span class="keyword">WHERE</span> r.session_id <span class="operator">&gt;</span> <span class="number">50</span>;  <span class="comment">-- 排除系统进程</span></span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><strong>优化建议</strong>：</li>
+</ol>
+<p>a. tempdb 优化配置：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 设置tempdb文件的理想配置</span></span><br><span class="line">USE master;</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">ALTER</span> DATABASE tempdb</span><br><span class="line">MODIFY FILE (NAME <span class="operator">=</span> <span class="string">&#x27;tempdev&#x27;</span>, SIZE <span class="operator">=</span> <span class="number">1024</span>MB, FILEGROWTH <span class="operator">=</span> <span class="number">256</span>MB);</span><br></pre></td></tr></table></figure>
+
+<p>b. 追踪 tempdb 使用情况：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建追踪标记来监控tempdb使用</span></span><br><span class="line"><span class="keyword">CREATE</span> EVENT SESSION [TempDB_Usage] <span class="keyword">ON</span> SERVER</span><br><span class="line"><span class="keyword">ADD</span> EVENT sqlserver.temp_table_creation_event,</span><br><span class="line"><span class="keyword">ADD</span> EVENT sqlserver.temp_table_deletion_event</span><br><span class="line"><span class="keyword">ADD</span> TARGET package0.event_file</span><br><span class="line">(<span class="keyword">SET</span> filename<span class="operator">=</span>N<span class="string">&#x27;C:\TempDB_Usage.xel&#x27;</span>);</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">ALTER</span> EVENT SESSION [TempDB_Usage] <span class="keyword">ON</span> SERVER STATE <span class="operator">=</span> <span class="keyword">START</span>;</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li><p><strong>长期解决方案</strong>：</p>
+</li>
+<li><p>定期维护计划：</p>
+<ul>
+<li>清理不必要的临时对象</li>
+<li>监控 tempdb 增长趋势</li>
+<li>定期重启 SQL Server 服务（在维护窗口）</li>
+</ul>
+</li>
+<li><p>预防措施：</p>
+<ul>
+<li>设置 tempdb 大小告警</li>
+<li>监控大型查询的 tempdb 使用情况</li>
+<li>优化使用大量 tempdb 的查询</li>
+</ul>
+</li>
+<li><p>最佳实践：</p>
+<ul>
+<li>将 tempdb 放在快速磁盘上</li>
+<li>避免 tempdb 文件自动增长</li>
+<li>保持文件大小一致</li>
+<li>使用多个 tempdb 文件</li>
+</ul>
+</li>
+</ol>
+<p>如果执行这些步骤后仍然遇到问题：</p>
+<ol>
+<li>考虑重启 SQL Server 服务</li>
+<li>检查是否有应用程序创建了大量临时表或表变量</li>
+<li>评估是否需要增加服务器资源</li>
+<li>优化可能占用大量 tempdb 空间的查询</li>
+</ol>
+<p>记住：</p>
+<ul>
+<li>在进行任何更改之前备份重要数据</li>
+<li>在维护窗口执行可能影响性能的操作</li>
+<li>记录所有更改以便追踪问题原因</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/5752c416/">https://leejs.cn/5752c416/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/58860e96dc1d3f00010ad1e2_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/873586f3/" title="readme"><img class="cover" src="https://images-origin.wallwiz.link/58860ebadc1d3f00010ad215_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">readme</div></div><div class="info-2"><div class="info-item-1">从这些错误消息来看，问题更加明确了。让我们逐步分析和处理：  首先，让我们详细了解这些错误页面的情况：  12345-- 查看具体页面信息DBCC TRACEON(3604)  -- 打开跟踪标志GODBCC PAGE(数据库名, 1, 31971864, 3) WITH TABLERESULTSGO   检查这个页面所属的对象：  123456-- 查找对象信息SELECT OBJECT_NAME(99) as ObjectName,       OBJECT_SCHEMA_NAME(99) as SchemaName,       type_descFROM sys.objectsWHERE object_id = 99   检查 tempdb 的空间情况（因为错误提示可能与 tempdb 有关）：  12345-- 检查tempdb空间SELECT name AS FileName,    size/128.0 AS CurrentSizeMB,    size/128.0 - CAST(FILEPROPERTY(name, &#x27;SpaceUsed&#x27;)...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">79</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/5752c416/" title="'readme2'"><img src="https://images-origin.wallwiz.link/58860e96dc1d3f00010ad1e2_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="'readme2'"/></a><div class="content"><a class="title" href="/5752c416/" title="'readme2'">'readme2'</a><time datetime="2025-01-09T13:18:32.000Z" title="发表于 2025-01-09 21:18:32">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860ebadc1d3f00010ad215_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860c5cdc1d3f00010acee5_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/59c1366e8ac7580001cec0fd_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>class-transformer | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/undefined/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'class-transformer',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">class-transformer</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">class-transformer</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.452Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><ol>
+<li><h1 id="什么是class-transformer"><a href="#什么是class-transformer" class="headerlink" title="什么是class-transformer"></a><strong>什么是class-transformer</strong></h1></li>
+</ol>
+<blockquote>
+<p>文档：<a target="_blank" rel="noopener" href="https://github.com/typestack/class-transformer">https://github.com/typestack/class-transformer</a></p>
+</blockquote>
+<p>class-transformer是一个为Typescript设计的轻量级库，用于实现JS普通对象和类对象之间的<strong>转换</strong>。它基于<strong>装饰器</strong>模式，使得开发者能够定义如何将对象属性从一个形式映射到另一个形式，以及在转换过程中如何处理复杂的类型和嵌套的对象结构。有助于维护类型安全并提高开发效率。</p>
+<ol>
+<li><h1 id="为什么需要class-transformer"><a href="#为什么需要class-transformer" class="headerlink" title="为什么需要class-transformer"></a><strong>为什么需要class-transformer</strong></h1></li>
+</ol>
+<p>举个🌰：</p>
+<p>假设我们定义了一个User类</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">  <span class="attr">firstName</span>: string</span><br><span class="line">  <span class="attr">lastName</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">firstName: string, lastName: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">firstName</span> = firstName</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">lastName</span> = lastName</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">getName</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">firstName</span> + <span class="string">&#x27; &#x27;</span> + <span class="variable language_">this</span>.<span class="property">lastName</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们通过接口获取到一个user对象</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">firstName</span>: <span class="string">&#x27;John&#x27;</span>,</span><br><span class="line">  <span class="attr">lastName</span>: <span class="string">&#x27;Cage&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&quot;user.json&quot;</span>)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> response.<span class="title function_">json</span>())</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function">(<span class="params">user: User</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(user.<span class="title function_">getName</span>()) <span class="comment">// 报错，不能使用❌</span></span><br><span class="line">  &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>注意：可以使用User定义类型获取到的user对象，且类型提示也可以使用；但是user只是普通对象，并不是User类的实例，所以不能使用User类中的方法</p>
+<p>解决方案：</p>
+<ol>
+<li>为了使用User类中的方法，我们可以自己这样处理：</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">fetch</span>(<span class="string">&quot;user.json&quot;</span>)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> response.<span class="title function_">json</span>())</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function">(<span class="params">user: User</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 使用得到的数据直接构建User类实例</span></span><br><span class="line">    <span class="keyword">const</span> userInstance = <span class="keyword">new</span> <span class="title class_">User</span>(user.<span class="property">firstName</span>, user.<span class="property">lastName</span>);</span><br><span class="line">    <span class="comment">// 以使用 User 类中定义的方法</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(userInstance.<span class="title function_">getName</span>());</span><br><span class="line">  &#125;)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>使用已有工具 class-transformer 进行处理</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; plainToInstance &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span></span><br><span class="line">  </span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&quot;user.json&quot;</span>)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> response.<span class="title function_">json</span>())</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function">(<span class="params">user: User</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 使自动将普通对象转换为User类实例</span></span><br><span class="line">    <span class="keyword">const</span> userInstance = <span class="title function_">plainToInstance</span>(<span class="title class_">User</span>, user)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(userInstance.<span class="title function_">getName</span>());</span><br><span class="line">  &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>userInstance打印结果：</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=ODkwNmFjYzUyN2ZkZjQxNzNmZmQ5ZmJhNGMwMTRlM2VfanVaOFVmdUwzbFZLb1pabWZXVEtyMnJsa2RGbjBCRXRfVG9rZW46R09Vd2JCM2x4b0I5NFN4MU1uNWM4YWpNblFiXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h1 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a><strong>常用方法</strong></h1></li>
+<li><h2 id="plainToInstance（plainToClass）"><a href="#plainToInstance（plainToClass）" class="headerlink" title="plainToInstance（plainToClass）"></a><strong>plainToInstance（<strong><strong>plainToClass</strong></strong>）</strong></h2></li>
+</ol>
+<p>将一个普通js对象转换为指定类的实例；第一个参数为要转换成的类定义；第二个参数是一个普通对象或者是对象数组；第三个参数为可选的转换选项</p>
+<p>默认情况下，如果对象的属性和类的属性不匹配：</p>
+<ul>
+<li>对象中有额外的属性（即类定义中没有的属性），转换的结果会包含这些属性</li>
+<li>对象中缺少类定义中的属性，这些属性将被默认设置为undefined</li>
+<li>如果对象中属性和类定义的类型不匹配，会保留对象属性的值</li>
+</ul>
+<ol>
+<li><h2 id="instanceToPlain（classToPlain）"><a href="#instanceToPlain（classToPlain）" class="headerlink" title="instanceToPlain（classToPlain）"></a><strong>instanceToPlain（<strong><strong>classToPlain</strong></strong>）</strong></h2></li>
+</ol>
+<p>将一个类的实例转换为普通的js对象；第一个参数为类的实例；第二个参数为可选的转换选项</p>
+<p>举例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; instanceToPlain &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">  <span class="attr">firstName</span>: string</span><br><span class="line">  <span class="attr">lastName</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">firstName: string, lastName: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">firstName</span> = firstName</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">lastName</span> = lastName</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">getName</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">firstName</span> + <span class="string">&#x27; &#x27;</span> + <span class="variable language_">this</span>.<span class="property">lastName</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> userInstance = <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&#x27;John&#x27;</span>, <span class="string">&#x27;Cage&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> userObj = <span class="title function_">instanceToPlain</span>(userInstance)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(userObj)</span><br></pre></td></tr></table></figure>
+
+<p>userObj打印结果：只包含属性，不包含方法</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=ODQ4ZDRhYzVmYTc2ZDNlN2JhZjdkNjZlNTYzNWJlMDBfTmVEb2RLSmlrQmJaSUs3RmQyOHlvOVJzVmpXZWVlZmhfVG9rZW46Q1R0RWJrSzE0b3MxZTF4NkQwMGM2TVZPbjZiXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h2 id="instanceToInstance（classToClass）"><a href="#instanceToInstance（classToClass）" class="headerlink" title="instanceToInstance（classToClass）"></a><strong>instanceToInstance（<strong><strong>classToClass</strong></strong>）</strong></h2></li>
+</ol>
+<p>将一个类实例转换为一个新的类实例；第一个参数为类的实例；第二个参数为可选的转换选项</p>
+<p>举例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; instanceToInstance &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">  <span class="attr">firstName</span>: string</span><br><span class="line">  <span class="attr">lastName</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">firstName: string, lastName: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">firstName</span> = firstName</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">lastName</span> = lastName</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">getName</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">firstName</span> + <span class="string">&#x27; &#x27;</span> + <span class="variable language_">this</span>.<span class="property">lastName</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> userInstance = <span class="keyword">new</span> <span class="title class_">User</span>(<span class="string">&#x27;John&#x27;</span>, <span class="string">&#x27;Cage&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> userInstanceNew = <span class="title function_">instanceToInstance</span>(userInstance)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(userInstanceNew)</span><br></pre></td></tr></table></figure>
+
+<p>userInstanceNew打印结果：拥有和userInstance相同的属性和方法</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=MjViNTRhZTg0MzFkZjgxMTY0OGMyODEzZDE0NTFkNmVfaU9Gb3Zhd3k5Tlh6OU1WVjNLU056T3lVcFFCR1lVaHVfVG9rZW46UE45cGIyQVJKb0hoWEJ4V3lnbGNUb3V3bnliXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h2 id="serialize"><a href="#serialize" class="headerlink" title="serialize"></a><strong>serialize</strong></h2></li>
+</ol>
+<p>将类实例转换为JSON字符串；第一个参数为类的实例；第二个参数为可选的转换选项</p>
+<p>即将废弃，不推荐使用，同JSON.stringify</p>
+<ol>
+<li><h2 id="deserialize"><a href="#deserialize" class="headerlink" title="deserialize"></a><strong>deserialize</strong></h2></li>
+</ol>
+<p>将JSON字符串转换为类实例；第一个参数为要转换成的类定义；第二个参数为一个JSON字符串；第三个参数为可选的转换选项</p>
+<p>即将废弃，不推荐使用，同 plainToInstance(cls, JSON.parse(jsonStr))</p>
+<ol>
+<li><h2 id="转换方法整理"><a href="#转换方法整理" class="headerlink" title="转换方法整理"></a><strong>转换方法整理</strong></h2></li>
+</ol>
+<p>暂时无法在飞书文档外展示此内容</p>
+<ol>
+<li><h1 id="装饰器及选项配置"><a href="#装饰器及选项配置" class="headerlink" title="装饰器及选项配置"></a><strong>装饰器及选项配置</strong></h1></li>
+</ol>
+<ul>
+<li><strong>装饰器：</strong><ul>
+<li>用于自定义控制转换过程中的行为，比如哪些属性需要被包含、应该如何转换等等</li>
+</ul>
+</li>
+<li><strong>选项配置：</strong><ul>
+<li>转换方法的最后一个参数，允许你定制操作的具体行为。通常与装饰器配合使用</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><h2 id="Expose"><a href="#Expose" class="headerlink" title="@Expose()"></a><strong>@Expose()</strong></h2></li>
+</ol>
+<p>控制类的属性是否应该被包含在转换过程中</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Expose</span>, plainToInstance &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">  <span class="comment">// 没有被Expose标记</span></span><br><span class="line">  <span class="attr">id</span>: number;</span><br><span class="line">  <span class="comment">// 无参数，标记该属性在转换过程中被包含</span></span><br><span class="line">  @<span class="title class_">Expose</span>()</span><br><span class="line">  <span class="attr">firstName</span>: string;</span><br><span class="line">  <span class="comment">// 只有当指定groups中包含“admin”时才会包含该属性</span></span><br><span class="line">  @<span class="title class_">Expose</span>(&#123; <span class="attr">groups</span>: [<span class="string">&#x27;admin&#x27;</span>] &#125;)</span><br><span class="line">  <span class="attr">lastName</span>: string;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">id: number, firstName: string, lastName: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">id</span> = id</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">firstName</span> = firstName</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">lastName</span> = lastName</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> userObj = &#123;</span><br><span class="line">  <span class="attr">id</span>: <span class="number">123</span>,</span><br><span class="line">  <span class="attr">firstName</span>: <span class="string">&#x27;John&#x27;</span>,</span><br><span class="line">  <span class="attr">lastName</span>: <span class="string">&#x27;Cage&#x27;</span>,</span><br><span class="line">  <span class="attr">extraProperty</span>: <span class="number">123</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// excludeExtraneousValues表示只包含Expose标识的属性，会过滤掉对象中extraProperty属性</span></span><br><span class="line"><span class="comment">// groups与lastName中定义的相同，返回的类中会包含password属性</span></span><br><span class="line"><span class="keyword">const</span> userInstance = <span class="title function_">plainToInstance</span>(<span class="title class_">User</span>, userObj, &#123;</span><br><span class="line">  <span class="attr">excludeExtraneousValues</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">groups</span>: [<span class="string">&#x27;admin&#x27;</span>],</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>userInstance返回结果：</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=NmEyNjQyNTA4YzZjZTlhNzBiYzEzNjBiMTQ5NzNlNzNfUWt3N3V2TXYxbE11Nk1BVWE2Tm5xSDVsZm5YZ2JhWmNfVG9rZW46R2NiRWJHSkx6b1hCUlh4NlFMemNabldtbkNlXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h2 id="Exclude"><a href="#Exclude" class="headerlink" title="@Exclude()"></a><strong>@Exclude()</strong></h2></li>
+</ol>
+<p>用于标记属性来在转换后排除它们</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Exclude</span>, plainToInstance &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">  <span class="attr">id</span>: number</span><br><span class="line">  @<span class="title class_">Exclude</span>()</span><br><span class="line">  <span class="attr">firstName</span>: string</span><br><span class="line">  <span class="comment">// 只有转换为对象时会排除</span></span><br><span class="line">  @<span class="title class_">Exclude</span>(&#123; <span class="attr">toPlainOnly</span>: <span class="literal">true</span> &#125;)</span><br><span class="line">  <span class="attr">lastName</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">id: number, firstName: string, lastName: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">id</span> = id</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">firstName</span> = firstName</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">lastName</span> = lastName</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> userObj = &#123;</span><br><span class="line">  <span class="attr">id</span>: <span class="number">123</span>,</span><br><span class="line">  <span class="attr">firstName</span>: <span class="string">&#x27;John&#x27;</span>,</span><br><span class="line">  <span class="attr">lastName</span>: <span class="string">&#x27;Cage&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> userInstance = <span class="title function_">plainToInstance</span>(<span class="title class_">User</span>, userObj)</span><br></pre></td></tr></table></figure>
+
+<p>userInstance输出结果：</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=NWM5NTYzNmEwMzU3ZGY3YjhjNjA0MDgzMjMzZjEwNzlfVlpwTmFmNDgybG42OXE1djdsN1Z5ZGFxRXJ5WXdlcTdfVG9rZW46SVJVVGIyRGV3b1BvVXp4VzdrSWMzb1JjbkVjXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h2 id="Transform"><a href="#Transform" class="headerlink" title="@Transform()"></a><strong>@Transform()</strong></h2></li>
+</ol>
+<p>自定义一个函数来转换值，用来指定如何处理这个属性的值</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Transfrom</span>, plainToInstance &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">  <span class="attr">firstName</span>: string</span><br><span class="line">  @<span class="title class_">Transform</span>(<span class="function">(<span class="params">obj</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> obj.<span class="property">value</span> + <span class="string">&#x27;123&#x27;</span></span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="attr">lastName</span>: string</span><br><span class="line">  </span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">firstName: string, lastName: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">firstName</span> = firstName</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">lastName</span> = lastName</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> userObj = &#123;</span><br><span class="line">  <span class="attr">firstName</span>: <span class="string">&#x27;John&#x27;</span>,</span><br><span class="line">  <span class="attr">lastName</span>: <span class="string">&#x27;Cage&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> userInstance = <span class="title function_">plainToInstance</span>(<span class="title class_">User</span>, userObj)</span><br></pre></td></tr></table></figure>
+
+<p>userInstance输出结果：</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=NDZjYjE3M2U0MzgwNjdjNTliYjA2ZDJkOWQwZjVjMWJfcG9TUnBHbUV2QmRBMnRUMGd2N0lCUDRUdGY4YktrS1VfVG9rZW46TGcxRWJkNzVKb2J1cUN4UlFGaWM0SkZRbkpmXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<p>@Transform中转换函数接收的对象参数，包括以下属性：</p>
+<ul>
+<li>key：当前属性的名称</li>
+<li>obj：包含当前属性的整个对象</li>
+<li>options：当前操作的选项配置</li>
+<li>type： 转换操作类型</li>
+<li>value：当前属性的值</li>
+</ul>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=N2E5ODc2YTIzYTBmODZiZGE4OTI0ZjJlODdlOTM0NjZfQkJ4MEgyREN0QXNCRjdJandhQ0FqUUN6SGpZM0FFT3lfVG9rZW46U0F4aWJGenNvb2tqd3V4SWpxYWN1WTBUbnRkXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h2 id="Type"><a href="#Type" class="headerlink" title="@Type()"></a><strong>@Type()</strong></h2></li>
+</ol>
+<p>指定类的属性在转换时应该的目标类型，主要用于复杂类型的转换场景</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Transfrom</span>, <span class="title class_">Type</span>, plainToInstance &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Address</span> &#123;</span><br><span class="line">  <span class="attr">street</span>: string</span><br><span class="line">  @<span class="title class_">Transform</span>(<span class="function">(<span class="params">&#123; value &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> value.<span class="title function_">toUpperCase</span>()</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="attr">city</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">street: string, city: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">street</span> = street</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">city</span> = city</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用户类，包含几个类型化的属性</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">  <span class="attr">id</span>: number</span><br><span class="line">  @<span class="title class_">Type</span>(<span class="function">() =&gt;</span> <span class="title class_">Address</span>) <span class="comment">// 用于自定义 Address 类的属性</span></span><br><span class="line">  <span class="attr">address</span>: <span class="title class_">Address</span></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">id: number, address: any</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">id</span> = id</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">address</span> = address</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> userObj = &#123;</span><br><span class="line">  <span class="attr">id</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="attr">address</span>: &#123;</span><br><span class="line">    <span class="attr">street</span>: <span class="string">&#x27;123 Main St&#x27;</span>,</span><br><span class="line">    <span class="attr">city</span>: <span class="string">&#x27;shanghai&#x27;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> userInstance = <span class="title function_">plainToInstance</span>(<span class="title class_">User</span>, userObj)</span><br></pre></td></tr></table></figure>
+
+<p>userInstane输出结果：</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=YWY3MTdiNzQzYjQyZDIyZWE5ZDMyNmFhNDdjYWIzNWVfRGs4bG5ORlpweGc2dTNtcWZHdnNnb0tLMHo5Qk5keG1fVG9rZW46Vlc1WmJhODVlb0VWS3d4RkdTdWM0RjFCbmFoXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<p>如果不增加@Type装饰器则会输出：</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=ZmQ3N2IxYmIzMDVhMjRkZjRmODBmNTdiZTc5ZDE5ZmNfZFBSSDdFejROSEhiRHZPYkduejlMZzRxVkliQWhHQWxfVG9rZW46WENWN2J1T2Jnb0x3emZ4ZUlzRmNLRDdYbk5iXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h1 id="tianji-service项目中使用class-transformer"><a href="#tianji-service项目中使用class-transformer" class="headerlink" title="tianji-service项目中使用class-transformer"></a><strong>tianji-service项目中使用class-transformer</strong></h1></li>
+</ol>
+<ul>
+<li>场景1：<ul>
+<li>service中使用，处理接口返回的数据，比如枚举映射、时间格式处理等</li>
+<li>class的定义放到entity中</li>
+</ul>
+</li>
+<li>场景2：<ul>
+<li>service中使用，处理接口需要的参数，比如补充参数默认值等</li>
+<li>class的定义放到dto中</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><h1 id="配合class-validator"><a href="#配合class-validator" class="headerlink" title="配合class-validator"></a><strong>配合class-validator</strong></h1></li>
+<li><h2 id="什么是class-validator"><a href="#什么是class-validator" class="headerlink" title="什么是class-validator"></a><strong>什么是class-validator</strong></h2></li>
+</ol>
+<blockquote>
+<p>文档：<a target="_blank" rel="noopener" href="https://github.com/typestack/class-validator">https://github.com/typestack/class-validator</a></p>
+</blockquote>
+<p>class-validator可以为类的属性添加校验，确保类实例的属性值满足特定约束。一般配合class-transformer使用</p>
+<ol>
+<li><h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a><strong>使用场景</strong></h2></li>
+</ol>
+<p>Controller层，定义Dto，代表这个post请求传入的数据结构。虽然User类定义了每个属性的类型，但其实是可以传入任意类型的，比如id传入String类型也是不会有任何报错</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Body</span>, <span class="title class_">Controller</span>, <span class="title class_">Post</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@nestjs/common&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UserDto</span> &#123;</span><br><span class="line">  <span class="attr">id</span>: number</span><br><span class="line">  <span class="attr">email</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">id: number, email: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">id</span> = id</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">email</span> = email</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@<span class="title class_">Controller</span>(<span class="string">&#x27;/query&#x27;</span>)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line">  @<span class="title class_">Post</span>(<span class="string">&#x27;/userInfo&#x27;</span>)</span><br><span class="line">  <span class="title function_">queryUserInfo</span>(@<span class="title class_">Body</span>() <span class="attr">userDto</span>: <span class="title class_">UserDto</span>): string &#123;</span><br><span class="line">    <span class="keyword">const</span> response = <span class="string">`User Info - ID: <span class="subst">$&#123;userDto.id&#125;</span>, Email: <span class="subst">$&#123;userDto.email&#125;</span>`</span></span><br><span class="line">    <span class="keyword">return</span> response</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过class-validator对数据类型进行校验</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Body</span>, <span class="title class_">Controller</span>, <span class="title class_">Post</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@nestjs/common&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; plainToInstance &#125; <span class="keyword">from</span> <span class="string">&#x27;class-transformer&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">IsNumber</span>, <span class="title class_">IsEmail</span>, validate &#125; <span class="keyword">from</span> <span class="string">&#x27;class-validator&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UserDto</span> &#123;</span><br><span class="line">  @<span class="title class_">IsNumber</span>()</span><br><span class="line">  <span class="attr">id</span>: number</span><br><span class="line">  @<span class="title class_">IsEmail</span>()</span><br><span class="line">  <span class="attr">email</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">id: number, email: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">id</span> = id</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">email</span> = email</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@<span class="title class_">Controller</span>(<span class="string">&#x27;/query&#x27;</span>)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line">  @<span class="title class_">Post</span>(<span class="string">&#x27;/userInfo&#x27;</span>)</span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">queryUserInfo</span>(@<span class="title class_">Body</span>() <span class="attr">userDto</span>: <span class="title class_">UserDto</span>): string &#123;</span><br><span class="line">    <span class="keyword">const</span> userInstance = <span class="title function_">plainToInstance</span>(<span class="title class_">UserDto</span>, userDto)</span><br><span class="line">    <span class="keyword">const</span> errors = <span class="keyword">await</span> <span class="title function_">validate</span>(userInstance)</span><br><span class="line">    <span class="keyword">if</span> (errors.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="comment">// 如果有验证错误，抛出 HttpException 异常</span></span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">HttpException</span>(&#123;</span><br><span class="line">        <span class="attr">status</span>: <span class="title class_">HttpStatus</span>.<span class="property">BAD_REQUEST</span>,</span><br><span class="line">        <span class="attr">error</span>: <span class="string">&#x27;Validation failed&#x27;</span>,</span><br><span class="line">        <span class="attr">message</span>: errors.<span class="title function_">map</span>(<span class="function">(<span class="params">error</span>) =&gt;</span> error.<span class="property">constraints</span>),</span><br><span class="line">      &#125;, <span class="title class_">HttpStatus</span>.<span class="property">BAD_REQUEST</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果验证成功，继续处理请求</span></span><br><span class="line">    <span class="keyword">const</span> response = <span class="string">`User Info - ID: <span class="subst">$&#123;userDto.id&#125;</span>, Email: <span class="subst">$&#123;userDto.email&#125;</span>`</span></span><br><span class="line">    <span class="keyword">return</span> response</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>errros返回内容：</p>
+<p><img src="https://iq.feishu.cn/space/api/box/stream/download/asynccode/?code=OGE2M2UwZDczMjQ3NDE4Mjk1YTg4ZWM4NTJjN2Y1NWJfNjNMbG5FWUY1NGFyS3lGbkFENFlPOXVJU1p6YnYzZ1NfVG9rZW46S0dzQmJlQWl0b0Ryb2J4dWZQTmNEVlVpbm9kXzE3MTI1NDY3OTI6MTcxMjU1MDM5Ml9WNA" alt="img"></p>
+<ol>
+<li><h2 id="结合ValidationPipe管道"><a href="#结合ValidationPipe管道" class="headerlink" title="结合ValidationPipe管道"></a><strong>结合ValidationPipe管道</strong></h2></li>
+</ol>
+<p>ValidationPipie是@nestjs&#x2F;common提供的，能够利用class-validator提供的装饰器进行自动验证，并且使用class-transformer来转换请求体中的普通对象为DTO的类实例。使得在Nest中处理和验证传入数据变得简单且一致</p>
+<p>使用ValidationPipe改写queryUserInfo方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Body</span>, <span class="title class_">ValidationPipe</span>, <span class="title class_">Controller</span>, <span class="title class_">Post</span>, <span class="title class_">UsePipes</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@nestjs/common&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">IsNumber</span>, <span class="title class_">IsEmail</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;class-validator&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UserDto</span> &#123;</span><br><span class="line">  @<span class="title class_">IsNumber</span>()</span><br><span class="line">  <span class="attr">id</span>: number</span><br><span class="line">  @<span class="title class_">IsEmail</span>()</span><br><span class="line">  <span class="attr">email</span>: string</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">id: number, email: string</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">id</span> = id</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">email</span> = email</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@<span class="title class_">Controller</span>(<span class="string">&#x27;/query&#x27;</span>)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line">  @<span class="title class_">Post</span>(<span class="string">&#x27;/userInfo&#x27;</span>)</span><br><span class="line">  @<span class="title class_">UsePipes</span>(<span class="keyword">new</span> <span class="title class_">ValidationPipe</span>())</span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">queryUserInfo</span>(@<span class="title class_">Body</span>() <span class="attr">userDto</span>: <span class="title class_">UserDto</span>): string &#123;</span><br><span class="line">    <span class="comment">// 如果验证成功，继续处理请求</span></span><br><span class="line">    <span class="keyword">const</span> response = <span class="string">`User Info - ID: <span class="subst">$&#123;userDto.id&#125;</span>, Email: <span class="subst">$&#123;userDto.email&#125;</span>`</span></span><br><span class="line">    <span class="keyword">return</span> response</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><h2 id="常用装饰器"><a href="#常用装饰器" class="headerlink" title="常用装饰器"></a><strong>常用装饰器</strong></h2></li>
+</ol>
+<blockquote>
+<p>更多：<a target="_blank" rel="noopener" href="https://github.com/typestack/class-validator">https://github.com/typestack/class-validator</a></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">装饰器</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">通用验证</td>
+<td align="left">@IsEmpty()</td>
+<td align="left">检查给定值是否为空(&#x3D;&#x3D;&#x3D; ‘’, &#x3D;&#x3D;&#x3D; null, &#x3D;&#x3D;&#x3D; undefined)</td>
+</tr>
+<tr>
+<td align="left">@Equals(comparison: any)</td>
+<td align="left">检查值是否相等（“&#x3D;&#x3D;&#x3D;”）</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">@IsIn(values: any[])</td>
+<td align="left">检查值是否在允许值的数组中</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">类型验证</td>
+<td align="left">@IsInt()</td>
+<td align="left">是否为整数</td>
+</tr>
+<tr>
+<td align="left">@IsDate()</td>
+<td align="left">是否为日期</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">@IsString()</td>
+<td align="left">是否为字符串</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">数字验证</td>
+<td align="left">@IsPositive()</td>
+<td align="left">是否是大于0的整数</td>
+</tr>
+<tr>
+<td align="left">@Min(min: number)</td>
+<td align="left">是否大于等于给定的数字</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">字符串验证</td>
+<td align="left">@Contains(seed: string)</td>
+<td align="left">是否包含指定的子字符串</td>
+</tr>
+<tr>
+<td align="left">@IsBase64()</td>
+<td align="left">是否是base64编码</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/undefined/">https://leejs.cn/undefined/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/a70288e8/" title="Docker常见命令"><img class="cover" src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Docker常见命令</div></div><div class="info-2"><div class="info-item-1">Docker 是一个强大的容器化平台，提供了许多命令来管理容器、镜像、网络和存储等。以下是一些常用的 Docker 命令，分为几个类别： 1. 镜像管理相关命令 列出本地镜像 1docker images 列出本地 Docker 镜像。  拉取镜像 1docker pull &lt;image_name&gt; 从 Docker Hub 或其他镜像仓库拉取镜像。  删除镜像 1docker rmi &lt;image_id&gt; 删除本地镜像。  构建镜像 1docker build -t &lt;image_name&gt;:&lt;tag&gt; &lt;path_to_dockerfile&gt; 根据 Dockerfile 构建新的镜像。  查看镜像历史 1docker history &lt;image_name&gt; 查看镜像的历史层信息。   2. 容器管理相关命令 运行容器 1docker run -d -p &lt;host_port&gt;:&lt;container_port&gt; --name &lt;container_name&gt;...</div></div></div></a><a class="pagination-related" href="/5feabfc2/" title="浏览器indexDB"><img class="cover" src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">浏览器indexDB</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFclass-transformer"><span class="toc-number">1.</span> <span class="toc-text">什么是class-transformer</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81class-transformer"><span class="toc-number">2.</span> <span class="toc-text">为什么需要class-transformer</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">常用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#plainToInstance%EF%BC%88plainToClass%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">plainToInstance（plainToClass）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceToPlain%EF%BC%88classToPlain%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">instanceToPlain（classToPlain）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceToInstance%EF%BC%88classToClass%EF%BC%89"><span class="toc-number">3.3.</span> <span class="toc-text">instanceToInstance（classToClass）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#serialize"><span class="toc-number">3.4.</span> <span class="toc-text">serialize</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#deserialize"><span class="toc-number">3.5.</span> <span class="toc-text">deserialize</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2%E6%96%B9%E6%B3%95%E6%95%B4%E7%90%86"><span class="toc-number">3.6.</span> <span class="toc-text">转换方法整理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A3%85%E9%A5%B0%E5%99%A8%E5%8F%8A%E9%80%89%E9%A1%B9%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">装饰器及选项配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Expose"><span class="toc-number">4.1.</span> <span class="toc-text">@Expose()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Exclude"><span class="toc-number">4.2.</span> <span class="toc-text">@Exclude()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Transform"><span class="toc-number">4.3.</span> <span class="toc-text">@Transform()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Type"><span class="toc-number">4.4.</span> <span class="toc-text">@Type()</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#tianji-service%E9%A1%B9%E7%9B%AE%E4%B8%AD%E4%BD%BF%E7%94%A8class-transformer"><span class="toc-number">5.</span> <span class="toc-text">tianji-service项目中使用class-transformer</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E5%90%88class-validator"><span class="toc-number">6.</span> <span class="toc-text">配合class-validator</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFclass-validator"><span class="toc-number">6.1.</span> <span class="toc-text">什么是class-validator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">6.2.</span> <span class="toc-text">使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E5%90%88ValidationPipe%E7%AE%A1%E9%81%93"><span class="toc-number">6.3.</span> <span class="toc-text">结合ValidationPipe管道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E8%A3%85%E9%A5%B0%E5%99%A8"><span class="toc-number">6.4.</span> <span class="toc-text">常用装饰器</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

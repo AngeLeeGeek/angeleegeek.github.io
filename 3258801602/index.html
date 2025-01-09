@@ -1,0 +1,263 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>vue常见API原理分析 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="数据绑定  oberserverObject.defineProperty() depdep.notify() watcheruser-watcher  render-watcher  computed-watcher nextTick nextTick..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/3258801602/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'vue常见API原理分析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/58860cbe6e9f6a00013b9112_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">vue常见API原理分析</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">vue常见API原理分析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-07-04T02:14:41.000Z" title="发表于 2020-07-04 10:14:41">2020-07-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.473Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h3 id="数据绑定"><a href="#数据绑定" class="headerlink" title="数据绑定"></a>数据绑定</h3><span id="more"></span>
+
+<h4 id="oberserver"><a href="#oberserver" class="headerlink" title="oberserver"></a>oberserver</h4><p><code>Object.defineProperty()</code></p>
+<h4 id="dep"><a href="#dep" class="headerlink" title="dep"></a>dep</h4><p><code>dep.notify()</code></p>
+<h4 id="watcher"><a href="#watcher" class="headerlink" title="watcher"></a>watcher</h4><p><code>user-watcher</code>  <code>render-watcher</code>  <code>computed-watcher</code></p>
+<h3 id="nextTick"><a href="#nextTick" class="headerlink" title="nextTick"></a>nextTick</h3><blockquote>
+<p><code>nextTick</code> 会在<code>DOM</code>更新完毕之后执行一个回调，确保我们操作的是更新之后的<code>DOM</code></p>
+</blockquote>
+<p><code>vue</code>用异步队列的方式来控制<code>DOM</code>更新和<code>nextTick</code>回调先后执行<br><code>microtask</code>因为其高优先级特性，能确保队列中的微任务在一次事件循环前被执行完毕<br>因为兼容性问题，<code>vue</code>不得不做了<code>microtask</code>向<code>macrotask</code>的降级方案 (<code>Promise</code>，<code>MutationObserver</code>，<code>setTimeout</code>)</p>
+<ol>
+<li>MutationObserver</li>
+</ol>
+<p>用于监听<code>DOM</code>修改事件，能够监听到节点的属性，文本内容，子节点等的改动</p>
+<ol start="2">
+<li>Event Loop</li>
+</ol>
+<p>MutationObserver 每次监听到变更的时候会往 microtask 添加一个事件</p>
+<ol start="3">
+<li>降级方案</li>
+</ol>
+<p>Promise &#x3D;&gt; MutationObserver &#x3D;&gt; setTimeout</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/liuhao-web/p/8919623.html">参考文档&gt;&gt;&gt;</a></p>
+<h3 id="computed"><a href="#computed" class="headerlink" title="computed"></a>computed</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">initData()</span><br><span class="line">initCompunted()</span><br><span class="line">defineComputed()</span><br><span class="line">Object.defineProperty()</span><br><span class="line">get: createCompuntedGetter()</span><br><span class="line">watcher()</span><br><span class="line">watcher.evaluate()</span><br><span class="line">watcher.depend()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里的变量<code>watcher</code>就是之前<code>computed</code>对应的<code>computed-watcher</code>实例，接下来会执行<code>Watcher</code>类专门为计算属性定义的两个方法，在执行<code>evaluate</code>方法进行求值的过程中又会触发<code>computed</code>内可以访问到的响应式数据的<code>get</code>，它们会将当前的<code>computed-watcher</code>作为依赖收集到自己的<code>dep</code>里，计算完毕之后将<code>dirty</code>置为<code>false</code>，表示已经计算过了。</p>
+</blockquote>
+<blockquote>
+<p>然后执行<code>depend</code>让计算属性内的响应式数据订阅当前的<code>render-watcher</code>，所以<code>computed</code>内的响应式数据会收集<code>computed-watcher</code>和<code>render-watcher</code>两个<code>watcher</code>，当<code>computed</code>内的状态发生变更触发<code>se</code>t后，首先通知<code>computed</code>需要进行重新计算，然后通知到视图执行渲染，再渲染中会访问到<code>computed</code>计算后的值，最后渲染到页面。</p>
+</blockquote>
+<p>为什么计算属性有缓存功能？</p>
+<p>因为当计算属性经过计算后，内部的标志位会表明已经计算过了，再次访问时会直接读取计算后的值</p>
+<p>为什么计算属性内的响应式数据发生变更后，计算属性会重新计算？</p>
+<p>因为内部的响应式数据会收集<code>computed-watcher</code>，变更后通知计算属性要进行计算，也会通知页面重新渲，渲染染时会读取到重新计算后的值。</p>
+<h3 id="watcher-1"><a href="#watcher-1" class="headerlink" title="watcher"></a>watcher</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">watch监听属性收集依赖过程</span><br><span class="line"></span><br><span class="line">root =&gt; _init()    根组件初始化</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">root =&gt; vm._update(vm._render())   根组件渲染，没状态不用收集依赖</span><br><span class="line">  app =&gt; initData()                 初始化App组件的data</span><br><span class="line">  app =&gt; oberserver(name)           将name转为响应式</span><br><span class="line">  app =&gt; initWatch(watch)           初始化watch</span><br><span class="line">  app =&gt; this.$watch(&#x27;name&#x27;)        主要就是这里： 触发name的get， 让dep收集user-watcher </span><br><span class="line">  app =&gt; Sub.$mont()                子组件挂载</span><br><span class="line">  app =&gt; new Watcher(vm, geeter)    实例化 render-watcher</span><br><span class="line">  app =&gt; vm._render()               触发name的get， 让dep收集render-watcher</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  watch监听属性派发更新</span><br><span class="line"></span><br><span class="line">  app =&gt; name = &#x27;www&#x27;               响应式数据被贱赋值，触发set</span><br><span class="line">  app =&gt; dep.nofity()               dep通知收集到的watcher</span><br><span class="line">  app =&gt; user-watcher               user-watcher派发新值跟旧值给回调函数</span><br><span class="line">  app =&gt; render-watcher             redner-wachter改变视图</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>watch</code>和<code>this.$watch</code>的实现是一致的，以及简单解释它的原理就是为需要观察的数据创建并收集·，当数据改变时通知到·将新值和旧值传递给用户自己定义的回调函数。</p>
+<p>定义watch时会被使用到的三个参数：<code>sync</code>、<code>immediate</code>、<code>deep</code></p>
+<p>简单说明它们的实现原理就是：<code>sync</code>是不将watcher加入到nextTick队列而同步的更新、<code>immediate</code>是立即以得到的值执行一次回调函数、<code>deep</code>是递归的对它的子值进行依赖收集。</p>
+<h3 id="虚拟DOM生成真实DOM的过程"><a href="#虚拟DOM生成真实DOM的过程" class="headerlink" title="虚拟DOM生成真实DOM的过程"></a>虚拟DOM生成真实DOM的过程</h3><ol>
+<li>元素节点生成<code>Dom</code></li>
+</ol>
+<p>里向外的挨个创建出真实的<code>Dom</code>，然后插入到它的父节点内，最后将创建好的<code>Dom</code>插入到<code>body</code>内，完成创建的过程</p>
+<ol start="2">
+<li>组件VNode生成<code>Dom</code></li>
+</ol>
+<blockquote>
+<p>无论是嵌套多么深的组件，遇到组件的后就执行<code>init</code>，在<code>init</code>的<code>__patch__</code>过程中又遇到嵌套组件，那就再执行嵌套组件的<code>init</code>，嵌套组件完成<code>__patch__</code>后将真实的<code>Dom</code>插入到它的父节点内，接着执行完外层组件的<code>__patch__</code>又插入到它的父节点内，最后插入到<code>body</code>内，完成嵌套组件的创建过程，总之还是一个由里及外的过程</p>
+</blockquote>
+<h3 id="extend和-mount"><a href="#extend和-mount" class="headerlink" title="extend和$mount"></a>extend和$mount</h3><p>这两个都是<code>vue</code>提供的API，不过在平时的业务开发中使用并不多。在<code>vue</code>的内部也有使用过这一对API。遇到嵌套组件时，首先将子组件转为组件形式的VNode时，会将引入的组件对象使用extend转为子组件的构造函数，作为VNode的一个属性Ctor；然后在将VNode转为真实的<code>Dom</code>的时候实例化这个构造函数；最后实例化完成后手动调用$mount进行挂载，将真实<code>Dom</code>插入到父节点内完成渲染。</p>
+<h4 id="extend"><a href="#extend" class="headerlink" title="extend"></a>extend</h4><blockquote>
+<p>接受的是一个组件对象，再执行extend时将继承基类构造器上的一些属性、原型方法、静态方法等，最后返回Sub这么一个构造好的子组件构造函数。拥有和<code>vue</code>基类一样的能力，并在实例化时会执行继承来的_init方法完成子组件的初始化。</p>
+</blockquote>
+<h4 id="实例化Sub"><a href="#实例化Sub" class="headerlink" title="实例化Sub"></a>实例化Sub</h4><blockquote>
+<p>执行_init组件初始化的一系列操作，初始化事件、生命周期、状态等等。将data或props内定义的变量挂载到当前this实例下，最后返回一个实例化后的对象。</p>
+</blockquote>
+<h4 id="mount"><a href="#mount" class="headerlink" title="$mount"></a>$mount</h4><blockquote>
+<p>在得到初始化后的对象后，开始组件的挂载。首先将当前render函数转为VNode，然后将VNode转为真实Dom插入到页面完成渲染。再完成挂载之后，会在当前组件实例this下挂载$el属性，它就是完成挂载后对应的真实Dom，我们就需要使用这个属性。</p>
+</blockquote>
+<h3 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h3><ol>
+<li>请问<code>runtime-compiler</code>和<code>runtime-only</code>这两个版本的区别？</li>
+</ol>
+<blockquote>
+<p><code>runtime-compiler</code> 经历的是一个 <code>template -&gt; ast -&gt; render -&gt; vdom -&gt; UI</code> 的过程，<br><code>runtime-only</code>直接使用了<code>render</code>函数，所以经历的是一个 <code>render -&gt; vdom -&gt; UI</code> 的过程。 <code>runtime-only</code> 会省去一个 <code>template -&gt; ast -&gt; render</code> 的过程，也不再需要相关的<code>loader</code>插件，从而这种方法搭建的项目性能更高，代码也更少，项目大小也更小。<br>最明显的就是大小的区别，带编译器会比不带的版本大6kb。</p>
+</blockquote>
+<ol start="2">
+<li>请问可以在<code>beforeCreate</code>钩子内通过<code>this</code>访问到<code>data</code>中定义的变量么，为什么以及请问这个钩子可以做什么？</li>
+</ol>
+<blockquote>
+<p>是不可以访问的，因为在<code>vue</code>初始化阶段，这个时候<code>data</code>中的变量还没有被挂载到<code>this</code>上，这个时候访问值会是<code>undefined</code>。<br><code>beforeCreate</code>这个钩子在平时业务开发中用的比较少，而像插件内部的<code>instanll</code>方法通过<code>Vue.use</code>方法安装时一般会选在<code>beforeCreate</code>这个钩子内执行，<code>vue-router</code>和<code>vuex</code>就是这么干的。</p>
+</blockquote>
+<ol start="3">
+<li>请问<code>methods</code>内的方法可以使用箭头函数么，会造成什么样的结果？</li>
+</ol>
+<blockquote>
+<p>是不可以使用箭头函数的，因为箭头函数的<code>this</code>是定义时就绑定的。<br>在vue的内部，<code>methods</code>内每个方法的上下文是当前的vm组件实例，<code>methods[key].bind(vm)</code>，而如果使用使用箭头函数，函数的上下文就变成了父级的上下文，也就是<code>undefined</code>了，结果就是通过<code>undefined</code>访问任何变量都会报错。</p>
+</blockquote>
+<ol start="4">
+<li>请问vue@2为什么要引入虚拟Dom，谈谈对虚拟Dom的理解？</li>
+</ol>
+<blockquote>
+<p>随着现代应用对页面的功能要求越复杂，管理的状态越多，如果还是使用之前的JavaScript线程去频繁操作GUI线程的硕大Dom，对性能会有很大的损耗，而且也会造成状态难以管理，逻辑混乱等情况。引入虚拟Dom后，在框架的内部就将虚拟Dom树形结构与真实Dom做了映射，让我们不用在命令式的去操作Dom，可以将重心转为去维护这棵树形结构内的状态即可，状态的变化就会驱动Dom发生改变，具体的Dom操作vue帮我们完成，而且这些大部分可以在JavaScript线程完成，性能更高<br>虚拟Dom只是一种数据结构，可以让它不仅仅使用在浏览器环境，还可以用与SSR以及Weex等场景。</p>
+</blockquote>
+<ol start="5">
+<li>父子两个组件同时定义了<code>beforeCreate</code>、<code>created</code>、<code>beforeMounte</code>、<code>mounted</code>四个钩子，它们的执行顺序是怎么样的？</li>
+</ol>
+<blockquote>
+<p>首先会执行父组件的初始化过程，所以会依次执行<code>beforeCreate</code>、<code>created</code>、在执行挂载前又会执行<code>beforeMounte</code>钩子，不过在生成真实dom的<code>__patch__</code>过程中遇到嵌套子组件后又会转为去执行子组件的初始化钩子<code>beforeCreate</code>、<code>created</code>，子组件在挂载前会执行<code>beforeMounte</code>，再完成子组件的Dom创建后执<code>行mounted</code>。这个父组件的<code>__patch__</code>过程才算完成，最后执行父组件的<code>mounted</code>钩子，这就是它们的执行顺序。执行顺序如下：</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">parent beforeCreate</span><br><span class="line">parent created</span><br><span class="line">parent beforeMounte</span><br><span class="line">    child beforeCreate</span><br><span class="line">    child created</span><br><span class="line">    child beforeMounte</span><br><span class="line">    child mounted</span><br><span class="line">parent mounted</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>当前组件模板中用到的变量一定要定义在data里么？</li>
+</ol>
+<blockquote>
+<p>data中的变量都会被代理到当前this下，所以我们也可以在this下挂载属性，只要不重名即可。而且定义在data中的变量在vue的内部会将它包装成响应式的数据，让它拥有变更即可驱动视图变化的能力。但是如果这个数据不需要驱动视图，定义在created或mounted钩子内也是可以的，因为不会执行响应式的包装方法，对性能也是一种提升。</p>
+</blockquote>
+<ol start="7">
+<li>请简单描述下vue响应式系统？</li>
+</ol>
+<blockquote>
+<p>简单来说就是使用Object.defineProperty这个API为数据设置get和set。  当读取到某个属性时，触发get将读取它的组件对应的render watcher收集起来；当重置赋值时，触发set通知组件重新渲染页面。<br>如果数据的类型是数组的话，还做了单独的处理，对可以改变数组自身的方法进行重写，因为这些方法不是通过重新赋值改变的数组，不会触发set，所以要单独处理。<br>响应系统也有自身的不足，所以官方给出了$set和$delete来弥补。</p>
+</blockquote>
+<ol start="8">
+<li>为什么v-for里建议为每一项绑定key，而且最好具有唯一性，而不建议使用index？</li>
+</ol>
+<blockquote>
+<p>diff比对内部做更新子节点时，会根据oldVnode内没有处理的节点得到一个key值和下标对应的对象集合，为的就是当处理vnode每一个节点时，能快速查找该节点是否是已有的节点，从而提高整个diff比对的性能。<br>如果是一个动态列表，key值最好能保持唯一性，但像轮播图那种不会变更的列表，使用index也是没问题的。</p>
+</blockquote>
+<ol start="9">
+<li>说下自定义事件的机制。</li>
+</ol>
+<blockquote>
+<p>子组件使用this.$emit触发事件时，会在当前实例的事件中心去查找对应的事件，然后执行它。不过这个事件回调是在父组件的作用域里定义的，所以$emit里的参数会传递给父组件的回调函数，从而完成父子组件通信。</p>
+</blockquote>
+<ol start="10">
+<li>请说明下组件库中命令式弹窗组件的原理？</li>
+</ol>
+<blockquote>
+<p>使用<code>extend</code>将组件转为构造函数，在实例化这个这个构造函数后，就会得到<code>$el</code>属性，也就是组件的真实<code>Dom</code>，这个时候我们就可以操作得到的真实的<code>Dom</code>去任意挂载，使用命令式也可以调用。</p>
+</blockquote>
+<ol start="11">
+<li>请说明下<code>transition</code>组件的实现原理？</li>
+</ol>
+<blockquote>
+<p><code>transition</code>组件是一个抽象组件，不会渲染出任何的<code>Dom</code>，它主要是帮助我们更加方便的写出动画。<br>以插槽的形式对内部单一的子节点进行动画的管理，在渲染阶段就会往子节点的虚拟<code>Dom</code>上挂载一个<code>transition</code>属性，表示它的一个被<code>transition</code>组件包裹的节点，在<code>path</code>阶段就会执行<code>transition</code>组件内部钩子，钩子里分为<code>enter</code>和<code>leave</code>状态，在这个被包裹的子节点上使用<code>v-if</code>或<code>v-show</code>进行状态的切换。<br>你可以使用<code>Css</code>也可以使用<code>JavaScript</code>钩子，使用<code>Css</code>方式时会在<code>enter/leave</code>状态内进行<code>class</code>类名的添加和删除，用户只需要写出对应类名的动画即可。<br>如果使用<code>JavaScript</code>钩子，则也是按照顺序的执行指定的函数，而这些函数也是需要用户自己定义，组件只是控制这个的流程而已。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/3258801602/">https://leejs.cn/3258801602/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/vue/">vue</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/58860cbe6e9f6a00013b9112_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/4288208203/" title="d3 前端业务模块代码组织形式"><img class="cover" src="https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">d3 前端业务模块代码组织形式</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a><a class="pagination-related" href="/148981014/" title="面试记录"><img class="cover" src="https://images-origin.wallwiz.link/58860cbe6e9f6a00013b9112_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">面试记录</div></div><div class="info-2"><div class="info-item-1">浏览器多进程+多线程DNS寻址方式，DNS 缓存， dns-prefetch建立 tcp&#x2F;ip 链接，三次握手，四次挥手，滑动窗口，接收窗口，收发帧的策略，为什么关闭要等待 2MSL，get post 区别，并发限制传输数据，展开计算机网络 5 层&#x2F;7 层模型，五层：http -&gt; tcp&#x2F;ip -&gt; ip -&gt; data frames -&gt; 物理介质服务器收到请求，负载均衡，tomcat 容器，后端统一拦截过滤展开 http 报文，实体，http 1.0, 1,1 2之间的区别，gzip，长连接&#x2F;短连接，展开 cookie 及优化，多子域名拆分等展开 https 中 SSL&#x2F;TLS 链接步骤展开 http 缓存，强缓存，协商缓存，from memory&#x2F;disk cache等DOM 树的构建过程，bytes -&gt; characters -&gt; tokens -&gt; nodes -&gt; DOMcss rule tree: bytes -&gt; characters -&gt;...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/8114936a/" title="vue 原理"><img class="cover" src="https://images-origin.wallwiz.link/59c13468ccb8f80001ef663f_1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-15</div><div class="info-item-2">vue 原理</div></div><div class="info-2"><div class="info-item-1">从 Object.defineProperty 到 Proxy一切的一切还得从 Object.defineProperty 开始讲起，那是一个不一样的 API … （bgm 响起，自行体会） Object.definePropertyObject.defineProperty(obj, prop, descriptor) 方法会直接在一个对象上定义一个 新属性，或修改一个 对象 的 现有属性，并返回此对象，其参数具体为：  obj：要定义属性的对象 prop：要定义或修改的 属性名称 或 Symbol  descriptor：要定义或修改的 属性描述符  从以上的描述就可以看出一些限制，比如：  目标是 对象属性，不是 整个对象  一次只能  定义或修改一个属性  当然有对应的一次处理多个属性的方法 Object.defineProperties()，但在 vue 中并不适用，因为 vue 不能提前知道用户传入的对象都有什么属性，因此还是得经过类似 Object.keys() + for 循环的方式获取所有的 key -&gt; value，而这其实是没有必要使用...</div></div></div></a><a class="pagination-related" href="/677899705/" title="vue2 父子组件的生命周期顺序"><img class="cover" src="https://images-origin.wallwiz.link/58860e926e9f6a00013b9386_1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-04</div><div class="info-item-2">vue2 父子组件的生命周期顺序</div></div><div class="info-2"><div class="info-item-1">加载渲染过程  同步加载父组件 beforeCreate,  created, beforMount子组件 beforeCreate, created, beforMount孙子组件 beforeCreate, created, beforMount孙子组件 mounted子组件 mounted父组件 mounted 异步加载父组件 beforeCreate, created, beforMount, mounted子组件 beforeCreate, created, beforMount, mounted 更新过程父组件 beforeUpdate子组件 beforeUpdate子组件 updated父组件 updated 销毁过程父组件 beforeDestroy子组件 beforeDestroy子组件 destroyed父组件 destroyed </div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A"><span class="toc-number">1.</span> <span class="toc-text">数据绑定</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#oberserver"><span class="toc-number">1.1.</span> <span class="toc-text">oberserver</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dep"><span class="toc-number">1.2.</span> <span class="toc-text">dep</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#watcher"><span class="toc-number">1.3.</span> <span class="toc-text">watcher</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nextTick"><span class="toc-number">2.</span> <span class="toc-text">nextTick</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed"><span class="toc-number">3.</span> <span class="toc-text">computed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#watcher-1"><span class="toc-number">4.</span> <span class="toc-text">watcher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9FDOM%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">虚拟DOM生成真实DOM的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#extend%E5%92%8C-mount"><span class="toc-number">6.</span> <span class="toc-text">extend和$mount</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#extend"><span class="toc-number">6.1.</span> <span class="toc-text">extend</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96Sub"><span class="toc-number">6.2.</span> <span class="toc-text">实例化Sub</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mount"><span class="toc-number">6.3.</span> <span class="toc-text">$mount</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">7.</span> <span class="toc-text">常见问题</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

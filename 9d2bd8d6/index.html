@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ts 问题 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="原文链接：How not to learn TypeScript 全文 7747 字，大约 15 分钟。 译者注：这篇文章对于初学 TypeScript 的同学应该是有帮助的，但是要注意，本文更多关注于初学，其中的建议在实际工作中不一定有用，甚至是不对的。但是，在初学 TypeScript..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/9d2bd8d6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ts 问题',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/58860ebadc1d3f00010ad215_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">ts 问题</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ts 问题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-09-21T02:36:21.000Z" title="发表于 2023-09-21 10:36:21">2023-09-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.470Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>原文链接：<a href="https://link.zhihu.com/?target=https://fettblog.eu/how-not-to-learn-typescript/?utm_campaign=sebastien_lorber_newsletter&utm_medium=email&utm_source=Revue%20newsletter">How not to learn TypeScript</a></p>
+<p>全文 7747 字，大约 15 分钟。</p>
+<p>译者注：<strong>这篇文章对于初学 TypeScript 的同学应该是有帮助的，但是要注意，本文更多关注于初学，其中的建议在实际工作中不一定有用，甚至是不对的。但是，在初学 TypeScript 时，这些内容，还是有一定帮助的。同时我也相信，只要读者坚持搞下去，不用多长时间，应该也能明白这些问题。</strong></p>
+<p>“我和 TypeScript 永远不是好朋友！“哎，我经常能听到这样的抱怨。学习 TypeScript，即便是在 2022 年，看起来也不是件容易的事儿。因为很多原因，尤其是有 Java 和 C# 经验的人会发现，在 TypeScript 中，和他们的预期是不一样的。经常写 JavaScript 的人又会被 TypeScript 的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E7%BC%96%E8%AF%91%E5%99%A8&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">编译器</a>搞的崩溃。这里是，我发现的一些新手开始学  TypeScript ，经常会犯的问题。我希望他们能帮助到你。</p>
+<p>这篇文章深受 Deny 的<a href="https://link.zhihu.com/?target=https://dystroy.org/blog/how-not-to-learn-rust/">如果学习错误的 Rust</a>的影响，我也推荐你们看看这篇文章。</p>
+<h2 id="错误1-忽视-JavaScript"><a href="#错误1-忽视-JavaScript" class="headerlink" title="错误1: 忽视 JavaScript"></a>错误1: 忽视 JavaScript</h2><p>从一开始， TypeScript 有一句著名的广告语：“TypeScript 是 JavaScript 的超集”。这句话是指，JavaScript 本身就是 TypeScript 的一部分！所有的 JavaScript！选择 TypeScript 并没有给你不去学 JavaScript 的权利，实际上，JavaScript 的怪异的行为依然存在。但是 TypeScript 帮助你更容易理解它们。</p>
+<p>你可以看看<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E6%88%91%E7%9A%84%E5%8D%9A%E5%AE%A2&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">我的博客</a>关于<a href="https://link.zhihu.com/?target=https://fettblog.eu/typescript-typing-catch-clauses/">错误处理</a>的文章。在任何其他语言里，捕获一个错误都是非常合理的事情。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="comment">// 举个例子，比如你正在使用 Axios</span></span><br><span class="line">&#125; <span class="keyword">catch</span>(<span class="attr">e</span>: <span class="title class_">AxiosError</span>) &#123;</span><br><span class="line"><span class="comment">//         ^^^^^^^^^^ Error 1196  </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是，这在 JavaScript 是无法做到的。原因是 JavaScript 的错误机制（详细的原因在上面那个错误处理的文章里）。但是这样的代码在 TypeScript 里，就可以实现。</p>
+<p>另一个例子，使用 Object.keys 然后获取它的属性，直接在 TypeScript 里这么做也会造成问题：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">type Person = &#123;</span><br><span class="line">  name: string, age: number, id: number,</span><br><span class="line">&#125;</span><br><span class="line">declare const me: Person;</span><br><span class="line"></span><br><span class="line">Object.keys(me).forEach(key =&gt; &#123;</span><br><span class="line">  //   下一行在 TypeScript 要报错</span><br><span class="line">  console.log(me[key])</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>一个绕过的方法可以看这篇<a href="https://link.zhihu.com/?target=https://fettblog.eu/typescript-better-object-keys/">文章</a>，但是这个方法并不适用所有的场景。TypeScript 编译器无法根据你的代码确定你希望的类型和你期望的行为是一致的。这样的代码在 JavaScript 里运行是完全没有问题的，但是，因为很多原因，在类型系统里是很难直接实现的。</p>
+<p>如果你学习 TypeScript，而没有 JavaScript 的背景，应该去学习 JavaScript 和 <a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">类型系统</a>的区别。也要去学习如何能搜索的正确的写法。TypeScript 的语法，比如把<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E5%87%BD%E6%95%B0&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">函数</a>的参数起好名字。用 objects 当作参数。其实就是一个比较好的 JavaScript 的模式。<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E5%8F%AF%E9%80%89%E9%93%BE&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">可选链</a>？实际是 TypeScript 编译器先实现的，但是后来也变成了 JavaScript 的特性。类和继承的语法？也是 JavaScript 的语法。私有类成员属性？你知道，你可以通过 # 来实现一个没有外部可以访问的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E5%86%85%E9%83%A8%E5%B1%9E%E6%80%A7&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">内部属性</a>，这也是 JavaScript 的语法。</p>
+<p>用 TypeScript 写代码，其实绝大部分事情，仍然是发生在 JavaScript 的世界里。如果你使用类型去表达你的意图和协议，你又到了类型系统的领地。</p>
+<p>目前，TypeScript 官网有了 TypeScript 更清晰的说法：<em>TypeScript 是有类型语法的 JavaScript</em>。是的，TypeScript 就是 JavaScript。理解 JavaScript 是理解 TypeScript 的核心钥匙。</p>
+<h2 id="错误2-到处标注类型"><a href="#错误2-到处标注类型" class="headerlink" title="错误2:到处标注类型"></a>错误2:到处标注类型</h2><p>类型标注是一个给出类型是什么的方式。你知道，在其他语言里，这个事情是非常重要的事儿，例如 StringBuilder sringBuilder &#x3D; new StringBuilder() 这个语法，确保，你确实在操作 StringBuilder。右边的就是一个类型引用，TypeScript 会尝试帮你找到类型。 let a_number &#x3D; 2, TypeScript 也会帮你找到类型 number。</p>
+<p>类型标注是 TypeScript 和 JavaScript 非常明显的语法不一样的地方。</p>
+<p>当你开始学习 TypeScript，你可能会去到处标注你写的东西的类型。这个好像是选择 TypeScript 自然而然的选择。但是，我非常建议你，不要这么做。你要学会让 TypeScript 的编译器帮助你去找你想要的类型。为什么呢？我来给你解释，<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E7%B1%BB%E5%9E%8B%E6%A0%87%E6%B3%A8&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">类型标注</a>实际在做什么。</p>
+<p>**类型标注是你表达，什么地方的协议，需要被检查。**如果你在一个式子的左边标注类型，本质是你告诉编译器，在代码评估阶段，去检查，类型匹配是否符合你的预期。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">type Person = &#123;</span><br><span class="line">  name: string,</span><br><span class="line">  age: number</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const me: Person = createPerson()</span><br></pre></td></tr></table></figure>
+
+<p>如果 createPerson 函数返回的东西和 Person 不匹配，TypeScript 就会报错。这么做的目的是，你希望确保这里建立连接的地方是正确的类型。</p>
+<p>同时，me 这个变量，就是 Person 类型的变量，TypeScript 就会把 me 当作 Person 类型来看待。如果 me 里有更多的属性，比如 profession 字段，TypeScript 不会允许你访问他，因为这个属性，你没有定义在 Person 类型中。</p>
+<p>如果你在一个函数的返回类型里标注类型，这是你告诉编译器要在返回的值和你预期<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E8%BF%94%E5%9B%9E%E5%80%BC&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">返回值</a>的类型做检查：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function createPerson(): Person &#123;</span><br><span class="line">  return &#123; name: &quot;Stefan&quot;, age: 39 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你返回不匹配 Person 类型的东西，TypeScript 就会报错。这么做，确保了你返回的一定是你期望的类型。这个在你做一个函数，返回一个复杂对象的时候及其有帮助。</p>
+<p>如果你在函数的参数进行类型标注，这个是你告诉编译器，在使用这个函数的时候，这个参数必须符合你的类型约束。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function printPerson(person: Person) &#123;</span><br><span class="line">  console.log(person.name, person.age)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">printPerson(me)</span><br></pre></td></tr></table></figure>
+
+<p>这个类型标注，是最重要，且不可避免的标注。但是其他的类型，是可以推导的。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">type Person = &#123;</span><br><span class="line">  name: string,</span><br><span class="line">  age: number</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 推导</span><br><span class="line">// 返回类型是 &#123; name: string, age: number &#125;</span><br><span class="line">function createPerson() &#123; </span><br><span class="line">  return &#123; name: &quot;Stefan&quot;, age: 39&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 推导!</span><br><span class="line">// me 的类型是 &#123; name: string, age: number&#125;</span><br><span class="line">const me = createPerson() </span><br><span class="line"></span><br><span class="line">// 标注! 你必须去检查，类型是否兼容</span><br><span class="line">function printPerson(person: Person) &#123;</span><br><span class="line">  console.log(person.name, person.age)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 一切顺利</span><br><span class="line">printPerson(me) </span><br></pre></td></tr></table></figure>
+
+<p>函数的参数要使用类型标注。这里是检查你协议的地方。这不仅很方便，你还会得到很多好处。比如，你顺带获得了<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E5%A4%9A%E6%80%81&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">多态</a>。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">type Person = &#123;</span><br><span class="line">  name: string,</span><br><span class="line">  age: number</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Studying = &#123;</span><br><span class="line">  semester: number</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Student = &#123;</span><br><span class="line">  id: string,</span><br><span class="line">  age: number,</span><br><span class="line">  semester: number</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function createPerson() &#123; </span><br><span class="line">  return &#123; name: &quot;Stefan&quot;, age: 39, semester: 25, id: &quot;XPA&quot;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function printPerson(person: Person) &#123;</span><br><span class="line">  console.log(person.name, person.age)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function studyForAnotherSemester(student: Studying) &#123;</span><br><span class="line">  student.semester++</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function isLongTimeStudent(student: Student) &#123;</span><br><span class="line">  return student.age - student.semester / 2 &gt; 30 &amp;&amp; student.semester &gt; 20</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const me = createPerson() </span><br><span class="line"></span><br><span class="line">// 一切顺利</span><br><span class="line">printPerson(me)</span><br><span class="line">studyForAnotherSemester(me)</span><br><span class="line">isLongTimeStudent(me)</span><br></pre></td></tr></table></figure>
+
+<p><strong>译者注：在不同的 tsconfig 编译器设置中，上述的行为不一定是这样的。这里可能会牵扯逆变和协变的问题，但是不是本文关注的重点。</strong></p>
+<p>Student，Person 和 Studying 有一些重叠，但是互相没关系。createPerson 可以返回所有符合这些类型的对象。如果我们标注太多，我们需要创建跟多的类型和更多的检查，但是可能这些工作是没必要的。（<strong>译者注：初学 TypeScript 这么想是没问题的，但是实际上，写的东西复杂了，这个作者推荐的这种方式可能是有问题的。</strong>）</p>
+<p>在学习 TypeScript 时，不太<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E4%BE%9D%E8%B5%96%E7%B1%BB%E5%9E%8B&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">依赖类型</a>系统，可以从结构类型系统里获得一些好处。（<strong>译者注：这里谈到的是<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E9%B8%AD%E5%AD%90%E7%B1%BB%E5%9E%8B&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">鸭子类型</a></strong>）</p>
+<h2 id="错误3-错误的类型"><a href="#错误3-错误的类型" class="headerlink" title="错误3:错误的类型"></a>错误3:错误的类型</h2><p>TypeScript 是 JavaScript 的超集，这意味着，TypeScript 实际上在一个已经定义好和存在的语言中增加了一些额外的东西。随着你学习的深入，你应该要知道，哪些是 JavaScript，哪些是 TypeScript。</p>
+<p>把 TypeScript 当作正常 JavaScript 上的一个增加层是一种有帮助的看法（<strong>译者注：这甚至是一种流派，因为你用纯粹 TypeScript 的新语法，要编译到 JavaScript，这个行为，在一些场景，可能给你带来相当的烦恼。</strong>）。在这个层面，TypeScript 就像一层薄薄的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E5%85%83%E6%95%B0%E6%8D%AE%E4%BF%A1%E6%81%AF%E5%B1%82&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">元数据信息层</a>，JavaScript 只要去掉这一层，就能很好的运行在实际的运行环境中。当用 tsc 进行编译时，一些人甚至说，TypeScript 代码“擦除”到了 JavaScript。</p>
+<p>TypeScript 作为 JavaScript 的这一层，代表着，在不同层用不同的语法。例如，function 或者 const 关键字是 JavaScript 的部分，type 和 interface 关键字是 TypeScript 的部分。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// TypeScript 的世界! --&gt; type</span><br><span class="line">type Collection&lt;T&gt; = &#123;</span><br><span class="line">  entries: T[]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// printCollection 是在 JavaScript 的世界! --&gt; value</span><br><span class="line">function printCollection(coll: Collection&lt;unknown&gt;) &#123;</span><br><span class="line">  console.log(...coll.entries)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们也能看到，任何声明语句，要么是一个类型声明，要么是一个值声明。因为类型层要在值的上一层，也可以在类型层消费值层的内容，但是无法倒过来。我们也有语法做到这一点：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 一个值</span><br><span class="line">const person = &#123;</span><br><span class="line">  name: Stefan</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 一个类型，这个类型消费了值世界的类型</span><br><span class="line">type Person = typeof person;</span><br></pre></td></tr></table></figure>
+
+<p>typeof 关键字通过值层的东西给类型层创建了类型。</p>
+<p>也有一些声明，即创建了值，也创建了类型，这很烦人（<strong>译者注：库作者必须要明白这里的行为，<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=monorepo&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">monorepo</a> 里，这个问题也是一个特别麻烦的问题</strong>）。比如 Class 的实例，既可以在 TypeScript 层作为一个类型，也可以在 JavaScript 层作为一个值。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 声明</span><br><span class="line">class Person &#123;</span><br><span class="line">  name: string</span><br><span class="line"></span><br><span class="line">  constructor(n: string) &#123;</span><br><span class="line">    this.name = n</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 值</span><br><span class="line">const person = new Person(&quot;Stefan&quot;)</span><br><span class="line"></span><br><span class="line">// 类型</span><br><span class="line">type PersonCollection = Collection&lt;Person&gt;</span><br><span class="line"></span><br><span class="line">function printPersons(coll: PersonCollection) &#123;</span><br><span class="line">  //...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是名字的惯性会给你造成一些迷惑。一般来说，我们定义 class、type、interface、enum 都会大写开头。即便他们提供值，他们也会提供类型。直到你也会给你的 React app 写大写开头的函数名。</p>
+<p>如果你习惯用名字来表示类型和值，你有可能碰到一个老 tsc 报错 <em>TS2749: ‘YourType’ refers to a value, but is being used as a type</em>error.</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">type PersonProps = &#123;</span><br><span class="line">  name: string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function Person(&#123; name &#125;: PersonProps) &#123;</span><br><span class="line">  return &lt;p&gt;&#123;name&#125;&lt;/p&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Collection&lt;T&gt; = &#123;</span><br><span class="line">  entries: T</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type PrintComponentProps = &#123;</span><br><span class="line">  collection: Collection&lt;Person&gt; // ERROR! </span><br><span class="line">  // &#x27;Person&#x27; refers to a value, but is being used as a type</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是 TypeScript 会造成一些真的很困扰人的地方。什么是类型，什么是值，为什么我们要区分他们，为什么这个行为和其他<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">编程语言</a>不一样？随着深入，你开始面对，typeof  甚至系统内置的 InstanceType 帮助类型来处理一些东西，因为你发现类实际有<a href="https://link.zhihu.com/?target=https://fettblog.eu/typescript-interface-constructor-pattern/">两个类型</a>（震惊）</p>
+<p>所以，知道什么贡献了类型，什么贡献了值是有价值的。边界是什么，出了问题该如何处理，这些对于你的程序意味着什么？下面这个表，和 TypeScript 文档一样，指明了这些事。</p>
+<table>
+<thead>
+<tr>
+<th>Declaration type</th>
+<th>Type</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Class</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr>
+<td>Enum</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr>
+<td>Interface</td>
+<td>X</td>
+<td></td>
+</tr>
+<tr>
+<td>Type Alias</td>
+<td>X</td>
+<td></td>
+</tr>
+<tr>
+<td>Function</td>
+<td></td>
+<td>X</td>
+</tr>
+<tr>
+<td>Variable</td>
+<td></td>
+<td>X</td>
+</tr>
+</tbody></table>
+<p>当学习 TypeScript 时，一个比较好的开始是，先关注在函数和变量，以及简单的类型别名（或者接口，如果你需要）。这会让你开始了解类型层会发生什么，值层会发生什么。</p>
+<h2 id="错误4-一开始什么都学"><a href="#错误4-一开始什么都学" class="headerlink" title="错误4:一开始什么都学"></a>错误4:一开始什么都学</h2><p>我们说了很多，如果你从另一个语言到 TypeScript 可能碰到的问题。说句实话，这些都是我的工作。（言外之意，作者一直在致力于帮助其他背景的人转到 TypeScript 上）但是，还有另一个轨道：如果你已经写了一大堆 JavaScript，突然要面对 TypeScript 世界的这些烦人的工具怎么办？</p>
+<p>这会导致非常沮丧的经验。你很熟悉你的代码，你的代码仓库中的一切，你都了如指掌。但是你发现，TypeScript 不明白，它报了那么多错。你的代码跑了很多年，你知道他们是没问题的。</p>
+<p>你甚至都疑惑，为啥这么多人会喜欢 tsc 这种看起来就是一堆 bug 的东西。TypeScript 应该提升你的效率，但是实际上，它只给你带来一堆红色的报错。</p>
+<p>但是，我们已经来到这里了，不是么？</p>
+<p>我能理解这一点。如果你直接把一个 JavaScript 项目切换到 TypeScript，那肯定是一堆报错。TypeScript 希望能了解你整个程序的细节，这需要大量的类型标注工作。</p>
+<p>如果你从 JavaScript 来，我建议你利用 TypeScript 的渐进修改的特性。TypeScript 实际上提供了一些方便的特性，让你慢慢把你的项目变成一个 TypeScript 的项目。</p>
+<ol>
+<li>一步步把你的程序改为 TypeScript，而不是一下都改了。TypeScript 有一个编译器选项  allowJS。</li>
+<li>TypeScript 有一个选项，可以静默编译器的报错，这个选项是 noEmitOnError，这个选项可以让你即便程序有 TypeScript 的报错，也可以运行。</li>
+<li>使用 TypeScript 编写<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E7%B1%BB%E5%9E%8B%E5%A3%B0%E6%98%8E%E6%96%87%E4%BB%B6&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">类型声明文件</a>，然后通过 <a href="https://link.zhihu.com/?target=https://fettblog.eu/typescript-jsdoc-superpowers/">JSDoc</a> 来引入它们。这对于 TypeScript 了解更多你的程序是有帮助的。</li>
+<li>在任何地方使用 any，是有问题的。但是和主流观点不同，我认为<a href="https://link.zhihu.com/?target=https://fettblog.eu/typescript-any-is-ok/">适当严格的使用 any</a>是 OK 的。</li>
+</ol>
+<p>学习 tsconfig 的<a href="https://link.zhihu.com/?target=https://www.typescriptlang.org/tsconfig">文档</a>去学习哪些参数是 OK 的。TypeScript 被设计为可以渐进更改。你可以使用尽可能多的类型，你可以仍然使用大量的 JavaScript 在你的程序里，这个可以让你快速开始你的 TypeScript 之旅。</p>
+<p>作为一个 JavaScript 的开发者，开始学习 TypeScript 时，不要怀疑自己。尝试把类型当成更好的内连文档，让你的代码有更好的含义，然后开始从中扩展和收益。</p>
+<h2 id="错误5-学习错误的-TypeScript"><a href="#错误5-学习错误的-TypeScript" class="headerlink" title="错误5:学习错误的 TypeScript"></a>错误5:学习错误的 TypeScript</h2><p>重申，受到<a href="https://link.zhihu.com/?target=https://dystroy.org/blog/how-not-to-learn-rust/">错误学习 Rust 文章</a>的影响。如果你的代码需要用下列的关键字，那你可能正在学习不合时宜的 TypeScript 的部分，这会给你带来很多问题（这些内容，都是 TypeScript 在演进中的折衷和兼容方案，现在都不应该在 2022 年使用）</p>
+<ul>
+<li>namespace</li>
+<li>declare</li>
+<li>module</li>
+<li><reference></li>
+<li>abstract （<strong>译者注：为什么不让用 abstract 呢？</strong>）</li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=unique&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:%222307521220%22%7D">unique</a></li>
+</ul>
+<p>不用这些关键字，不是说这些关键字不重要，在一些场景，是有用的。但是，在开始的时候，你可以先不要学这些内容。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/9d2bd8d6/">https://leejs.cn/9d2bd8d6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ts/">ts</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/58860ebadc1d3f00010ad215_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/d55bdcba/" title="ts objecy[key] 报错"><img class="cover" src="https://images-origin.wallwiz.link/59c13437ccb8f80001ef65ea_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">ts objecy[key] 报错</div></div><div class="info-2"><div class="info-item-1">原文： https://fettblog.eu/typescript-better-object-keys/ 译文：  注意：要非常小心使用这个技术。最好查看我的新方法。 TypeScript在lib.d.ts中的预定义类型通常是非常良好类型化的，并提供了大量关于如何使用内置功能以及提供额外类型安全性的信息。直到它们不是。考虑以下带有对象类型Person的示例： 123456789type Person = &#123;  name: string, age: number, id: number,&#125;declare const me: Person;Object.keys(me).forEach(key =&gt; &#123;  // 💥 下一行在我们这里抛出了红色波浪线  console.log(me[key])&#125;)  我们有一个类型为Person的对象，我们想使用Object.keys获取所有键作为字符串，然后使用这些键在映射或forEach循环中访问每个属性，以在严格模式下对其进行某些操作，但是我们得到了红色波浪线。这是错误消息： “Element...</div></div></div></a><a class="pagination-related" href="/abd146cd/" title="js 数据结构"><img class="cover" src="https://images-origin.wallwiz.link/59c1325eccb8f80001ef5d43_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">js 数据结构</div></div><div class="info-2"><div class="info-item-1">一、前言首先，为什么我会学习数据结构与算法呢，其实主要是有两方面  第一，是我在今年的flag里明确说到我会学这个东西 第二，学了这些，对自己以后在工作或者面试也会带来许多好处  然后，本文是最近学习的一个总结文章，文中的算法题，大部分都是leetcode中的，如不太理解题意，可直接去leetcode中找到对应的题。 二、基本概念常常听到算法的时候，就会有人说到 时间复杂度， 空间复杂度。那么这俩玩意是啥呢，下面我们就来一一解释 1. 时间复杂度其实就是一个函数，用大 O 表示， 比如 O(1)、 O(n)… 它的作用就是用来定义描述算法的运行时间  O(1)  12let i = 0i += 1   O(n)： 如果是 O(1) + O(n) 则还是 O(n)  123for (let i = 0; i &lt; n; i += 1) &#123;  console.log(i)&#125;   O(n^2)： O(n) * O(n), 也就是双层循环，自此类推：O(n^3)…  12345for (let i = 0; i &lt; n; i += 1) &#123; ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/d55bdcba/" title="ts objecy[key] 报错"><img class="cover" src="https://images-origin.wallwiz.link/59c13437ccb8f80001ef65ea_1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-21</div><div class="info-item-2">ts objecy[key] 报错</div></div><div class="info-2"><div class="info-item-1">原文： https://fettblog.eu/typescript-better-object-keys/ 译文：  注意：要非常小心使用这个技术。最好查看我的新方法。 TypeScript在lib.d.ts中的预定义类型通常是非常良好类型化的，并提供了大量关于如何使用内置功能以及提供额外类型安全性的信息。直到它们不是。考虑以下带有对象类型Person的示例： 123456789type Person = &#123;  name: string, age: number, id: number,&#125;declare const me: Person;Object.keys(me).forEach(key =&gt; &#123;  // 💥 下一行在我们这里抛出了红色波浪线  console.log(me[key])&#125;)  我们有一个类型为Person的对象，我们想使用Object.keys获取所有键作为字符串，然后使用这些键在映射或forEach循环中访问每个属性，以在严格模式下对其进行某些操作，但是我们得到了红色波浪线。这是错误消息： “Element...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF1-%E5%BF%BD%E8%A7%86-JavaScript"><span class="toc-number">1.</span> <span class="toc-text">错误1: 忽视 JavaScript</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF2-%E5%88%B0%E5%A4%84%E6%A0%87%E6%B3%A8%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">错误2:到处标注类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF3-%E9%94%99%E8%AF%AF%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">错误3:错误的类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF4-%E4%B8%80%E5%BC%80%E5%A7%8B%E4%BB%80%E4%B9%88%E9%83%BD%E5%AD%A6"><span class="toc-number">4.</span> <span class="toc-text">错误4:一开始什么都学</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF5-%E5%AD%A6%E4%B9%A0%E9%94%99%E8%AF%AF%E7%9A%84-TypeScript"><span class="toc-number">5.</span> <span class="toc-text">错误5:学习错误的 TypeScript</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

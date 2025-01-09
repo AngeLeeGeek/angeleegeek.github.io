@@ -1,0 +1,343 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Rollup output 不同类型对比 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Rollup 输出的不同格式js文件对比1amd , cjs , esm , iife , umd , system  一、IIFE 自执行函数 IIFE 的全称是 “immediately invoked function expression”。  1.1 打包结果分析让我们先看看本..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/3437106334/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Rollup output 不同类型对比',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Rollup output 不同类型对比</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Rollup output 不同类型对比</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-15T02:39:12.000Z" title="发表于 2022-07-15 10:39:12">2022-07-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.469Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="Rollup-输出的不同格式js文件对比"><a href="#Rollup-输出的不同格式js文件对比" class="headerlink" title="Rollup 输出的不同格式js文件对比"></a>Rollup 输出的不同格式js文件对比</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">amd , cjs , esm , iife , umd , system</span><br></pre></td></tr></table></figure>
+
+<h2 id="一、IIFE-自执行函数"><a href="#一、IIFE-自执行函数" class="headerlink" title="一、IIFE 自执行函数"></a>一、IIFE 自执行函数</h2><blockquote>
+<p>IIFE 的全称是 “immediately invoked function expression”。</p>
+</blockquote>
+<h3 id="1-1-打包结果分析"><a href="#1-1-打包结果分析" class="headerlink" title="1.1 打包结果分析"></a>1.1 打包结果分析</h3><p>让我们先看看本 <code>demo</code> 的 <code>iife</code> 格式打出来的包长什么样。</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c7ff249b1c574c6f8fe3bf46c6ca7899~tplv-k3u1fbpfcp-zoom-1.image" alt="IIFE"></p>
+<p>对上述代码做一些简化：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Test</span> = (<span class="keyword">function</span> (<span class="params"><span class="built_in">exports</span>, lodash</span>) &#123;</span><br><span class="line">  <span class="string">&#x27;use strict&#x27;</span>; <span class="comment">// 自带严格模式，避免一些奇怪的兼容性问题</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 下面折行无用代码被 tree-shaking 掉了</span></span><br><span class="line"><span class="comment">   * const unusedVar = &#x27;May the 4th&#x27;</span></span><br><span class="line"><span class="comment">   * */</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> answer = <span class="number">42</span>; <span class="comment">// 业务中被单一引用的模块，被直接抹平了</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">printAnswer</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`the answer is <span class="subst">$&#123;answer&#125;</span>`</span>);</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(lodash.<span class="title function_">repeat</span>(<span class="string">&#x27;1&#x27;</span>, answer));</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">exports</span>.<span class="property">printAnswer</span> = printAnswer; <span class="comment">// 把要export的属性挂在到exports上</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">exports</span>;</span><br><span class="line"></span><br><span class="line">&#125;)(&#123;&#125;, $); <span class="comment">// exports是第一个入参，依赖的jquery是第二个入参</span></span><br></pre></td></tr></table></figure>
+
+<p><code>IIFE</code> 是前端模块化早期的产物，它的核心思路是:</p>
+<ol>
+<li>构建一个匿名函数</li>
+<li>立刻执行这个匿名函数，对外部的依赖通过入参的形式传入</li>
+<li>返回该模块的输出</li>
+</ol>
+<h3 id="1-2-如何运行"><a href="#1-2-如何运行" class="headerlink" title="1.2 如何运行"></a>1.2 如何运行</h3><p><code>IIFE</code> 的运行其实很容易，如果它没有其他依赖，只需要去引入文件，然后在 <code>window</code> 上取相应的变量即可。<br>如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://cdn.bootcss.com/jquery/3.3.1/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"> </span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// jquery 就是典型的自执行函数模式，当你引入后，他就会挂在到 window.$ 上</span></span></span><br><span class="line"><span class="language-javascript">  <span class="variable language_">window</span>.<span class="property">$</span> <span class="comment">// 这样就能取到 jquery 了</span></span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是如果你像本 <code>demo</code> 中那样依赖了其他的模块，那你就必须保证以下两点才能正常运行：</p>
+<ol>
+<li>此包所依赖的包，已在此包之前完成加载。</li>
+<li>前置依赖的包，和 <code>IIFE</code> 只执行入参的变量命名是一致的。</li>
+</ol>
+<p>以本 <code>demo</code> 的 <code>IIFE</code> 构建结果为例：</p>
+<ol>
+<li>它前置依赖了 <code>lodash</code>，因此需要在它加载之前完成 <code>lodash</code> 的加载。</li>
+<li>此 <code>IIFE</code> 的第二个入参是 <code>lodash</code>，作为前置条件，我们需要让 <code>window.lodash</code> 也指向 <code>lodash</code>。<br>因此，运行时，代码如下：</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">window</span>.<span class="property">lodash</span> = <span class="variable language_">window</span>.<span class="property">_</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./bundle.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">window</span>.<span class="property">Test</span>.<span class="title function_">printAnswer</span>();</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-优缺点"><a href="#1-3-优缺点" class="headerlink" title="1.3 优缺点"></a>1.3 优缺点</h3><ul>
+<li>优点:<ol>
+<li>通过闭包营造了一个“私有”命名空间，防止影响全局，并防止被从外部修改私有变量。</li>
+<li>简单易懂</li>
+<li>对代码体积的影响不大</li>
+</ol>
+</li>
+<li>缺点：<ol>
+<li>输出的变量可能影响全局变量；引入依赖包时依赖全局变量。</li>
+<li>需要使用者自行维护 <code>script</code> 标签的加载顺序。</li>
+</ol>
+</li>
+</ul>
+<p>优点就不细说了，缺点详细解释一下。</p>
+<p><strong>缺点一：输出的变量可能影响全局变量；引入依赖包时依赖全局变量</strong>。</p>
+<p>前半句：<strong>输出的变量可能影响全局变量;</strong> 其实很好理解，以上面 <code>demo</code> 的输出为例： <code>window.Test</code> 就已经被影响了。<br>这种明显的副作用在程序中其实是有隐患的。</p>
+<p>后半句：<strong>引入依赖包时依赖全局变量；</strong> 我们为了让 <code>demo</code> 正常运行，因此加了一行代码让 <code>window.lodash</code> 也指向 <code>lodash</code>，但它确实是太脆弱了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 没有这一行，demo就无法正常运行 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">window</span>.<span class="property">lodash</span> = <span class="variable language_">window</span>.<span class="property">_</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>你瞧，<code>IIFE</code> 的执行对环境的依赖是苛刻的，除非它完全不依赖外部包。（Jquery: 正是在下！）</p>
+<p>虽然 <code>IIFE</code> 的缺点很多，但并不妨碍它在 <code>Jquery</code> 时代极大地推动了 <code>web</code> 开发的进程，因为它确实解决了 <code>js</code> 本身存在的很多问题。</p>
+<p>那么？后续是否还有 <strong>更为优秀</strong> 的前端模块化方案问世呢？</p>
+<p>当然有，往下看吧。</p>
+<h2 id="二、CommonJS"><a href="#二、CommonJS" class="headerlink" title="二、CommonJS"></a>二、CommonJS</h2><h3 id="2-1-分析打包结果"><a href="#2-1-分析打包结果" class="headerlink" title="2.1 分析打包结果"></a>2.1 分析打包结果</h3><p>先看看 <code>CommonJs</code> 打包的结果:<br><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95627d69b68b4cc9a4387db25cdf954c~tplv-k3u1fbpfcp-zoom-1.image" alt="cjs"><br>简化一下，就长这样了：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&#x27;use strict&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> lodash = <span class="built_in">require</span>(<span class="string">&#x27;lodash&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> answer = <span class="number">42</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">printAnswer</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="comment">// 打印</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`the answer is <span class="subst">$&#123;answer&#125;</span>`</span>);</span><br><span class="line">  <span class="comment">// 测试 lodash 的能力，打印42个1</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(lodash.<span class="title function_">repeat</span>(<span class="string">&#x27;1&#x27;</span>, answer));</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">exports</span>.<span class="property">printAnswer</span> = printAnswer;</span><br></pre></td></tr></table></figure>
+
+<p>以上格式，就是 <code>CommonJS</code> 规范的写法。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CommonJS 通过一个全局 require 方法进行模块的引入 </span></span><br><span class="line"><span class="keyword">var</span> lodash = <span class="built_in">require</span>(<span class="string">&#x27;lodash&#x27;</span>);</span><br><span class="line"><span class="comment">// CommonJS 进行模块内方法输出的方式</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span>.<span class="property">printAnswer</span> = printAnswer;</span><br><span class="line"><span class="comment">// 上面写法也等价于：</span></span><br><span class="line"><span class="built_in">exports</span>.<span class="property">printAnswer</span> = printAnswer;</span><br><span class="line"><span class="comment">// 因为 exports 变量等价于 module.exports</span></span><br></pre></td></tr></table></figure>
+
+<p>为了解决 <code>node.js</code> 在模块化上的缺失， <strong>2009年10月</strong> <code>CommonJS</code> 规范首次被提出。</p>
+<p>注意这个关键词： <strong>node.js</strong>。</p>
+<p>是的，<code>CommonJS</code> 并不是在浏览器环境运行的规范，而是在 <code>node.js</code> 环境下运行的。</p>
+<h3 id="2-2-如何运行"><a href="#2-2-如何运行" class="headerlink" title="2.2 如何运行"></a>2.2 如何运行</h3><p>因此，我写了一个 <code>run.js</code> 脚本。<br>如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// run.js</span></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Test</span> = <span class="built_in">require</span>(<span class="string">&#x27;./bundle-by-lodash&#x27;</span>)</span><br><span class="line"><span class="title class_">Test</span>.<span class="title function_">printAnswer</span>()</span><br></pre></td></tr></table></figure>
+
+<p>然后，执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 执行脚本</span></span><br><span class="line">node ./out/cjs/run.js </span><br><span class="line"><span class="comment"># 输出1： </span></span><br><span class="line">&gt; the answer is 42</span><br><span class="line"><span class="comment"># 输出2： </span></span><br><span class="line">&gt; 111111111111111111111111111111111111111111</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，<code>node.js</code> 环境是天然支持 <code>CommonJS</code> 的。</p>
+<h3 id="2-3-优缺点"><a href="#2-3-优缺点" class="headerlink" title="2.3 优缺点"></a>2.3 优缺点</h3><ul>
+<li>优点</li>
+</ul>
+<ol>
+<li>完善的模块化方案，完美解决了 <code>IIFE</code> 的各种缺点。</li>
+</ol>
+<ul>
+<li>缺点</li>
+</ul>
+<ol>
+<li>不支持浏览器环境，因为这种同步的引入方式可能导致浏览器假死。</li>
+</ol>
+<p>因此，前端界迫切地需要一种能在浏览器环境完美运行，完善的模块化方案。</p>
+<h2 id="三、AMD-和-requirejs"><a href="#三、AMD-和-requirejs" class="headerlink" title="三、AMD 和 requirejs !"></a>三、AMD 和 requirejs !</h2><blockquote>
+<p>AMD，YES!</p>
+</blockquote>
+<p>2011年， <code>amdjs-api</code> 在业内被正式提出。</p>
+<h3 id="3-1-打包结果分析"><a href="#3-1-打包结果分析" class="headerlink" title="3.1 打包结果分析"></a>3.1 打包结果分析</h3><p>amd 格式的打包结果如下：<br><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/49b6e3794785493b97322cbbf74d8d19~tplv-k3u1fbpfcp-zoom-1.image" alt="amd,yes!"><br>可以看到，核心内容是一个全局方法 <code>define</code> 。</p>
+<p><code>define</code> 方法有三个入参，分别是：</p>
+<ul>
+<li><code>&quot;Test&quot;</code>, 模块名称</li>
+<li><code>[</code>exports<code>,</code>lodash<code>]</code> 分别表示模块的输出和外部依赖</li>
+<li>一个以 <code>exports</code> 和 <code>lodash</code> 作为入参的方法，代表模块的实际内容。</li>
+</ul>
+<p>相比于 <code>IIFE</code> 和 <code>CommonJs</code> 而言，<code>AMD</code> 的写法无疑是复杂且别扭的。</p>
+<p>但它却实实在在是解决了 <code>IIFE</code> 和 <code>CommonJS</code> 所面临的问题，对“浏览器里完善的JS模块方法” 提供了一套完善的方案。</p>
+<p>尤其是 <code>amd</code> 标准的实现方案：<code>requirejs</code>。</p>
+<p><code>requirejs</code> 所实现的 <code>AMD</code> 不仅解决了 <code>CommonJS</code> 在浏览器端的不适，通过异步的方式进行模块加载实现了不会导致假死的能力；更是完全弥补了 <code>IIFE</code> 存在的各类缺陷。</p>
+<p><code>requirejs</code> 在使用时，一般情况下是以下四步法：</p>
+<ol>
+<li>在浏览器内引入 <code>require.js</code></li>
+<li>通过 <code>requirejs.config</code> 方法定义全局的依赖</li>
+<li>通过 <code>requirejs.define</code> 注册模块</li>
+<li>通过 <code>requirejs()</code> 完成模块引入。</li>
+</ol>
+<h3 id="3-2-如何运行"><a href="#3-2-如何运行" class="headerlink" title="3.2 如何运行"></a>3.2 如何运行</h3><p>在 <code>out/amd</code> 打包目录下的 <code>index.html</code> 里，按如下方式编排代码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 1. 引入 require.js --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./require.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 2. 定义全局依赖 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">window</span>.<span class="property">requirejs</span>.<span class="title function_">config</span>(&#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="attr">paths</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="string">&quot;lodash&quot;</span>: <span class="string">&quot;https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.min&quot;</span></span></span><br><span class="line"><span class="language-javascript">      &#125;</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 3. 定义模块 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./bundle.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="comment">// 4. 开销模块</span></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">window</span>.<span class="title function_">requirejs</span>(</span></span><br><span class="line"><span class="language-javascript">      [<span class="string">&#x27;Test&#x27;</span>],</span></span><br><span class="line"><span class="language-javascript">      <span class="keyword">function</span>   (<span class="params">test</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        test.<span class="title function_">printAnswer</span>()</span></span><br><span class="line"><span class="language-javascript">      &#125;</span></span><br><span class="line"><span class="language-javascript">    );</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>打开浏览器，我们可以正常地看到]控制台里被打印出来的 <code>42</code> 和 <code>42个1</code> 了。</p>
+<h3 id="3-3-优缺点"><a href="#3-3-优缺点" class="headerlink" title="3.3 优缺点"></a>3.3 优缺点</h3><ul>
+<li>优点</li>
+</ul>
+<ol>
+<li>解决了 <code>CommonJS</code> 的缺点</li>
+<li>解决了 <code>IIFE</code> 的缺点</li>
+<li>一套完备的浏览器里 <code>js</code> 文件模块化方案</li>
+</ol>
+<ul>
+<li>缺点</li>
+</ul>
+<ol>
+<li>代码组织形式别扭，可读性差</li>
+</ol>
+<p>但好在我们拥有了各类打包工具，浏览器内的代码可读性再差也并不影响我们写出可读性ok的代码。</p>
+<p>现在，我们拥有了<strong>面向 <code>node.js</code> 的 <code>CommonJs</code></strong> 和 <strong>面向浏览器的 <code>AMD</code></strong> 两套标准。</p>
+<p>如果我希望我写出的代码能同时被<strong>浏览器</strong>和<strong>nodejs</strong>识别，我应该怎么做呢？</p>
+<h2 id="四、UMD-伟大的整合"><a href="#四、UMD-伟大的整合" class="headerlink" title="四、UMD 伟大的整合"></a>四、UMD 伟大的整合</h2><blockquote>
+<p>它没有做什么突破性的创造，但它是集大成者。</p>
+</blockquote>
+<h3 id="4-1-打包分析"><a href="#4-1-打包分析" class="headerlink" title="4.1 打包分析"></a>4.1 打包分析</h3><p><code>umd</code> 格式构建出来的代码的可读性进一步降低了。</p>
+<p>我相信任何正常人看到下面这段代码都会感到一阵头大：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/73f996a633424e23bffb9b592323bcb2~tplv-k3u1fbpfcp-zoom-1.image" alt="umd bundle"></p>
+<p>是的，整整一大段代码，只是在处理兼容性问题，判断当前应该使用 <code>amd</code> 亦或是 <code>CommonJS</code>。</p>
+<p>因此 <code>umd</code> 的代码和实现不在此进行过多分析，它所做的无非便是让同一段代码兼容了 <code>amd</code> 和 <code>CommonJS</code>。</p>
+<h3 id="4-2-如何运行？"><a href="#4-2-如何运行？" class="headerlink" title="4.2 如何运行？"></a>4.2 如何运行？</h3><ul>
+<li>在浏览器端，它的运行方式和 <code>amd</code> 完全一致，可以完全参考 <code>3.2</code> 节的 <code>demo</code>。</li>
+<li>在node.js端，它则和 <code>CommonJS</code> 的运行方式完全一致，在此就不赘述了。</li>
+</ul>
+<h3 id="4-3-优缺点"><a href="#4-3-优缺点" class="headerlink" title="4.3 优缺点"></a>4.3 优缺点</h3><ul>
+<li>优点<ol>
+<li>抹平了一个包在 <code>AMD</code> 和 <code>CommonJS</code> 里的差异</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>会为了兼容产生大量不好理解的代码。（理解难度与包体积）</li>
+</ol>
+</li>
+</ul>
+<p>虽然在社区的不断努力下，<code>CommonJS</code> 、 <code>AMD</code> 、 <code>UMD</code> 都给业界交出了自己的答卷。</p>
+<p>但很显然，它们都是不得已的选择。</p>
+<p>浏览器应该有自己的加载标准。</p>
+<p><code>ES6</code> 草案里，虽然描述了模块应该如何被加载，但它没有 “加载程序的规范”。</p>
+<h2 id="五、SystemJs"><a href="#五、SystemJs" class="headerlink" title="五、SystemJs"></a>五、SystemJs</h2><p>因此 <code>WHATWG（Web Hypertext Application Technology Working Group）</code> 即网页超文本应用技术工作小组，提出了一套更有远见的规范：<a target="_blank" rel="noopener" href="https://github.com/whatwg/loader">whatwg&#x2F;loader</a>。</p>
+<p>也就是 <code>JavaScript Loader Standard</code> （JS 加载标准）。</p>
+<blockquote>
+<p>本规范描述了从 JavaScript 宿主环境中加载 JavaScript 模块的行为。它还提供了用于拦截模块加载过程和自定义加载行为的 api。</p>
+</blockquote>
+<p>基于此规范，<code>SystemJS</code> 诞生了。</p>
+<p><code>SystemJS</code> 是目前 <code>whatwg/loader</code> 规范的最佳实践者。</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/19c610fcbb654337b5ff23f451e52ab5~tplv-k3u1fbpfcp-zoom-1.image" alt="systemjs bundle"></p>
+<p>可以看出来，<code>system</code> 的打包结果其实和 <code>amd</code> 类似，提供了全局的对象 <code>System</code>，并提供了注册的方式和统一的写法。</p>
+<p>就单纯的从打包结果上，其实看不出它相比对 <code>AMD + require.js</code> 有什么优势，<strong>难道只是写法上存在差异</strong>?</p>
+<p>并不止于此！</p>
+<p>相比于 <code>require.js</code>，<code>SystemJS</code> 的 <code>System.import(&#39;module/name&#39;)</code> 方式允许你更为“懒”地加载模块，这意味着你无需每次都加载一大堆的 <code>bundle</code>，用户只需要为他能看见的页面开销带宽。</p>
+<p>另外，正因为 <code>SystemJS</code> 是面向 <code>whatwg/loader</code> 规范实践的，因此它是面向未来的模块依赖方式。</p>
+<blockquote>
+<p>抱歉，这个的 demo 我也没玩明白，就不误导大家了。希望有明白的大佬可以帮忙完善下demo。</p>
+</blockquote>
+<h2 id="六、ESM"><a href="#六、ESM" class="headerlink" title="六、ESM"></a>六、ESM</h2><blockquote>
+<p>ECMAScript modules, 也叫 ESM, Javascript 模块化官方标准格式。</p>
+</blockquote>
+<h3 id="6-1-打包分析"><a href="#6-1-打包分析" class="headerlink" title="6.1 打包分析"></a>6.1 打包分析</h3><p>在 <code>ESM</code> 被提出来之前，JavaScript 一直没有真正意义上的模块（module）体系。</p>
+<p>它的规范是通过 <code>export</code> 命令显式指定输出的代码，再通过 <code>import</code> 命令输入。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 导入模块</span></span><br><span class="line"><span class="keyword">import</span> &#123; foo &#125; <span class="keyword">from</span> <span class="string">&#x27;bar&#x27;</span>;</span><br><span class="line"><span class="comment">// 导出命令</span></span><br><span class="line"><span class="keyword">export</span> &#123; zap &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这也是我们日常开发中最为熟悉的写法。</p>
+<p>因此，<code>esm</code> 格式打出来的包，可读性确实非常棒:<br><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/71c81b32140d4853b83d8ab6ff3bb764~tplv-k3u1fbpfcp-zoom-1.image" alt="esm"></p>
+<p>和阅读我们平时所写的业务代码完全没有区别。（<code>rollup</code> 依然没忘记做 <code>tree-shaking</code>）</p>
+<h3 id="6-2-如何运行"><a href="#6-2-如何运行" class="headerlink" title="6.2 如何运行"></a>6.2 如何运行</h3><blockquote>
+<p>祝贺你，是这个时代的前端开发。</p>
+</blockquote>
+<p>部分现代浏览器已经开始实装 <code>&lt;script type=&quot;module&gt;</code> 了，因此在浏览器上直接使用 <code>esm</code> 已成为现实。</p>
+<p>但运行起来扔需要做一些前置步骤。</p>
+<ol>
+<li>在js-modules目录下起一个本地静态服务</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在js-modules目录下起一个本地静态服务</span></span><br><span class="line"><span class="built_in">cd</span> js-modules &amp;&amp; http-server</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>把 <code>esm/bundle.js</code> 文件的第一行修改为：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> repeat <span class="keyword">from</span> <span class="string">&#x27;../../node_modules/lodash-es/repeat.js&#x27;</span>;</span><br><span class="line"><span class="comment">// 因为默认的lodash并不是输出的 esm 格式，因此为了demo我们需要做一些特殊处理</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>在浏览器打开页面(假设端口是8080)，则打开：<a target="_blank" rel="noopener" href="http://127.0.0.1:8080/out/esm/index.html">http://127.0.0.1:8080/out/esm/index.html</a></li>
+</ol>
+<p>这样一来，代码就能成功运行，控制台就可以成功打印 <code>42</code> 和 <code>42个1</code> 了。</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/598c41396bcf4fc0a31c3bb3df7398d3~tplv-k3u1fbpfcp-zoom-1.image" alt="img"></p>
+<h2 id="总结：分别适合在什么场景使用？"><a href="#总结：分别适合在什么场景使用？" class="headerlink" title="总结：分别适合在什么场景使用？"></a>总结：分别适合在什么场景使用？</h2><ul>
+<li><strong>IIFE:</strong> 适合部分场景作为SDK进行使用，尤其是需要把自己挂到 <code>window</code> 上的场景。</li>
+<li><strong>CommonJS:</strong> 仅node.js使用的库。</li>
+<li><strong>AMD:</strong> 只需要在浏览器端使用的场景。</li>
+<li><strong>UMD:</strong> 既可能在浏览器端也可能在node.js里使用的场景。</li>
+<li><strong>SystemJs:</strong> 和UMD类似。目前较出名的 <code>Angular</code> 用的就是它。</li>
+<li><strong>ESM:</strong> 1. 还会被引用、二次编译的场景（如组件库等）；2.浏览器调试场景如 <code>vite.js</code>的开发时。3.对浏览器兼容性非常宽松的场景。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/324355">原文地址</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/3437106334/">https://leejs.cn/3437106334/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/rollup/">rollup</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/1224102205/" title="百度 serverless cli 试用"><img class="cover" src="https://images-origin.wallwiz.link/58860cbe6e9f6a00013b9112_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">百度 serverless cli 试用</div></div><div class="info-2"><div class="info-item-1">工具安装  安装 docker 桌面版:  docker官网  安装 bsam cli 执行 sudo pip3 install bce-sam-cli 即可完成安装。  遇到问题： zsh: command not found: bsam ;原因是之前没有加 sudo    创建函数  初始化项目： bsam init --runtime nodejs12 --name lee-app  函数安装依赖：  cd src npm install bsam local install   部署  打包 bsam package  发布 bsam deploy  发布之前要去配置 config， 把百度帐号的信息跟本地的cli绑定起来， 创建&#x2F;获取 AK&#x2F;SK执行 bsam configBCE Access Key ID:BCE Secret Access Key:BCE region (bj, gz, su):   执行完deploy命令后， 可到页面函数列表里边去看函数是否发布成功， 如果成功了， 就会在函数列表里边有    测试  本地 去src下边用...</div></div></div></a><a class="pagination-related" href="/1342917158/" title="vue3 watch 理解"><img class="cover" src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">vue3 watch 理解</div></div><div class="info-2"><div class="info-item-1">vue3中 watch、watchEffect区别1、watch是惰性执行，也就是只有监听的值发生变化的时候才会执行，但是watchEffect不同，每次代码加载watchEffect都会执行（忽略watch第三个参数的配置，如果修改配置项也可以实现立即执行） 2、watch需要传递监听的对象，watchEffect不需要 3、watch只能监听响应式数据：ref定义的属性和reactive定义的对象，如果直接监听reactive定义对象中的属性是不允许的，除非使用函数转换一下 4、watchEffect如果监听reactive定义的对象是不起作用的，只能监听对象中的属性。 123456789101112131415161718let count = ref(0)let countObj = reactive(&#123;count: 0&#125;)// 惰性，首次加载不执行watch(count, (newVal, oldVal) =&gt;&#123;console.log(newVal, oldVal)&#125; )// watch...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Rollup-%E8%BE%93%E5%87%BA%E7%9A%84%E4%B8%8D%E5%90%8C%E6%A0%BC%E5%BC%8Fjs%E6%96%87%E4%BB%B6%E5%AF%B9%E6%AF%94"><span class="toc-number">1.</span> <span class="toc-text">Rollup 输出的不同格式js文件对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81IIFE-%E8%87%AA%E6%89%A7%E8%A1%8C%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">一、IIFE 自执行函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%89%93%E5%8C%85%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 打包结果分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%A6%82%E4%BD%95%E8%BF%90%E8%A1%8C"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 如何运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81CommonJS"><span class="toc-number">3.</span> <span class="toc-text">二、CommonJS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%88%86%E6%9E%90%E6%89%93%E5%8C%85%E7%BB%93%E6%9E%9C"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 分析打包结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%A6%82%E4%BD%95%E8%BF%90%E8%A1%8C"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 如何运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81AMD-%E5%92%8C-requirejs"><span class="toc-number">4.</span> <span class="toc-text">三、AMD 和 requirejs !</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%89%93%E5%8C%85%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 打包结果分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%A6%82%E4%BD%95%E8%BF%90%E8%A1%8C"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 如何运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81UMD-%E4%BC%9F%E5%A4%A7%E7%9A%84%E6%95%B4%E5%90%88"><span class="toc-number">5.</span> <span class="toc-text">四、UMD 伟大的整合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%89%93%E5%8C%85%E5%88%86%E6%9E%90"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 打包分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%A6%82%E4%BD%95%E8%BF%90%E8%A1%8C%EF%BC%9F"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 如何运行？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81SystemJs"><span class="toc-number">6.</span> <span class="toc-text">五、SystemJs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81ESM"><span class="toc-number">7.</span> <span class="toc-text">六、ESM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%89%93%E5%8C%85%E5%88%86%E6%9E%90"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 打包分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%A6%82%E4%BD%95%E8%BF%90%E8%A1%8C"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 如何运行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E5%88%86%E5%88%AB%E9%80%82%E5%90%88%E5%9C%A8%E4%BB%80%E4%B9%88%E5%9C%BA%E6%99%AF%E4%BD%BF%E7%94%A8%EF%BC%9F"><span class="toc-number">8.</span> <span class="toc-text">总结：分别适合在什么场景使用？</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

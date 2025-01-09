@@ -1,0 +1,194 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>webpack 详细执行过程 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="问：webpack 究竟解决了什么问题 模块化解决方案  在早前web前端只需要一个简单的 html 页面，插入几条script标签 去引用 js..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/3856502506/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'webpack 详细执行过程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/58860e926e9f6a00013b9386_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">webpack 详细执行过程</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">webpack 详细执行过程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-11-20T07:57:14.000Z" title="发表于 2019-11-20 15:57:14">2019-11-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.476Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/tools/">tools</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h4 id="问：webpack-究竟解决了什么问题"><a href="#问：webpack-究竟解决了什么问题" class="headerlink" title="问：webpack 究竟解决了什么问题"></a>问：webpack 究竟解决了什么问题</h4><ul>
+<li>模块化解决方案</li>
+</ul>
+<p>在早前web前端只需要一个简单的 html 页面，插入几条script标签 去引用 js 文件就可以满足需求，随着项目越来越复杂，要实现的功能越来越多，文件也越来越多，全部都这么引入已经不再现实，这时候前端模块化就出现了，从AMD、CMD 到现在的 ES6 模块化写法，我们可以把代码拆成一个个 JS 文件，通过 import 去关联依赖文件，最后再通过某个打包工具把这么多 js 文件按照依赖关系最终打包成一个或多个 js 文件在html 页面去引入。<br>所以 webpack首要要解决的问题是将多个模块化的 js文件 按照依赖关系打包为一个或多个文件，所以我们通常都会说他是一个模块化解决方案</p>
+<span id="more"></span>
+
+<ul>
+<li>处理资源转换</li>
+</ul>
+<p>随着 ES6，ES7，ES8 的出现，还有 vue、react 等前端框架的出现，我们发现这些文件浏览器是不能直接执行的，需要我们中间编译转换一下为浏览器可执行的文件，所以这时候 webpack 要做的事情又多了一项，按照依赖打包的同时，还要对源文件进行编译转换处理，也就是我们日常配置的 loader 处理。</p>
+<ul>
+<li>tree-shaking以及代码压缩</li>
+</ul>
+<p>现在webpack已经支持了对文件编译转换后再进行打包，满足了我们的基本需求。这时候我们又开始对性能提出了要求，希望打包出的体积越小越好。比如有些文件虽然整个引用了，但其实真正只用了其中部分代码，没用到的部分希望可以被剔除掉。这种是通过剔除无效代码来减小总的打包体积，另外一种方式是通过代码压缩，比如空格、较长的函数名都可以被压缩。因此webpack支持了 tree-shaking和代码压缩。</p>
+<ul>
+<li>代码拆分(异步加载 + 抽出第三方公用库）</li>
+</ul>
+<p>现在 webpack 打包结果是不是做到了极致了呢？不行，我们还是嫌弃最终打包出的文件体积太大了。这时候懒加载（异步加载）出现了，你只需要把进入首页时所需要的所有资源打包为一个文件输出就行，这样进入首页我只需要加载该文件就行，其他资源文件等我真正执行的时候再去加载就可以。就这样，webpack又支持了异步加载文件的拆包功能，这时候我们最终打包出的主文件只是当前首页需要的资源。</p>
+<ul>
+<li>开发辅助工具的提供</li>
+</ul>
+<p>我们对于打包的基本需求以及性能需求终于得到了满足，又开始追求开发时的体验了，开发越便捷越好，webpack 就提供了一系列的开发辅助功能，比如 devserver，HMR 等等什么的帮助我们高效的开发。</p>
+<p>现在我们回过头总结下看，webpack帮我们做了好多事啊。</p>
+<ul>
+<li>作为一个模块化解决方案，帮助我们将繁多的 JS 模块化文件按照依赖关系打包 为一个或多个文件输出</li>
+<li>支持针对文件指定文件进行编译转换后再打包</li>
+<li>支持针对打包后的内容优化、压缩处理<br>来减小总的文件体积</li>
+<li>支持异步加载以及其他拆包方式</li>
+<li>提供一系列开发辅助工具</li>
+</ul>
+<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>webpack的构建从处理入口文件开始着手，首先解析入口文件，需要 经过 loader转换编译这时候就转换编译，转换完了开始分析是否有依赖文件，有依赖文件就接着处理依赖文件，流程和刚刚一致，需要编译转换就转换，然后接着解析依赖文件是否还有依赖文件，有再接着处理。就这样通过入口文件以及依赖关系，webpack 可以获取并处理所有的依赖文件。然后再基于这些文件做进一步的优化处理，比如 treeshaking 或者 代码压缩，最后生成为我们需要的一个或多个js 文件。</p>
+<h4 id="1-准备工作"><a href="#1-准备工作" class="headerlink" title="1. 准备工作"></a>1. 准备工作</h4><p>webpack 首先会将我们的配置文件和它自己的默认配置做一个 merge，生成最终的一个配置文件，其次会将这个最终配置文件里的所有插件plugin在这个时候都注册好，在这里要提一下 webpack 的事件机制，他是基于一个 tapable库做的事件流控制，在整个的编译过程中暴露出各种hook，而我们写的 plugin 也就是去注册监听了某个 hook，在这个 hook 触发时，去执行我们的 plugin。</p>
+<h4 id="2-处理入口文件"><a href="#2-处理入口文件" class="headerlink" title="2. 处理入口文件"></a>2. 处理入口文件</h4><p>在 webpack 的处理中多种入口最后都会转化为同一方法去处理，单入口不用说，多入口我可以先遍历，再去执行该方法，动态入口，我先执行函数再去处理，最终都会进入到 生成入口文件 module 实例阶段。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 入口文件</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="comment">// 单入口</span></span><br><span class="line">  <span class="attr">entry</span>: &#123;</span><br><span class="line">    <span class="attr">main</span>: <span class="string">&#x27;./src/index.js&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 多入口</span></span><br><span class="line">  <span class="attr">entry</span>: &#123;</span><br><span class="line">    <span class="attr">app</span>: <span class="string">&#x27;./src/app.js&#x27;</span>,</span><br><span class="line">    <span class="attr">adminApp</span>: <span class="string">&#x27;./src/adminApp.js&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">//  动态入口</span></span><br><span class="line">  <span class="attr">entry</span>: <span class="function">() =&gt;</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> <span class="title function_">resolve</span>([<span class="string">&#x27;./demo&#x27;</span>, <span class="string">&#x27;./demo2&#x27;</span>]))</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>大家都说 webpack 中一切文件都是 module，那 module 是什么呢，其实他就是一个存了当前文件所有信息的一个对象而已，这个文件包含了以下信息。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span> = &#123;</span><br><span class="line">  type,</span><br><span class="line">  request,</span><br><span class="line">  userRequest,</span><br><span class="line">  rawRequest,</span><br><span class="line">  loaders,</span><br><span class="line">  resource,</span><br><span class="line">  matchResource,</span><br><span class="line">  parser,</span><br><span class="line">  generator,</span><br><span class="line">  resolveOptions</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-生成文件-module实例"><a href="#3-生成文件-module实例" class="headerlink" title="3.生成文件 module实例"></a>3.生成文件 module实例</h4><h5 id="1-resolve-阶段"><a href="#1-resolve-阶段" class="headerlink" title="1. resolve 阶段"></a>1. resolve 阶段</h5><p>通过我们的 resolve 配置和 rules 配置去获取到当前文件的绝对路径和需要经过哪些loader 进行处理，然后将这些信息存到我们当前这个文件对应的 module 实例里面</p>
+<h5 id="2-执行-loader-阶段"><a href="#2-执行-loader-阶段" class="headerlink" title="2.执行 loader 阶段"></a>2.执行 loader 阶段</h5><p>loader 的执行是倒序</p>
+<p>loader的执行分为 2 个阶段: pitching,执行 loader 上的 pitch 方法;normal,执行 loader 常规方法</p>
+<p>执行完 loader 后，也就是对文件做了编译转换，使其变成了最终可以被浏览器执行的代码。</p>
+<h5 id="3-parse-阶段"><a href="#3-parse-阶段" class="headerlink" title="3. parse 阶段"></a>3. parse 阶段</h5><p>webpack 是采用将loader 执行过后的源文件source转换为AST 去分析依赖。这里使用了acorn 库，将source生成对应的 AST。生成的 AST 划分为 3部分，ImportDeclaration、FunctionDeclaration和VariablesDeclaration，接下来遍历 AST 去收集依赖。找到 import 等关键字去达到依赖收集的目的。</p>
+<h5 id="4-递归处理依赖"><a href="#4-递归处理依赖" class="headerlink" title="4.递归处理依赖"></a>4.递归处理依赖</h5><p>基于我们解析到的依赖文件，我们要开始递归处理依赖了，又回到了我们处理入口文件的整个流程，去生成依赖文件的 module 实例，再执行 对应loader。就这样 webpack 递归处理了所有的依赖文件并完成了所有文件的转换</p>
+<h4 id="4-生成-chunk"><a href="#4-生成-chunk" class="headerlink" title="4. 生成 chunk"></a>4. 生成 chunk</h4><p>根据用户配置的 optimization.slitChunks 或者默认的配置，用上一步生成的module，来生成 chunk</p>
+<ol>
+<li>生成 Module-graph</li>
+<li>生成 Basic-chunk-graph</li>
+<li>生成最终的 chunk-graph</li>
+</ol>
+<h4 id="5-优化"><a href="#5-优化" class="headerlink" title="5. 优化"></a>5. 优化</h4><ol>
+<li>首先生成对应的 moduleId ，不做任何配置的话，默认采用以自增 id 的方式，推荐 hash 的方式，有利于缓存</li>
+<li>基于生成的 moduleId进行排序</li>
+<li>接着类似于 module 的操作，对应生成 chunkId ，并根据 chunkId进行排序</li>
+<li>分别为 module 和chunk 生成hash</li>
+</ol>
+<h4 id="6-生成文件"><a href="#6-生成文件" class="headerlink" title="6. 生成文件"></a>6. 生成文件</h4><p>webpack 把这些文件按照内置的 template 渲染生成最终的打包文件。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>总结一下 webpack 的整个构建打包过程，首先通过依赖关系和 loader 配置获取经过编译转换后的所有module 实例，然后再根据配置进行拆分为一个或多个chunk，最后按照内置的template 渲染出最终的文件输出。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/3856502506/">https://leejs.cn/3856502506/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/webpack/">webpack</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/58860e926e9f6a00013b9386_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/3947484483/" title="bodybuilding notes"><img class="cover" src="https://images-origin.wallwiz.link/590bc66690c79d0001e9cbad_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">bodybuilding notes</div></div><div class="info-2"><div class="info-item-1">2019 已经结束， 不忘初心， 坚持就是胜利从跟家琦健身以来，来健身房也不下30次了，虽然说自己很多动作还是不标准，但是学到了很多，算是个对健身入门了，2020年好好加油，不忘初心。 一点小感悟：中午健身牺牲了原来的午睡时间，但是，这也许是一个上班族无法避免的问题吧，这也让我晚上睡得更早了 健身之后的那种快感，是很难得的，很舒服的，是打心底发出的一种自信，因为自己心底会说，今天我健身了，就是牛逼，再看到什么程序员猝死这类的新闻，心底会想，这一看就是个平时不健身的人   记录一下中午健身的内容【时间】【时长】【锻炼肌肉】【地点：滴滴湾流】【教练：家琦】 【2019年12月30日 周一】【 中午】【胸，腹， 跑步】【2019年12月27日 周五】【 中午 】【胸，腹， 跑步】【2019年12月25日 周三】【 中午】【腿， 跑步】【2019年12月23日 周一】【 中午 】【背 跑步】【2019年12月20日 周五】【 中午 】【背 跑步】【2019年12月23日 周二】【 中午 】【胸 跑步】【2019年12月16日 周一】【 中午 】【背 跑步】【2019年12月4日...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%EF%BC%9Awebpack-%E7%A9%B6%E7%AB%9F%E8%A7%A3%E5%86%B3%E4%BA%86%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">问：webpack 究竟解决了什么问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">2.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">1. 准备工作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%A4%84%E7%90%86%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">2. 处理入口文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E6%96%87%E4%BB%B6-module%E5%AE%9E%E4%BE%8B"><span class="toc-number">5.</span> <span class="toc-text">3.生成文件 module实例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-resolve-%E9%98%B6%E6%AE%B5"><span class="toc-number">5.1.</span> <span class="toc-text">1. resolve 阶段</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E6%89%A7%E8%A1%8C-loader-%E9%98%B6%E6%AE%B5"><span class="toc-number">5.2.</span> <span class="toc-text">2.执行 loader 阶段</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-parse-%E9%98%B6%E6%AE%B5"><span class="toc-number">5.3.</span> <span class="toc-text">3. parse 阶段</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-%E9%80%92%E5%BD%92%E5%A4%84%E7%90%86%E4%BE%9D%E8%B5%96"><span class="toc-number">5.4.</span> <span class="toc-text">4.递归处理依赖</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E7%94%9F%E6%88%90-chunk"><span class="toc-number">6.</span> <span class="toc-text">4. 生成 chunk</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E4%BC%98%E5%8C%96"><span class="toc-number">7.</span> <span class="toc-text">5. 优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-%E7%94%9F%E6%88%90%E6%96%87%E4%BB%B6"><span class="toc-number">8.</span> <span class="toc-text">6. 生成文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number"></span> <span class="toc-text">总结</span></a></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

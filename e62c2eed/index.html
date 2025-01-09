@@ -1,0 +1,442 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>go 语言学习列表 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="  基础信息   镜像说明 前言    第一章. Go 起源，发展与普及   1.1. 起源与发展 1.2. 主要特性与发展的环境和影响因素    第二章. 安装与运行环境   2.1. 平台与架构 2.2. Go 环境变量 2.3. 在 Linux 上安装 Go 2.4. 在 Mac OS..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/e62c2eed/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'go 语言学习列表',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">go 语言学习列表</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">go 语言学习列表</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-02T03:25:56.000Z" title="发表于 2022-09-02 11:25:56">2022-09-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.456Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><ul>
+<li><input disabled="" type="checkbox"> <h3 id="基础信息"><a href="#基础信息" class="headerlink" title="基础信息"></a>基础信息</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/book-intro/3560">镜像说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/preface/3561">前言</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第一章-Go-起源，发展与普及"><a href="#第一章-Go-起源，发展与普及" class="headerlink" title="第一章. Go 起源，发展与普及"></a>第一章. Go 起源，发展与普及</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/origin-and-development/3562">1.1. 起源与发展</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/characteristics-environment-and-factors/3563">1.2. 主要特性与发展的环境和影响因素</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第二章-安装与运行环境"><a href="#第二章-安装与运行环境" class="headerlink" title="第二章. 安装与运行环境"></a>第二章. 安装与运行环境</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/31-platform-and-architecture/3564">2.1. 平台与架构</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/go-environment-variable/3565">2.2. Go 环境变量</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/install-go-on-linux/3566">2.3. 在 Linux 上安装 Go</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/install-go-on-mac-os-x/3567">2.4. 在 Mac OS X 上安装 Go</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/install-go-on-windows/3568">2.5. 在 Windows 上安装 Go</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/install-directory-listing/3569">2.6. 安装目录清单</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/go-runtime-runtime/3570">2.7. Go 运行时（runtime）</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/go-interpreter/3571">2.8. Go 解释器</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第三章-编辑器、IDE-等工具"><a href="#第三章-编辑器、IDE-等工具" class="headerlink" title="第三章. 编辑器、IDE 等工具"></a>第三章. 编辑器、IDE 等工具</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/editors-integrated-development-environments-and-other-tools/3572">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/basic-requirements-for-go-development-environment/3573">3.1. Go 开发环境的基本要求</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/editors-and-integrated-development-environments/3574">3.2. 编辑器和集成开发环境</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/33-debugger/3575">3.3. 调试器</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/build-and-run-go-programs/3576">3.4. 构建并运行 Go 程序</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/formatting-code/3577">3.5. 格式化代码</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/generating-code-documents/3578">3.6. 生成代码文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/other-tools/3579">3.7. 其它工具</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/go-performance-description/3580">3.8. Go 性能说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/interact-with-other-languages/3581">3.9. 与其它语言进行交互</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第四章-基本结构和基本数据类型"><a href="#第四章-基本结构和基本数据类型" class="headerlink" title="第四章. 基本结构和基本数据类型"></a>第四章. 基本结构和基本数据类型</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/file-name-keyword-and-identifier/3582">4.1. 文件名、关键字与标识符</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/the-basic-structure-and-elements-of-the-go-program/3583">4.2. Go 程序的基本结构和要素</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/constant/3584">4.3. 常量</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/variable/3585">4.4. 变量</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/basic-types-and-operators/3586">4.5. 基本类型和运算符</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/character-string/3587">4.6. 字符串</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/strings-and-strconv-packages/3588">4.7. strings 和 strconv 包</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/time-and-date/3589">4.8. 时间和日期</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/pointer/3590">4.9. 指针</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第五章-控制结构"><a href="#第五章-控制结构" class="headerlink" title="第五章. 控制结构"></a>第五章. 控制结构</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3591">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/if-else-structure/3592">5.1. if-else 结构</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/test-the-error-of-multiple-return-function/3593">5.2. 测试多返回值函数的错误</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/switch-structure/3594">5.3. switch 结构</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/for-structure/3595">5.4. for 结构</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/break-and-continue/3596">5.5. Break 与 continue</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/label-and-goto/3597">5.6. 标签与 goto</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第六章-函数（function）"><a href="#第六章-函数（function）" class="headerlink" title="第六章. 函数（function）"></a>第六章. 函数（function）</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3598">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/introduce/3599">6.1. 介绍</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/function-parameters-and-return-values/3600">6.2. 函数参数与返回值</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/transfer-length-parameter/3601">6.3. 传递变长参数</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/defer-and-tracking/3602">6.4. defer 和追踪</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/built-in-function/3603">6.5. 内置函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/recursive-function/3604">6.6. 递归函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/take-the-function-as-a-parameter/3605">6.7. 将函数作为参数</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/closure/3606">6.8. 闭包</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/application-closure-function-as-a-return-value/3607">6.9. 应用闭包：将函数作为返回值</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/use-closure-debugging/3608">6.10. 使用闭包调试</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/computing-function-execution-time/3609">6.11. 计算函数执行时间</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/improve-performance-through-memory-caching/3610">6.12. 通过内存缓存来提升性能</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第七章-数组与切片"><a href="#第七章-数组与切片" class="headerlink" title="第七章. 数组与切片"></a>第七章. 数组与切片</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3611">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/declarations-and-initialization/3612">7.1. 声明和初始化</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/72-slice/3613">7.2. 切片</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/73-for-range-structure/3614">7.3. For-range 结构</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/74-slice-recombination-reslice/3615">7.4. 切片重组（reslice）</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/duplication-and-addition-of-75-slices/3616">7.5. 切片的复制与追加</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/the-application-of-76-strings-arrays-and-slices/3617">7.6. 字符串、数组和切片的应用</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第八章-Map"><a href="#第八章-Map" class="headerlink" title="第八章. Map"></a>第八章. Map</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/8-chapters/3618">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/81-declarations-initialization-and-make/3619">8.1. 声明、初始化和 make</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/82-test-key-values-for-the-existence-and-deletion-of-elements/3620">8.2. 测试键值对是否存在及删除元素</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/the-matching-usage-of-83-for-range/3621">8.3. for-range 的配套用法</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/slicing-of-the-84-map-type/3622">8.4. map 类型的切片</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/the-sorting-of-85-map/3623">8.5. map 的排序</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/86-adjust-the-key-values-of-map/3624">8.6. 将 map 的键值对调</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第九章-包（package）"><a href="#第九章-包（package）" class="headerlink" title="第九章. 包（package）"></a>第九章. 包（package）</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3625">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/overview-of-the-91-standard-library/3626">9.1. 标准库概述</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/93-locks-and-sync-packages/3627">9.2. regexp 包</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/94-precision-calculation-and-big-package/3628">9.3. 锁和 sync 包</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/95-custom-packages-and-visibility/3629">9.4. 精密计算和 big 包</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/92-regexp-package/3630">9.5. 自定义包和可见性</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/96-uses-godoc-for-custom-packages/3631">9.6. 为自定义包使用 godoc</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/97-installs-custom-packages-using-go-install/3632">9.7. 使用 go install 安装自定义包</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/98-custom-package-directory-structure-go-install-and-go-test/3633">9.8. 自定义包的目录结构、go install 和 go test</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/99-is-packaged-and-installed-through-git/3634">9.9. 通过 Git 打包和安装</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/external-packages-and-projects-of-910-go/3635">9.10. Go 的外部包和项目</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/911-uses-an-external-library-in-the-go-program/3636">9.11. 在 Go 程序中使用外部库</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十章-结构与方法"><a href="#第十章-结构与方法" class="headerlink" title="第十章. 结构与方法"></a>第十章. 结构与方法</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3637">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/101-structure-definition/3638">10.1. 结构体定义</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/102-creates-an-instance-of-a-structure-using-a-factory-method/3639">10.2. 使用工厂方法创建结构体实例</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/103-uses-the-structure-in-the-custom-package/3640">10.3. 使用自定义包中的结构体</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/107-type-string-method-and-formatted-descriptor/3641">10.4. 带标签的结构体</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/104-tag-structure/3642">10.5. 匿名字段和内嵌结构体</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/105-anonymous-field-and-embedded-structure/3643">10.6. 方法</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/106-method/3644">10.7. 类型的 String() 方法和格式化描述符</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/108-garbage-collection-and-setfinalizer/3645">10.8. 垃圾回收和 SetFinalizer</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十一章-接口与反射"><a href="#第十一章-接口与反射" class="headerlink" title="第十一章. 接口与反射"></a>第十一章. 接口与反射</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3646">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/what-is-the-111-interface/3647">11.1. 接口是什么</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/112-interface-nesting-interface/3648">11.2. 接口嵌套接口</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/113-type-assertion-how-to-detect-and-transform-the-type-of-interface-variables/3649">11.3. 类型断言：如何检测和转换接口变量的类型</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/114-type-judgment-type-switch/3650">11.4. 类型判断：type-switch</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/115-tests-whether-a-value-implements-an-interface/3651">11.5. 测试一个值是否实现了某个接口</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/116-usage-set-and-interface/3652">11.6. 使用方法集与接口</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/the-first-example-of-117-sorting-using-the-sorter-interface/3653">11.7. 第一个例子：使用 Sorter 接口排序</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/118-second-examples-reading-and-writing/3654">11.8. 第二个例子：读和写</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/119-empty-interface/3655">11.9. 空接口</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1110-reflector/3656">11.10 反射包</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1112-interface-and-dynamic-type/3657">11.12. 接口与动态类型</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1113-summary-object-oriented-in-go/3658">11.13. 总结：Go 中的面向对象</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1114-structures-sets-and-higher-order-functions/3659">11.14. 结构体、集合和高阶函数</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十二章-读写数据"><a href="#第十二章-读写数据" class="headerlink" title="第十二章. 读写数据"></a>第十二章. 读写数据</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3660">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/121-reads-user-input/3661">12.1. 读取用户的输入</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/122-file-reading-and-writing/3662">12.2. 文件读写</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/copy-of-123-file/3663">12.3. 文件拷贝</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/124-reads-parameters-from-the-command-line/3664">12.4. 从命令行读取参数</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/125-reads-files-with-buffer/3665">12.5. 用 buffer 读取文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/126-read-and-write-files-with-sliced-slices/3666">12.6. 用切片读写文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/127-closes-files-with-defer/3667">12.7. 用 defer 关闭文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/an-actual-example-of-128-using-the-interface-fmtfprintf/3668">12.8. 使用接口的实际例子：fmt.Fprintf</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/129-json-data-format/3669">12.9. JSON 数据格式</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1210-xml-data-format/3670">12.10. XML 数据格式</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1211-uses-gob-to-transmit-data/3671">12.11. 用 Gob 传输数据</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/cryptography-in-1212-go/3672">12.12. Go 中的密码学</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十三章-错误处理与测试"><a href="#第十三章-错误处理与测试" class="headerlink" title="第十三章. 错误处理与测试"></a>第十三章. 错误处理与测试</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3673">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/131-error-handling/3674">13.1. 错误处理</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/132-runtime-exception-and-panic/3675">13.2. 运行时异常和 panic</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/133-recovery-from-panic-recover/3676">13.3. 从 panic 中恢复（Recover）</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/error-handling-and-panicking-in-the-134-custom-package/3677">13.4. 自定义包中的错误处理和 panicking</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/135-a-pattern-that-handles-errors-with-closures/3678">13.5. 一种用闭包处理错误的模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/136-starts-external-commands-and-programs/3679">13.6. 启动外部命令和程序</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/unit-testing-and-benchmarking-in-137-go/3680">13.7. Go 中的单元测试和基准测试</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/specific-examples-of-138-testing/3681">13.8. 测试的具体例子</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/139-driven-test-with-test-data-table/3682">13.9. 用（测试数据）表驱动测试</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1310-performance-debugging-analysis-and-optimization-of-go-programs/3683">13.10. 性能调试：分析并优化 Go 程序</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十四章-协程与通道"><a href="#第十四章-协程与通道" class="headerlink" title="第十四章. 协程与通道"></a>第十四章. 协程与通道</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3684">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/141-concurrency-parallel-and-co-process/3685">14.1. 并发、并行和协程</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/142-covariance-channel/3686">14.2. 协程间的信道</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/synchronization-of-143-cooperations-closing-channels-testing-blocked-channels/3687">14.3. 协程的同步：关闭通道-测试阻塞的通道</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/144-switching-co-process-using-select/3688">14.4. 使用 select 切换协程</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/145-channels-timeouts-and-timers-ticker/3689">14.5. 通道、超时和计时器（Ticker）</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/146-co-process-and-recovery-recover/3690">14.6. 协程和恢复（recover）</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/comparison-of-147-new-and-old-models-task-and-worker/3691">14.7. 新旧模型对比：任务和worker</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/implementation-of-148-inert-generator/3692">14.8. 惰性生成器的实现</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/149-implementation-of-futures-mode/3693">14.9. 实现 Futures 模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1410-multiplexing/3694">14.10. 多路复用 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1411-limiting-the-number-of-requests-processed-concurrently/3695">14.11. 限制并发数 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1412-chaining-goroutines/3696">14.12. 链式操作 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1413-parallelizing-a-computation-over-a-number-of-cores/3697">14.13. 多核运算 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1414-parallelizing-a-computation-over-a-large-amount-of-data/3698">14.14. 多核运算处理大量数据 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1415-the-leaky-bucket-algorithm/3699">14.15. 漏桶算法 Leaky Bucket <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1416-benchmarking-goroutines/3700">14.16. 标杆分析 Goroutines <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1417-concurrent-acces-to-objects-by-using-a-channel/3701">14.17. 使用 Channel 来并发读取对象 <strong>已完成</strong></a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十五章-网络，模板和网页应用"><a href="#第十五章-网络，模板和网页应用" class="headerlink" title="第十五章. 网络，模板和网页应用"></a>第十五章. 网络，模板和网页应用</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3702">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/151-tcp-server/3703">15.1. tcp 服务器</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/152-a-simple-web-server/3704">15.2. 一个简单的网页服务器</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/153-access-and-read-pages/3705">15.3. 访问并读取页面</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/154-writes-a-simple-web-page-application/3706">15.4. 写一个简单的网页应用</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/155-making-a-web-application-robust/3707">15.5. 让 Web 应用更加健壮 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/156-writing-a-web-application-with-templates/3708">15.6. 在 Web 应用中使用模板 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/157-exploring-the-template-package/3709">15.7. 探索 Template 扩展的功能 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/158-a-versatile-and-delicate-webserver/3710">15.8. 一个多功能的精致的 WebServer <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/159-rpc-remote-call/3711">15.9. RPC 远程调用 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1510-uses-netchan-across-network-to-implement-message-delivery/3712">15.10. 使用 netchan 跨网络实现消息传递 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1511-websocket-communication/3713">15.11. Websocket 通讯 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1512-smtp-sends-mail/3714">15.12. SMTP 发送邮件 <strong>已完成</strong></a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十六章-常见的陷阱与错误"><a href="#第十六章-常见的陷阱与错误" class="headerlink" title="第十六章. 常见的陷阱与错误"></a>第十六章. 常见的陷阱与错误</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3715">章节说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/163-closes-a-file-with-defer-when-an-error-occurs/3716">16.1. 误用短声明导致变量覆盖</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/161-misuse-short-declarations-leading-to-variable-coverage/3717">16.2. 误用字符串</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/when-164-uses-new-and-make/3718">16.3 发生错误时使用defer关闭一个文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/168-misuse-co-process-and-channel/3719">16.4. 何时使用 new() 和 make()</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/162-misuse-string/3720">16.5. 不需要将一个指向切片的指针传递给函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/165-does-not-need-to-transfer-a-pointer-to-a-slice-to-a-function/3721">16.6. 使用指针指向接口类型</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/the-use-of-169-closures-and-association-courses/3722">16.7. 使用值类型时误用指针</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/166-uses-pointers-to-point-to-the-type-of-interface/3723">16.8 误用协程和通道</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/167-misuse-pointers-when-using-value-types/3724">16.9. 闭包和协程的使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1610-bad-error-handling/3725">16.10. 糟糕的错误处理</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十七章-模式"><a href="#第十七章-模式" class="headerlink" title="第十七章. 模式"></a>第十七章. 模式</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/171-on-the-comma-ok-pattern/3726">17.1. 关于逗号 ok 模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/172-the-defer-pattern/3727">17.2. defer 模式 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/173-the-visibility-pattern/3728">17.3.能见度模式 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/174-the-operator-pattern-and-interface/3729">17.4. 操作者模式和接口 <strong>已完成</strong></a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十八章-性能调优代码片段"><a href="#第十八章-性能调优代码片段" class="headerlink" title="第十八章. 性能调优代码片段"></a>第十八章. 性能调优代码片段</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/181-string/3730">18.1. 字符串</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/182-array-and-slicing/3731">18.2. 数组和切片</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/183-mapping/3732">18.3. 映射</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/184-structure/3733">18.4. 结构体</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/185-interface/3734">18.5. 接口</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/186-function/3735">18.6. 函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/187-file/3736">18.7. 文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/188-co-range-goroutine-and-channel-channel/3737">18.8. 协程（goroutine）与通道（channel）</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/189-network-and-web-application/3738">18.9. 网络和网页应用</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1810-other/3739">18.10. 其他</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1811-best-practices-and-suggestions-for-performance-considerations/3740">18.11. 出于性能考虑的最佳实践和建议</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第十九章-构建完整的应用程序"><a href="#第十九章-构建完整的应用程序" class="headerlink" title="第十九章. 构建完整的应用程序"></a>第十九章. 构建完整的应用程序</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/191-introduction/3741">19.1. 简介 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/192-introducing-project-urlshortener/3742">19.2. UrlShortener 项目介绍 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/193-data-structure/3743">19.3. 数据结构分析 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/194-our-user-interface-a-web-server-frontend/3744">19.4. 用户界面：Web 网页前端 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/195-persistent-storage-gob/3745">19.5. 数据存储: gob <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/196-using-goroutines-for-performance/3746">19.6. 使用 Goroutines 来提高性能 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/197-using-json-for-storage/3747">19.7. 使用 Json 来存储 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/198-multiprocessing-on-many-machines/3748">19.8. 多台机器上的多线程 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/199-using-a-proxystore/3749">19.9. 使用 ProxyStore <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/1910-summary-and-enhancements/3750">19.10. 总结和优化 <strong>已完成</strong></a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第二十章-Google-App-引擎中的-Go"><a href="#第二十章-Google-App-引擎中的-Go" class="headerlink" title="第二十章. Google App 引擎中的 Go"></a>第二十章. Google App 引擎中的 Go</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3751">章节说明</a></li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <h3 id="第二十一章-Go-现实世界中的使用"><a href="#第二十一章-Go-现实世界中的使用" class="headerlink" title="第二十一章. Go 现实世界中的使用"></a>第二十一章. Go 现实世界中的使用</h3></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/chapter-description/3752">章节说明 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/the-voip-system-implemented-by-212-mroffice-go/3754">21.2. MROffice — Go 实现的 VOIP 系统 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/213-atlassian-virtual-machine-cluster-management-system/3755">21.3. Atlassian— 虚拟机集群管理系统 <strong>已完成</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/docs/the-way-to-go/214-camlistore-personal-address-storage-system/3756">21.4. Camlistore 个人住址存储系统 <strong>已完成</strong></a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/e62c2eed/">https://leejs.cn/e62c2eed/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/go/">go</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/cd70c25c/" title="常见数据分析模型"><img class="cover" src="https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">常见数据分析模型</div></div><div class="info-2"><div class="info-item-1">[TOC] 留存分析据某第三方平台近期调研结果显示，在金融创业领域，2013 年一家互联网金融创业公司的投资获客成本区间为 300 – 500 元，而2016 年则涨为 1000 – 3000 元；在电商领域，新用户的获取成本，是维护一个老用户的 3 倍到 10 倍…… 如今，高居不下的获客成本让互联网、移动互联网创业者们遭遇新的“天花板”，甚至陷入“纳不起”新客的窘境。而花费极高成本所获取的客户，可能仅打开一次...</div></div></div></a><a class="pagination-related" href="/9a3c1b5f/" title="vue3 API学习列表"><img class="cover" src="https://images-origin.wallwiz.link/58860b9a6e9f6a00013b8f89_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">vue3 API学习列表</div></div><div class="info-2"><div class="info-item-1">没有别的意思， 就是希望自己能系统的把vue的api文档完整的看一遍 最近在用vue做新项目，碰到的东西的，有些还是需要临时查文档 最后，希望能多看几遍 开始  简介  快速上手  基础  创建一个应用  模板语法  响应式基础  计算属性  类与样式绑定  条件渲染  列表渲染  事件处理  表单输入绑定  生命周期  侦听器  模板引用  组件基础  深入组件  注册  Props  事件  透传 Attributes  插槽  依赖注入  异步组件  逻辑复用  组合式函数  自定义指令  插件  内置组件  Transition  TransitionGroup  KeepAlive  Teleport  Suspense  应用规模化  单文件组件  工具链  路由  状态管理  测试  服务端渲染 (SSR)  最佳实践  生产部署  性能优化  无障碍访问  安全  TypeScript  总览  TS 与组合式 API  TS 与选项式 API  进阶主题  使用 Vue 的多种方式  组合式 API 常见问答  深入响应式系统  渲染机制  渲染函数...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">基础信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0-Go-%E8%B5%B7%E6%BA%90%EF%BC%8C%E5%8F%91%E5%B1%95%E4%B8%8E%E6%99%AE%E5%8F%8A"><span class="toc-number">2.</span> <span class="toc-text">第一章. Go 起源，发展与普及</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">3.</span> <span class="toc-text">第二章. 安装与运行环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0-%E7%BC%96%E8%BE%91%E5%99%A8%E3%80%81IDE-%E7%AD%89%E5%B7%A5%E5%85%B7"><span class="toc-number">4.</span> <span class="toc-text">第三章. 编辑器、IDE 等工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84%E5%92%8C%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">5.</span> <span class="toc-text">第四章. 基本结构和基本数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0-%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84"><span class="toc-number">6.</span> <span class="toc-text">第五章. 控制结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0-%E5%87%BD%E6%95%B0%EF%BC%88function%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">第六章. 函数（function）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E7%AB%A0-%E6%95%B0%E7%BB%84%E4%B8%8E%E5%88%87%E7%89%87"><span class="toc-number">8.</span> <span class="toc-text">第七章. 数组与切片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E7%AB%A0-Map"><span class="toc-number">9.</span> <span class="toc-text">第八章. Map</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B9%9D%E7%AB%A0-%E5%8C%85%EF%BC%88package%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">第九章. 包（package）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E7%AB%A0-%E7%BB%93%E6%9E%84%E4%B8%8E%E6%96%B9%E6%B3%95"><span class="toc-number">11.</span> <span class="toc-text">第十章. 结构与方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0-%E6%8E%A5%E5%8F%A3%E4%B8%8E%E5%8F%8D%E5%B0%84"><span class="toc-number">12.</span> <span class="toc-text">第十一章. 接口与反射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%BA%8C%E7%AB%A0-%E8%AF%BB%E5%86%99%E6%95%B0%E6%8D%AE"><span class="toc-number">13.</span> <span class="toc-text">第十二章. 读写数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%89%E7%AB%A0-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="toc-number">14.</span> <span class="toc-text">第十三章. 错误处理与测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%9B%9B%E7%AB%A0-%E5%8D%8F%E7%A8%8B%E4%B8%8E%E9%80%9A%E9%81%93"><span class="toc-number">15.</span> <span class="toc-text">第十四章. 协程与通道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%BA%94%E7%AB%A0-%E7%BD%91%E7%BB%9C%EF%BC%8C%E6%A8%A1%E6%9D%BF%E5%92%8C%E7%BD%91%E9%A1%B5%E5%BA%94%E7%94%A8"><span class="toc-number">16.</span> <span class="toc-text">第十五章. 网络，模板和网页应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0-%E5%B8%B8%E8%A7%81%E7%9A%84%E9%99%B7%E9%98%B1%E4%B8%8E%E9%94%99%E8%AF%AF"><span class="toc-number">17.</span> <span class="toc-text">第十六章. 常见的陷阱与错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%83%E7%AB%A0-%E6%A8%A1%E5%BC%8F"><span class="toc-number">18.</span> <span class="toc-text">第十七章. 模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E5%85%AB%E7%AB%A0-%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5"><span class="toc-number">19.</span> <span class="toc-text">第十八章. 性能调优代码片段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B9%9D%E7%AB%A0-%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F"><span class="toc-number">20.</span> <span class="toc-text">第十九章. 构建完整的应用程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0-Google-App-%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84-Go"><span class="toc-number">21.</span> <span class="toc-text">第二十章. Google App 引擎中的 Go</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%80%E7%AB%A0-Go-%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">22.</span> <span class="toc-text">第二十一章. Go 现实世界中的使用</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

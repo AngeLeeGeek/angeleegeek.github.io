@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>理想国 第一卷 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/a3f55816/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '理想国 第一卷',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/59c12ed68ac7580001ce9ef8_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">理想国 第一卷</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">理想国 第一卷</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-12-01T07:55:06.000Z" title="发表于 2023-12-01 15:55:06">2023-12-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.489Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><a target="_blank" rel="noopener" href="https://book.douban.com/review/8396621/"><strong>原文地址</strong></a></p>
+<p>对话的缘起</p>
+<p>这一天，苏格拉底来到了一个港口城市，注意，这里并不是雅典，而是雅典“下面”的一个城市，叫比雷埃夫思港。也就是说，苏格拉底不在他的主场作战。为什么他去哪里？因为那里在过一个节日，并且是当地人第一次过这个节日，于是苏格拉底就去看热闹。他带了一个人，这个人是柏拉图的兄弟，叫格劳孔。<br>看完表演之后，他们本来打算回雅典。但是在路上遇到了当地的一个富商，叫波乐马霍斯。我们可以设想一下这个商人当时的心情。苏格拉底当时在希腊世界可是一个知名人物，他喜欢跟年轻人聊天，碰到年轻人就想抓住不放，在街上或者广场上跟他们讨论哲学问题。而且苏格拉底的辩论成绩非常好，几乎没有打过败仗。这么一个名人，今天被我波乐马霍斯碰到了，一定不能放他走。也就是说，波乐马霍斯是有好胜心的，他希望打败苏格拉底，至少要争取这样一次机会。因为输给苏格拉底并不丢脸，但如果能赢苏格拉底，那真的是扬名于整个希腊世界。所以他就请苏格拉底留步，不放他走。但是，他也知道，他一个人是敌不过苏格拉底的，所以他不允许这个对话发生在当场，也就是在街上。他要把苏格拉底绑架回家，因为家里有外援，家里人多势众，大家可以联合起来打倒苏格拉底。那苏格拉底为何甘心跟他回家呢？当时，他身边带了两个人，而苏格拉底只带了格劳孔一个人，二比三，所以苏格拉底肯定在力量上不及他，于是他就成功地把苏格拉底请回家了。那么，对话的现场就转移到波乐马霍斯的家里。</p>
+<p>现场人物聚焦</p>
+<p>对话现场一共有10个人。苏格拉底一方只有2人，而另一边有8人，其中包括：波乐马霍斯本人；还有他老爹，克法洛斯，一个已经退休的老富商；还有色拉叙马霍斯，一个有名的智者。色拉叙马霍斯这个名字在希腊语里是“激情”的意思，也确实人如其名，此人的性格比较狂暴、暴躁，而且这个人物形象在整个西方哲学史上也是大名鼎鼎。我们知道苏格拉底被认为是理性主义的代表，而色拉叙马霍斯则被看作其对立面，也就是非理性主义者，是主流哲学的批判者，是边缘人物。恰恰因此，他被很多非主流哲学家搬出来，作为鼻祖，这个老祖宗也曾经和苏格拉底打过一架，而且最后也并没有输给苏格拉底。在这里我们稍微透露一下这场辩论的结果。虽然苏格拉底最后在场面上占有优势，但从整个论证来看，当我们回顾对话的细节，就可以看到，两人难分高下。</p>
+<p>第一回合：克法洛斯</p>
+<p>谁是第一个发言的人呢？不用想，是富商的老爹，老富商，因为他年纪最大、德高望重，所以是最有资格第一个发言的。他开始说：我活了这么久，但我年轻的时候，什么都经历过，各种party，谈情说爱，各种年轻人可以想象的东西都经历过。但现在呢，老了，不行了，但我总结这一辈子得出这么一个道理，重要的是人的性格，而不是一时的快乐。现在我老了，我就喜欢谈话，跟年轻人聊天。这一点和苏格拉底类似，所以他就觉得和苏格拉底很投缘。<br>他又说：我赚的钱没我爷爷多，但比我父亲遗留给我的又多一些。就是说，他爷爷是比较能干的，但他爹是败家子，就把家业给败掉了，到他这一辈，又东山再起了，但是又没有他爷爷那么牛。这是啥意思？潜台词是：我不如我爷爷，这意味着你们年轻人也是不如我的，所以你们得尊重我，尊重传统。当他在场时，苏格拉底就只好隐藏自己犀利的风格，就劝他多说一说。因为苏格拉底也是一个谦虚好学的人，他希望向那些有经验的老头学习。<br>于是老富商就继续说道：我老了，只有一件事是我比较担心的。人死了之后可能到地府里接受审判，那么，我就想，我有没有做什么亏心事，我算不算一个好人，会不会遭到惩罚。这里就引出了一个“好人”的问题，什么样的人是好人。老头说，我认为好人就两个标准。第一，说真话，不撒谎。第二，欠债还钱。这时候，苏格拉底眼前一亮。因为这场辩论的核心问题出场了：什么是好，什么是正义。<br>老富商对这个问题的答案，也不是自己杜撰的，而是来自传统，来自古希腊的一个诗人，叫西蒙尼德。老头讲了这个答案之后，心里也感到宽慰，他说：大家都知道我有钱，但其实，有钱最大的好处就是，不用为了一时的利益而撒谎，不会欠债不还钱。也就是说，有钱是我做一个好人的重要前提。<br>大家都觉得老头讲得很有道理，很有智慧。这时，苏格拉底开始说话了，他说，在您看来，正义就是欠债还钱，也就是说，正义的定义是欠债还钱，那我们就来检查一下，您说得对不对。我先来举个例子。假如说我向一个朋友借了一把刀，那么，假如后来这个朋友疯了，那我是不是应该把刀还给他呢？按照原来的说法，欠债还钱，那就应该还啊。但是，如果在这个具体情形下你贸然把刀还给他，那会怎样？他就会去乱砍人啊。所以，对于一个头脑清醒的人来说，正当的做法是，不应该把刀还给这个疯了的债主。<br>苏格拉底的这个反例，看起来有效地攻击了对正义的第一个定义。这时候，老富商马上警觉到了苏格拉底的来势汹汹。他想，我可不能和苏格拉底争论，于是他就找了一个借口离开了。老头是聪明的，因为他德高望重，要注意自己的身份；另一方面，有他在场，年轻人们也不好意思撒野，所以，他的离开，预示着辩论的真正开始。</p>
+<p>第二回合：波乐马霍斯</p>
+<p>老头走了，他儿子就登场了，所谓“父业子承”。他就是刚才把苏格拉底绑架回家的那个人，波乐马霍斯。苏格拉底一看，就开始用他的老办法，就是引诱对手，先给个定义，然后再与其争辩。波乐马霍斯自信满满，他说，依我看，正义就是损敌益友，帮助朋友，消灭敌人。这个和前面说的“欠债还钱”也有联系。因为朋友就是那个在你不行的时候（过去或未来）拉你一把的人，也就是说，你总是欠朋友一点东西，所以就要对朋友好。而敌人呢，你所欠他的就是伤害。<br>这个定义，也是我们现在的日常的想法。我们经常说，对敌人要像冬天一样冰冷，对朋友要像春天一样温暖。那么，苏格拉底是怎么回应这个定义的呢？有两点。第一，如何界定朋友？你认为的朋友是不是真正的朋友？也许你觉得是朋友，但结果你却发现，他其实是披着羊皮的狼，怎么办？在这种情况下，你做了对这位“朋友”有利的事情，但实际上，他是你的敌人，那么，你就恰恰做了对敌人有益的事了。第二，如果把正义定义为损敌益友，那么，这里所指的敌人是怎么来的？敌人并不是先天的，生下来就是敌人，并非如此。实际上，一个人之所以成为你的敌人，按照苏格拉底的说法，是因为他受到了你的伤害。敌人和坏人往往是受了伤害的人，后者是他们成为敌人或坏人的原因。这么来看问题的话，损敌益友中的敌人反而是值得同情的。由此苏格拉底也得出了一个结论：伤害任何人都是不好、不正义的。再者，把正义定义为损敌益友，谁最会支持这一点？肯定是那些拥有权力的人，比如皇帝、僭主。他们所宣扬的正义是损敌益友，是为了激励士气，让手下的人更有底气去帮他们掠夺财富、开疆拓土。但这种所谓的正义，其实是不义。<br>经过上述的论证，苏格拉底基本上压倒了波乐马霍斯。我们可以简要总结一下苏格拉底的反驳技巧。我们发现，他的两点论证，一个是追问定义中所涉及到的概念的精确含义。比如“朋友”，到底是表面上的朋友，还是真正的朋友？再一个就是追问某一个事物所发生的原因。朋友和敌人，并不是简单地加以接受的事实，而是有渊源的，为什么某个人成为你的朋友、而另一个人却是你的敌人？也就是说，简单地制作出“朋友”和“敌人”两个范畴、两个框架，然后把具体的人放进这些框架里，进而采取或支持或批判的行动，是一种简单化、脸谱化的做法，而这种做法往往是违背理性的、没有思考的成分在里面的，因此，谈不上真正的正义。</p>
+<p>第三回合：色拉叙马霍斯</p>
+<p>在波乐马霍斯被苏格拉底问住、陷入思考的同时，现场有一个人坐不住了。他就是前面所说的色拉叙马霍斯（以下简称色拉）。他说，苏格拉底，你只会质问别人、引诱别人给出定义，然后再去质疑别人——这个很不厚道啊，有本事你自己给个定义啊。要知道，质疑和批判某个定义要比给出定义容易的多啊。<br>苏格拉底说，其实呢，我不是不愿意给出定义，而是没能力。我们都是来追求真理的，真理比黄金更珍贵，如果我能给出真理的话，肯定早就说出来了，只是能力不够。色拉就说，既然你不行，那我来。于是他就给出了一个定义：正义就是强者的利益。<br>表面上看，这个定义和第二个定义在结构上是平行的。第二个定义说，正义是朋友的利益，而色拉说的则是，强者的利益。注意，在这里发生了一个视角上的转换。当我说朋友的利益和敌人的害处时，我是以我自己为中心来思考问题的；而当我说强者的利益时，这却是以整个共同体为参照系的。在一个共同体内部，有强有弱。当然强者不一定是某个人，也许是某些人，甚至可能是大多数人。这是一个要点。<br>其次，当大家听到色拉说，正义是强者的利益，大家会作何感想？可能大家会说，色拉是赤裸裸地为强者辩护啊。这个逻辑是：正义是天经地义的东西，正义又是强者的利益，所以，对强者有利是天经地义的。这就误解了色拉的本意。那么，色拉说的到底是啥意思？<br>所谓强者，就是统治者。我们把整个共同体分为两部分：统治阶级和被统治阶级。那么，当色拉说，正义是强者的利益，他说的其实是：正义是统治阶级的利益。换句话说，所谓的那个天经地义的东西，正义，只不过是统治阶级编造出来，去哄骗那些被统治阶级的意识形态工具，它被宣传为是崇高的、正义的。而被统治阶级按照这种所谓的正义和道德去行为，那就恰恰是中了统治阶级的圈套。因此，色拉的真正意思是，并没有什么天经地义的“正义”。结论就是：我们不应该做一个“正义”的人，相反，我们要么做坏人，或者更彻底，去揭露和推翻那些道德、法律和所谓的正义，要闹革命。这种观念，其实是很后现代的。<br>那么，苏格拉底是怎么对付这么颠覆性的观点的呢？第一，他问，你说的这个强者是什么意思？强者有没有可能犯错呢？你说，强者制定法律，让弱者服从，从而维护自己的利益。那么，有没有可能他一不小心制定了损害自己的法律呢？对于这个问题，色拉说，你认为我所讲的强者是可能会犯错的强者吗？既然他是强者，就不可能犯错，这才是严格意义上的强者。比如一个医生治病，有时候也可能会误诊，但是，这个时候，他算不算一个合格的医生？色拉说，在严格的意义上，他在误诊的时候不能算是医生了。与此类似，一个严格意义上的强者是始终不会犯错的。这是对苏格拉底的一个很漂亮的回击。<br>但苏格拉底毕竟是久经沙场，他马上指出，既然你说要在严格意义上考虑问题，那更好。还是举医生的例子，一个严格意义上的医生，是以治病本身为目的的，还是以赚钱为目的？在日常意义上，两者很难区分，因为一个现实的医生既要治病救人，又要收取报酬以谋生。但就严格意义上来讲，掌握了医术的医生，是一个实施医术的人，就医术而言，显然是为了治好患者的身体，也就是说，是对患者有好处。在医生和患者的关系上，前者是强者而后者是弱者。那么，一个严格意义上的医生，岂不是为了患者、也就是弱者的利益？如果这种关系能类比到正义上的话，正义也应该是弱者的利益，强者、治国者、统治阶级应该为弱者、人民群众考虑，代表人民的利益，这才是真正意义上、严格意义上的强者。<br>色拉显然对苏格拉底的类比不满，他又举了另一个例子，也就是牧羊人和羊群的例子。表面上看，牧羊人是对羊群好，把羊群养得又肥又壮，保护羊群免受恶狼的袭击。但是，这么做，其实是为了以后能把羊卖个好价钱，归根结底还是为了自己的利益。<br>通过这两个不同的例子，分别以医生和患者、牧羊人和羊群来类比强者和弱者，似乎苏格拉底和色拉各执一词，各有道理。而其实质在于，到底是在理想意义上、还是在现实意义上去理解正义。在这里，苏格拉底是理想主义者，所以这部书又叫《理想国》，因此他认为，无论是医生还是牧羊人，如果他是真正地、严格地施展他的技艺，那么，应该是为了对象的利益，也就是弱者的利益。但是，在现实层面上思考问题，可能色拉的观点更有代表性。一个现实的医生或牧羊人，往往并不是那么纯粹的，他还是会考虑赚钱的问题的。而且，很难说，为了赚更多的钱，他会不会违背他原先的技艺对他的要求。所以色拉讽刺苏格拉底太幼稚，完全不懂现实政治的残酷。而苏格拉底则坚持他的理想原则。尽管表面上看，苏格拉底占了上风，因为“严格意义上的强者”是色拉自己提出来的概念，而他又没能遵守这个概念，但即便如此，旁观者也很容易发现，色拉所说的“严格意义上的强者”和苏格拉底所提倡的“严格意义上的强者”并不是一回事。<br>如此来看，苏格拉底的第一个反驳比较失败，至少他没能完全击败色拉，而是各执一词。但他并没有泄气。色拉接着说，在现实生活中，正义的人较之不正义的人生活得更惨，因为一个遵纪守法的人，从城邦生活中，付出得多、分得的好处却少，有时候也会因为坚持正义而遭受他人的误解。而一个最极端的例子就是僭主。僭主是最不正义的，但他却得到最多的好处。一个普通的坏人，做了违法的事会被抓起来；但是一个僭主，也就是最大、最彻底的坏人，他做类似的事情，却非但不会被抓，还会被吹捧。吹捧他的人中，有些人是知道僭主的不义的，但是他们还是这么做，是因为他们也能从中获取一些好处，或者害怕遭受不义。这就是说，只要坏人把“坏”做到彻底、做到完美，那么，坏就是好。而反观那些“正义”的人，自以为很高尚、很有教养，但其实是幼稚的。“不义”的人才是聪明的人，会精打细算的人。<br>讲到这里，苏格拉底感觉到色拉的说法有点超乎他的想象了。因为他不仅指出了现实政治中的“不义”现象，而且为这一现象进行了理论上的奠基，从而完全地摧毁了传统。传统告诉我们，正义是好的，不义是坏的，尽管现实生活中有一些“不义”，但这些坏东西始终会逐渐减少，并且最终会遭受惩罚。但是，色拉从“不义”现象出发，得出了一套新的理论，那就是：正义是笨的、坏的，而不义是聪明的、好的。恰恰因此，所以“不义”的人比正义的人更能获得好处。通过颠覆传统而提出新的理论，色拉消除了理论解释与现实生活的矛盾。在这个意义上，色拉是一个反传统、反道德，也可以说是非理性的“大师”。<br>考验苏格拉底的时候到了。他到底能不能击败色拉呢？苏格拉底清楚的知道，说服色拉是不可能的了，但是能不能在现场观众那里赢得更多的支持呢？他必须提出有力的证据。苏格拉底说，按照你色拉的逻辑，彻底的不正义是好的。这个恐怕是错的。比如说，强盗内部也有正义。要想一起做事，即便是强盗内部，也是有正义的。强盗同伙之间也是讲正义的，只有对待外人才不正义。要是自己人内部也没有正义，那就根本无法合作干大事了。也就是说，正义始终还是要有的，只要人们之间想要合作。不义的人要想获利，恰恰是建立在有正义的基础之上的。要是完全没有正义，那就成为动物世界了，变成一切人反对一切人的斗争了。在这个意义上，正义还是有必要的。<br>的确，对于色拉的“彻底不义论”，苏格拉底是给出了有效的反驳，但是，苏格拉底的反驳也是有代价的。第一，他借助于强盗内部的正义来给自己撑腰，虽然说明了正义的无所不在，却也已经把“正义”的含金量减少了很多。于是乎，城邦和强盗团伙怎么区分？苏格拉底给自己挖了一个坑。第二，色拉完全可以说，苏格拉底这里所说的强盗内部的“正义”其实就是强盗集团内部的统治工具，这种“正义”恰恰助长了强盗头子的“不义”。看上去，苏格拉底是掉到色拉给他下的陷阱里去了。<br>当然喽，我们知道，苏格拉底之所以举强盗的例子，并不是把城邦等同于强盗窝。他是在讽刺色拉眼里的城邦，无非是一个强盗窝。而他自己心中的城邦，也就是他心中的“理想国”，当然是一个美好的世界，也就是真正的、严格的城邦。对于后者，色拉完全是不能想象的，因而，自此他也被柏拉图“放逐”出了这个对话。</p>
+<p>对话分析：以具体哲学为视角</p>
+<p>对《理想国》的解读层出不穷，最常见的方式是从文本本身出发，将其作为经典加以注疏。这是从内而外的解读法。但在此很难作出重大创新。于是我们选择从外到内的解读法，也就是说：从一个具体视角出发，将文本理解为该视角的具体展开。这就是具体哲学的视角。<br>如果将《理想国》（第一卷）作为一部柏拉图特色的戏剧作品，我们将首先关注柏拉图所创造的人物形象，除了苏格拉底之外，还有三个人物形象，分别是克法洛斯（老富商）、波乐马霍斯（富商）和色拉叙马霍斯（智者）。我们的问题在于，苏格拉底作为一个具体哲学家，第一，他如何与其它人物形象区别开来，特别是智者（哲学家与智者的不同）；第二，作为启蒙者，他如何对待其它人物形象。<br>第一，苏格拉底并不反对传统，相反他看重传统、看重生活经验，但对待传统，他不是采取简单地采纳或抛弃的态度（拿来主义），而是尝试理解传统，理解其发生机制。<br>第二，苏格拉底的主要工作对象是拥有日常理性的城邦公民。此类人是城邦的主体，他们既受传统的影响，但又因为日常生活中的具体经验与其有所矛盾而怀疑传统，因此，他们处于一种纠结的状态。（这种纠结的状态往往是经过苏格拉底的提示才被意识到的）纠结的原因在于，他们没能打通传统所形成的“道-理”和“具体”的生活经验之间的差异。对于传统，他们没能透彻地理解（他们甚至不知道，传统的形成也是建立在某种生活经验的基础之上的）；对于生活经验，他们又无法加以理论的上升。因此，他们或陷于教条主义，或陷于经验主义，他们缺乏的是“具体哲学”的智慧，所以他们需要苏格拉底。苏格拉底对待他们很有一套，基本上是“两段法”。首先要联合他们，搞一搞统一战线，苏格拉底反复强调：我和你们是“共同”追求真理的，而不是来争一时是非的。其次要敲打他们，提醒他们，他们离真理还是有一段距离的，因此苏格拉底把自己比作牛虻和电鲧。<br>第三，苏格拉底的主要竞争者是拥有超常智慧的智者。此类人是城邦的破坏者（首先是批判者，因此和苏格拉底很难区分）。他们完全拒绝传统，而提倡人的理性。他们拥有强大的理论能力，因此形成了对现实生活经验的一套很有逻辑的解释系统。在某种意义上，他们的理论能力并不弱于苏格拉底，因此苏格拉底无法通过理性来遏制他们。他们与苏格拉底的基本区别是：苏格拉底对传统的批判，在于重新理解传统，调和传统和理性的差异；而他们则是为了破坏传统，提倡极端的个人主义（参考自然权利论与习俗主义的矛盾）。如果说苏格拉底是城邦内部的反对派，那么他们就是城邦的敌人。对待他们，苏格拉底的意思是：必须把他们从空间上隔离起来，如果不是进行肉体消灭的话。</p>
+<p>在苏格拉底这个具体案例中，我们也明确了具体哲学的基本原理：<br>·具体哲学要从生活经验出发，但不能停留于生活经验，而是要穷根究底，不断追问，彻底地理解生活；<br>·具体哲学不反对传统，而反对对于传统的简单态度，它提倡传统和现实的结合，让传统焕发出其生命力；<br>·具体哲学对于颠覆传统、非道德论者（以理性消解一切传统），持警惕态度。此类人乃是玩弄理性的高手，是艺术家，但他们却不是哲学家。具体哲学家，一方面必须警惕自己变成智者，另一方面，必须让大家明确智者和哲学家之间的区分，特别是辨别出那些装成哲学家的智者。</p>
+<p>附： <a target="_blank" rel="noopener" href="https://milkpku.github.io/blog/2015/03/11/%E7%90%86%E6%83%B3%E5%9B%BD%E7%AC%AC%E4%B8%80%E5%8D%B7%E6%B5%85%E6%9E%90/">浅析理想国第一卷</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/a3f55816/">https://leejs.cn/a3f55816/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AF%BB%E4%B9%A6-%E7%90%86%E6%83%B3%E5%9B%BD/">读书;理想国</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/59c12ed68ac7580001ce9ef8_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/37cd135e/" title="关于浏览器缓存"><img class="cover" src="https://images-origin.wallwiz.link/59c1325eccb8f80001ef5d43_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">关于浏览器缓存</div></div><div class="info-2"><div class="info-item-1">什么是浏览器缓存当我们访问一个网站的时候，会去加载各种资源，包括 HTML、JS、CSS、图片等，浏览器会将一些不经常变动的资源缓存在本地，当下次访问时，直接从本地加载资源，并不通过请求服务器，这就是浏览器缓存。 所以，合理利用缓存，缩短白屏时间（FCP），提高页面的打开速度，减少服务器端的压力。 有哪些缓存类别Service WorkerService Worker 是运行在浏览器背后的独立线程，一般可以用来实现缓存功能。使用 Service Worker的话，传输协议必须为 HTTPS。因为 Service Worker 中涉及到请求拦截，所以必须使用 HTTPS 协议来保障安全。Service Worker 的缓存与浏览器其他内建的缓存机制不同，它可以让我们自由控制缓存哪些文件、如何匹配缓存、如何读取缓存，并且缓存是持续性的。 Memory Cache、Disk Cache当我们打开一个新页面时，会发现某些资源是 from Memory Cache的，但是在刷新页面后，就变成了from Disk Cache。 Memory Cache 是内存中的缓存 ， Disk...</div></div></div></a><a class="pagination-related" href="/34588bfd/" title="TS 基础中的基础"><img class="cover" src="https://images-origin.wallwiz.link/58860f916e9f6a00013b94fb_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">TS 基础中的基础</div></div><div class="info-2"><div class="info-item-1">对于前端小伙伴来说，TypeScript 肯定都不陌生，但本人之前一直对 TS 了解的不多，这次决定全面学习一下 TS 并总结成博客文章 废话不多说，咱直接就开始吧 👊 TypeScript 概览 TypeScript 是什么？ 简单理解就是 TypeScript 是增加了类型约束的 JavaScript，并且可以被编译成原生 JavaScript。  为什么需要 TypeScript？ a. 与弱类型的 JS 结合，在编译期间增强类型检查，提前发现可能的缺陷 b. 通过强类型约束可以放心地进行多人协作开发，保证项目的可维护性 c. 与代码编辑器集成，提供自动补全、引用跳转等实用功能，提升开发效率   基本用法下面来看看 TypeScript 的基本用法 基本类型简单类型介绍对于简单类型呢，就是 string、number、boolean、symbol、undefined 和 null，比较基础: 12345const str: string = &#x27;hello&#x27;;const num: number = 1;const isAfternoon:...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

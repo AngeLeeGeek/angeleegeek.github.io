@@ -1,0 +1,184 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ts objecy[key] 报错 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="原文： https://fettblog.eu/typescript-better-object-keys/ 译文：..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/d55bdcba/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ts objecy[key] 报错',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/59c13437ccb8f80001ef65ea_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">ts objecy[key] 报错</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ts objecy[key] 报错</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-09-21T02:48:25.000Z" title="发表于 2023-09-21 10:48:25">2023-09-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.469Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>原文： <a target="_blank" rel="noopener" href="https://fettblog.eu/typescript-better-object-keys/">https://fettblog.eu/typescript-better-object-keys/</a></p>
+<p>译文： </p>
+<p>注意：要非常小心使用这个技术。最好查看我的新方法。</p>
+<p>TypeScript在lib.d.ts中的预定义类型通常是非常良好类型化的，并提供了大量关于如何使用内置功能以及提供额外类型安全性的信息。直到它们不是。考虑以下带有对象类型Person的示例：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Person</span> = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span>, <span class="attr">age</span>: <span class="built_in">number</span>, <span class="attr">id</span>: <span class="built_in">number</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">declare</span> <span class="keyword">const</span> <span class="attr">me</span>: <span class="title class_">Person</span>;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">keys</span>(me).<span class="title function_">forEach</span>(<span class="function"><span class="params">key</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 💥 下一行在我们这里抛出了红色波浪线</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(me[key])</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>我们有一个类型为Person的对象，我们想使用Object.keys获取所有键作为字符串，然后使用这些键在映射或forEach循环中访问每个属性，以在严格模式下对其进行某些操作，但是我们得到了红色波浪线。这是错误消息：</p>
+<p>“Element implicitly has an ‘any’ type because expression of type ‘string’ can’t be used to index type ‘Person’. No index signature with a parameter of type ‘string’ was found on type ‘Person’”</p>
+<p>那么发生了什么？Object.keys的类型声明如下：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ObjectConstructor</span> &#123;</span><br><span class="line">  <span class="comment">//... </span></span><br><span class="line">  <span class="title function_">keys</span>(<span class="attr">o</span>: <span class="built_in">object</span>): <span class="built_in">string</span>[]</span><br><span class="line">  <span class="title function_">keys</span>(<span class="attr">o</span>: &#123;&#125;): <span class="built_in">string</span>[]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这两个重载都接受任何对象作为输入，并返回一个字符串数组作为输出。这是正确的和预期的行为。只是对于我们已经知道更多信息的情况，以及TypeScript应该了解更多信息的情况下，它太泛化了。</p>
+<p>string是我们可以从Person访问的实际键的超集。具体的子集将是name | age | id。这也是TypeScript允许我们从Person索引的值的集合。对于每个其他字符串，TypeScript说它可能是，但索引值可以是任何东西。在严格模式下，任何都是不允许的，除非明确声明。</p>
+<p>重要提示：这很可能有原因。或者更具体的类型在已建立的库中会引起问题。或者行为太复杂，无法在类型中总结。或者，只是有更重要的事情。这并不意味着更好的类型定义不会在某个时候出现。</p>
+<p>但仍然，我们能做什么呢？</p>
+<p>选项1. 类型转换#<br>最糟糕的解决方案是关闭noImplicitAny。这是一个引发错误和错误类型的开放之门。最明显的解决方案是类型转换。我们可以将对象转换为any以允许发生一切。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Object</span>.<span class="title function_">keys</span>(me).<span class="title function_">forEach</span>(<span class="function">(<span class="params">key</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>((me <span class="keyword">as</span> <span class="built_in">any</span>)[key])</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>不够好。或者我们可以将key参数强制转换为keyof Person，以确保TypeScript了解我们的目标。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Object</span>.<span class="title function_">keys</span>(me).<span class="title function_">forEach</span>(<span class="function">(<span class="params">key</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(me[key <span class="keyword">as</span> keyof <span class="title class_">Person</span>])</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>更好一些。但仍然不够好。这是TypeScript应该自己做的事情！所以如果TypeScript还不知道，我们可以开始教会TypeScript如何做。</p>
+<p>选项2. 扩展Object构造函数#<br>由于接口的声明合并功能，我们可以使用我们自己的类型定义来扩展ObjectConstructor接口。我们可以直接在需要它的地方进行此操作，或者创建自己的环境声明文件。</p>
+<p>我们打开接口，并为keys编写另一个重载。这次，我们希望非常具体地描述我们得到的对象值，并根据其形状决定返回什么。</p>
+<p>这是行为：</p>
+<ul>
+<li>如果我们传递一个数字，我们得到一个空数组。</li>
+<li>如果我们传递一个字符串或数组，我们得到一个字符串数组作为返回值。此字符串数组包含数字索引的字符串表示，以索引数组或字符串的位置。这意味着字符串数组的长度与其输入相同。</li>
+<li>对于任何实际对象，我们返回它的键。<br>我们为此构建了一个辅助类型。这是一个条件类型，描述了上面的行为。</li>
+</ul>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">ObjectKeys</span>&lt;T&gt; = </span><br><span class="line">  T <span class="keyword">extends</span> <span class="built_in">object</span> ? (keyof T)[] :</span><br><span class="line">  T <span class="keyword">extends</span> <span class="built_in">number</span> ? [] :</span><br><span class="line">  T <span class="keyword">extends</span> <span class="title class_">Array</span>&lt;<span class="built_in">any</span>&gt; | <span class="built_in">string</span> ? <span class="built_in">string</span>[] :</span><br><span class="line">  <span class="built_in">never</span>;</span><br></pre></td></tr></table></figure>
+
+<p>在我的条件类型中，我通常以never结束。这给了我信号，要么我在声明中忘记了东西，要么在代码中做了完全错误的事情。无论哪种情况，这都是看到有问题的指示器。</p>
+<p>现在，我们打开ObjectConstructor接口并为keys添加另一个重载。我们定义一个泛型类型变量，返回值基于条件类型ObjectKeys。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ObjectConstructor</span> &#123;</span><br><span class="line">  keys&lt;T&gt;(<span class="attr">o</span>: T): <span class="title class_">ObjectKeys</span>&lt;T&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样，由于这是一个接口，我们可以在需要它的地方进行修补定义。一旦我们将具体对象传递给Object.keys，我们就将泛型类型变量T绑定到此对象。这意味着我们的条件可以提供关于返回值的确切信息。由于我们的定义是所有三个keys声明中最具体的，TypeScript默认使用这个。</p>
+<p>我们的小示例不再向我们抛出红色波浪线。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Object</span>.<span class="title function_">keys</span>(me).<span class="title function_">forEach</span>(<span class="function">(<span class="params">key</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// typeof key = &#x27;id&#x27; | &#x27;name&#x27; | &#x27;age&#x27;</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(me[key])</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>key的类型现在是’id’ | ‘name’ | ‘age’，正如我们希</p>
+<p>望的那样。而且对于所有其他情况，我们都获得了适当的返回值。</p>
+<p>重要提示：传递数组或字符串的行为并没有显着变化。但这是一个很好的指示器，你的代码可能有问题。与空数组一样。仍然，我们保留了内置功能的行为。</p>
+<p>扩展现有接口是一种很好的方式，可以选择地加入到类型中，在某种情况下，我们无法获取所需信息。</p>
+<p>感谢与我合作的Mirjam的提示👏</p>
+<p>进一步阅读#<br>Dan Vanderkam给我指出了为什么Object.keys不返回keyof T的Anders的问题。阅读GitHub问题评论以获取更多详细信息。TLDR：尽管keyof T在类型级别世界中是有效的，在运行时对象可以有更多的键。Lenz也有一个很好的例子。</p>
+<p>问题在于您对类型合同的期望以及您如何处理Object.keys在一般情况下。因此，请确保小心处理此修补程序！ </p>
+<p>Dan还指出了他的一篇文章，详细介绍了如何遍历对象的策略。一定要查看！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/d55bdcba/">https://leejs.cn/d55bdcba/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ts/">ts</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/59c13437ccb8f80001ef65ea_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/d396855b/" title="来处一个老程序员的忠告"><img class="cover" src="https://images-origin.wallwiz.link/5891eb8635e2fb00012d3a4f_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">来处一个老程序员的忠告</div></div><div class="info-2"><div class="info-item-1">吉日噶拉（在外企、上市公司工作过，自己也创业失败过，遇到过很多失败挫折，甚至露宿街头，但是最后还是挺过来了），是一个十几年的程序员了，里面介绍了他的相关经历，以及他的一下经验，无论是对刚入门的程序员，还是工作了十年八年的程序员都有一些经验值得借鉴学习。这里我也把这本书中的部分精华分享给大家，希望对大家有帮助！  程序员你伤不起...</div></div></div></a><a class="pagination-related" href="/9d2bd8d6/" title="ts 问题"><img class="cover" src="https://images-origin.wallwiz.link/58860ebadc1d3f00010ad215_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">ts 问题</div></div><div class="info-2"><div class="info-item-1">原文链接：How not to learn TypeScript 全文 7747 字，大约 15 分钟。 译者注：这篇文章对于初学 TypeScript 的同学应该是有帮助的，但是要注意，本文更多关注于初学，其中的建议在实际工作中不一定有用，甚至是不对的。但是，在初学 TypeScript 时，这些内容，还是有一定帮助的。同时我也相信，只要读者坚持搞下去，不用多长时间，应该也能明白这些问题。 “我和 TypeScript 永远不是好朋友！“哎，我经常能听到这样的抱怨。学习 TypeScript，即便是在 2022 年，看起来也不是件容易的事儿。因为很多原因，尤其是有 Java 和 C# 经验的人会发现，在 TypeScript 中，和他们的预期是不一样的。经常写 JavaScript 的人又会被 TypeScript 的编译器搞的崩溃。这里是，我发现的一些新手开始学  TypeScript ，经常会犯的问题。我希望他们能帮助到你。 这篇文章深受 Deny 的如果学习错误的 Rust的影响，我也推荐你们看看这篇文章。 错误1: 忽视 JavaScript从一开始，...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/9d2bd8d6/" title="ts 问题"><img class="cover" src="https://images-origin.wallwiz.link/58860ebadc1d3f00010ad215_1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-21</div><div class="info-item-2">ts 问题</div></div><div class="info-2"><div class="info-item-1">原文链接：How not to learn TypeScript 全文 7747 字，大约 15 分钟。 译者注：这篇文章对于初学 TypeScript 的同学应该是有帮助的，但是要注意，本文更多关注于初学，其中的建议在实际工作中不一定有用，甚至是不对的。但是，在初学 TypeScript 时，这些内容，还是有一定帮助的。同时我也相信，只要读者坚持搞下去，不用多长时间，应该也能明白这些问题。 “我和 TypeScript 永远不是好朋友！“哎，我经常能听到这样的抱怨。学习 TypeScript，即便是在 2022 年，看起来也不是件容易的事儿。因为很多原因，尤其是有 Java 和 C# 经验的人会发现，在 TypeScript 中，和他们的预期是不一样的。经常写 JavaScript 的人又会被 TypeScript 的编译器搞的崩溃。这里是，我发现的一些新手开始学  TypeScript ，经常会犯的问题。我希望他们能帮助到你。 这篇文章深受 Deny 的如果学习错误的 Rust的影响，我也推荐你们看看这篇文章。 错误1: 忽视 JavaScript从一开始，...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

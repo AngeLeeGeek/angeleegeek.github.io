@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>常见数据分析模型 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="[TOC] 留存分析据某第三方平台近期调研结果显示，在金融创业领域，2013 年一家互联网金融创业公司的投资获客成本区间为 300 – 500 元，而2016 年则涨为 1000 – 3000 元；在电商领域，新用户的获取成本，是维护一个老用户的 3 倍到 10..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/cd70c25c/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '常见数据分析模型',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">常见数据分析模型</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">常见数据分析模型</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-26T10:08:08.000Z" title="发表于 2022-09-26 18:08:08">2022-09-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.485Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/">数据分析</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>[TOC]</p>
+<h2 id="留存分析"><a href="#留存分析" class="headerlink" title="留存分析"></a>留存分析</h2><p>据某第三方平台近期调研结果显示，在金融创业领域，2013 年一家互联网金融创业公司的投资获客成本区间为 300 – 500 元，而2016 年则涨为 1000 – 3000 元；在电商领域，新用户的获取成本，是维护一个老用户的 3 倍到 10 倍……</p>
+<p>如今，高居不下的获客成本让互联网、移动互联网创业者们遭遇新的“天花板”，甚至陷入“纳不起”新客的窘境。而花费极高成本所获取的客户，可能仅打开一次 APP或完成一次交易，就白白流失。随着市场饱和度上升，绝大多数企业亟待解决如何增加客户黏性，延长每一个客户的生命周期价值。因此留存分析分析模型备受青睐。</p>
+<h3 id="一、什么是留存分析"><a href="#一、什么是留存分析" class="headerlink" title="一、什么是留存分析"></a>一、什么是留存分析</h3><p>留存分析是一种用来分析用户参与情况&#x2F;活跃程度的分析模型，考察进行初始行为的用户中，有多少人会进行后续行为。这是用来衡量产品对用户价值高低的重要方法。留存分析可以帮助回答以下问题：</p>
+<p>一个新客户在未来的一段时间内是否完成了您期许用户完成的行为？如支付订单等。</p>
+<p>某个社交产品改进了新注册用户的引导流程，期待改善用户注册后的参与程度，如何验证？</p>
+<p>想判断某项产品改动是否奏效，如新增了一个邀请好友的功能，观察是否有人因新增功能而多使用产品几个月？</p>
+<h3 id="二、直接看活跃百分比不行吗？"><a href="#二、直接看活跃百分比不行吗？" class="headerlink" title="二、直接看活跃百分比不行吗？"></a>二、直接看活跃百分比不行吗？</h3><p>对此疑惑，答案显然是，当然不行！</p>
+<p>如果产品目前处于快速增长阶段，很有可能新用户中的活跃用户数增长掩盖了老用户活跃度的变化。按初始行为时间分组的留存分析可以消除用户增长对用户参与数据带来的影响。通过留存分析，你可以将用户按照注册时间分段查看，得出类似如下结论：“三月份改版前，该月注册的用户 7 天留存只有 15%；但是四月份改版后，该月注册的用户 7 天留存提高到了 20%。”</p>
+<h3 id="三、留存分析模型特点与价值"><a href="#三、留存分析模型特点与价值" class="headerlink" title="三、留存分析模型特点与价值"></a>三、留存分析模型特点与价值</h3><p>科学的留存分析模型具有灵活条件配置——根据具体需求筛选初始行为或后续行为的细分维度，针对用户属性筛选合适的分析对象的特点。那么，留存分析有哪些价值呢？</p>
+<p>第一，留存率是判断产品价值最重要的标准，揭示了产品保留用户的能力。</p>
+<p>留存率反映的实际上是一种转化率，即由初期的不稳定的用户转化为活跃用户、稳定用户、忠诚用户的过程。随着统计数字的变化，运营人员可看到不同时期用户的变化情况，从而判断产品对客户的吸引力。</p>
+<p>第二，宏观上把握用户生命周期长度以及定位产品可改善至之处；</p>
+<p>通过留存分析，可以查看新功能上线之后，对不同群体的留存是否带来不同效果? 可以判断产品新功能或某活动是否提高了用户的留存率？结合版本更新、市场推广等诸多因素结合，砍掉使用频率低的功能，实现快速迭代验证，制定相应的策略。</p>
+<h3 id="四、留存分析应用场景"><a href="#四、留存分析应用场景" class="headerlink" title="四、留存分析应用场景"></a>四、留存分析应用场景</h3><h4 id="场景一：游戏行业提升活跃、留存——如何精准找到玩家“流失点”？"><a href="#场景一：游戏行业提升活跃、留存——如何精准找到玩家“流失点”？" class="headerlink" title="场景一：游戏行业提升活跃、留存——如何精准找到玩家“流失点”？"></a>场景一：游戏行业提升活跃、留存——如何精准找到玩家“流失点”？</h4><p>游戏的生命周期的时长差异、玩家的游戏粘度，直接体现了游戏的竞争能力和盈利能力。玩家对游戏的直观感受、游戏难度曲线、游戏节奏的松弛、游戏福利等游戏内涵都能够导致游戏玩家流失。正确找到玩家流失原因，是促进玩家、活跃挽留玩家的第一步。下面为《迷城物语》在删档测试期间的相关应用情景。（注：以下配图所涉及的数据，均为模拟真实应用场景下的虚拟数据）</p>
+<p>图一统计出流失玩家的等级分布，判断玩家流失与关卡设置的相关性。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2017/06/-1.jpg" alt="">
+图1 玩家在首次登陆游戏之后的8周流失情况分析
+
+<p>上图显示，100～110 级、80～90 级是玩家流失较多的关卡。为精准导致玩家流失的关键因素，需要每个环节、具体场景进行深入追踪与分析，余略。</p>
+<h4 id="场景二：了解新用户的留存"><a href="#场景二：了解新用户的留存" class="headerlink" title="场景二：了解新用户的留存"></a>场景二：了解新用户的留存</h4><p>运营人员想从总体上看用户留存的情况是否越来越好了。可根据新用户启动 APP 的时间按日或按月进行分组，得到同期群，观察该群体用户发生投资的 7 日留存、14 日留存或 30 日留存(可自由选择)，通过比较不同的同期群，可以获知。也可以点击“曲线标识”按钮，就可以看到每天留存率的变化趋势了。<br><img src="https://www.sensorsdata.cn/blog/content/images/2017/06/-2-1.png" alt=""></p>
+<p>图 2 新用户群体七天留存趋势变化</p>
+<p>7 日或者 30 日仍留下来做投资的用户，显然是一批忠诚度非常高的用户，什么样的用户群体有这么高的留存率？以 4 月 10 号这天的新用户为例，一共有 1931 个新用户，在第 7 天有 68 人留下来了，点击“ 68 ”这个数字，我们进入了用户列表界面。</p>
+<p>这里值得强调的是，神策分析在任何分析模型中都支持人群明细的查看，如下图。人群明细可查看同样是数据分析方法中不可或缺的功能。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2017/06/-3-1.png" alt="">
+图 3 第 7 天用户留存 68 人基本信息明细
+
+<p>这里我们能够看到留存下来的用户的一些详细的基础信息，比如借款次数，借款金额、年龄等，通过总借款次数以及借款金额，可进行用户质量评估；通过年龄可以分析到金融平台吸引的群体用户的年龄分布。</p>
+<p>若想深度挖掘高留存用户有哪些共性特征、具体操作流程，以作为后序产品优化与改进的借鉴，则可使用用户分群功能，命名为“4 - 10 号 7 日留存用”然后通过用户路径等其他分析模型进一步深度分析。</p>
+<h2 id="行为事件分析"><a href="#行为事件分析" class="headerlink" title="行为事件分析"></a>行为事件分析</h2><h3 id="一、什么是行为事件分析？"><a href="#一、什么是行为事件分析？" class="headerlink" title="一、什么是行为事件分析？"></a>一、什么是行为事件分析？</h3><p>行为事件分析法主要用于研究某行为事件的发生对企业组织价值的影响以及影响程度。企业借此来追踪或记录用户行为及业务过程，如用户注册、浏览产品详情页、成功投资、提现等，通过研究与事件发生关联的所有因素来挖掘用户行为事件背后的原因、交互影响等。</p>
+<p>在日常工作中，运营、市场、产品、数据分析师根据实际工作情况而关注不同的事件指标。如最近三个月来自哪个渠道的用户注册量最高？变化趋势如何？各时段的人均充值金额是分别多少？上周来自北京发生过购买行为的独立用户数，按照年龄段的分布情况？每天的独立 Session 数是多少？诸如此类的指标查看的过程中，行为事件分析起到重要作用。</p>
+<h3 id="二、行为事件分析的特点与价值"><a href="#二、行为事件分析的特点与价值" class="headerlink" title="二、行为事件分析的特点与价值"></a>二、行为事件分析的特点与价值</h3><p>行为事件分析法具有强大的筛选、分组和聚合能力，逻辑清晰且使用简单，已被广泛应用。行为事件分析法一般包含事件定义与选择、下钻分析、解释与结论等环节。</p>
+<p>事件定义与选择。事件描述的是，一个用户在某个时间点、某个地方、以某种方式完成了某个具体的事情。</p>
+<p>Who、When、Where、What、How 是定义一个事件的关键因素。其中：</p>
+<p>Who 是参与事件的主体，对于未登陆用户，可以是 Cookie、设备 ID 等匿名 ID ；对于登录用户，可以使用后台配置的实际用户 ID；</p>
+<p>When 是事件发生的实际时间，应该记录精确到毫秒的事件发生时间；</p>
+<p>Where 即事件发生的地点，可以通过 IP 来解析用户所在省市；也可以根据 GPS 定位方式获取地理位置信息。</p>
+<p>How 即用户从事这个事件的方式。用户使用的设备、浏览器、 APP 版本、渠道来源等等；</p>
+<p>What 描述用户所做的这个事件的所有具体内容。比如对于“购买”类型的事件，则可能需要记录的字段有：商品名称、商品类型、购买数量、购买金额、付款方式等。</p>
+<p>多维度下钻分析。最为高效的行为事件分析要支持任意下钻分析和精细化条件筛选。当行为事件分析合理配置追踪事件和属性，可以激发出事件分析的强大潜能，为企业回答关于变化趋势、维度对比等等各种细分问题。同时，还可以通过添加筛选条件，可以精细化查看符合某些具体条件的事件数据。</p>
+<p>解释与结论。此环节要对分析结果进行合理的理论解释，判断数据分析结果是否与预期相符，如判断产品的细节优化是否提升了触发用户数。如果相悖，则应该针对不足的部分进行再分析与实证。</p>
+<h3 id="三、行为事件分析应用场景"><a href="#三、行为事件分析应用场景" class="headerlink" title="三、行为事件分析应用场景"></a>三、行为事件分析应用场景</h3><h4 id="场景一：互金行业常见的行为事件分析"><a href="#场景一：互金行业常见的行为事件分析" class="headerlink" title="场景一：互金行业常见的行为事件分析"></a>场景一：互金行业常见的行为事件分析</h4><p>某互联网金融客户运营人员发现，4 月 10 日号来自新浪渠道的 PV 数异常高，因此需要快速排查原因：是异常流量还是虚假流量？</p>
+<p>企业可以先定义事件，通过“筛选条件”限定广告系列来源为“新浪”。再从其它多个维度进行细分下钻，比如“地理位置”、“时间”、“广告系列媒介”、“操作系统”、“浏览器”等。当进行细分筛查时，虚假流量无处遁形。下图为来源为“新浪”的各城市浏览页面的总次数。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2017/09/1-2.png" alt="">
+图 1 新浪来源的各城市浏览页面的总次数
+
+<p>在剔除虚假流量后，运营人员可进行其他用户行为分析。通过“投资成功”事件，查看各个时段的投资金额。若想知道每个产品类型的投资金额，此时再按照“产品类型”进行分组查看即可。如图 2。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2017/09/2-1.png" alt="">
+图 2 不同产品投资成功的支付金额的总和
+
+<p>当用户投资到期后，后续行为可能是提现或继续投资，运营人员可以实时关注“提现率”的变化趋势。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2017/09/3-2.png" alt="">
+图 3 用户投资到期后提现率的变化情况
+
+
+
+<h2 id="漏斗分析模型"><a href="#漏斗分析模型" class="headerlink" title="漏斗分析模型"></a>漏斗分析模型</h2><p>用户行为分析之漏斗分析模型是企业实现精细化运营、进行用户行为分析的重要数据分析模型，其精细化程度影响着营销管理的成败，以及用户行为分析的精准度。</p>
+<p>现代营销观念认为：“营销管理重在过程，控制了过程就控制了结果。”用户行为分析之漏斗分析模型是企业实现精细化运营、进行用户行为分析的重要数据分析模型，其精细化程度影响着营销管理的成败，以及用户行为分析的精准度。粗陋的漏斗分析模型因为过程管理不透明、数据分析不精细、用户行为分析不科学而造成结果失控。因此，我们经常能够听到一些产品经理的抱怨不绝于耳：从启动 APP 到“支付成功”，用户转化率为何仅仅 0.8 %？</p>
+<h3 id="一、什么是漏斗分析？"><a href="#一、什么是漏斗分析？" class="headerlink" title="一、什么是漏斗分析？"></a>一、什么是漏斗分析？</h3><p>究竟什么是漏斗分析？漏斗分析是一套流程式数据分析，它能够科学反映用户行为状态以及从起点到终点各阶段用户转化率情况的重要分析模型。</p>
+<p>漏斗分析模型已经广泛应用于流量监控、产品目标转化等日常数据运营与数据分析的工作中。例如在一款产品服务平台中，直播用户从激活 APP 开始到花费，一般的用户购物路径为激活 APP、注册账号、进入直播间、互动行为、礼物花费五大阶段，漏斗能够展现出各个阶段的转化率，通过漏斗各环节相关数据的比较,能够直观地发现和说明问题所在，从而找到优化方向。</p>
+<h3 id="二、漏斗分析模型的特点与价值"><a href="#二、漏斗分析模型的特点与价值" class="headerlink" title="二、漏斗分析模型的特点与价值"></a>二、漏斗分析模型的特点与价值</h3><p>对于业务流程相对规范、周期较长、环节较多的流程分析,能够直观地发现和说明问题所在。值得强调的是，漏斗分析模型并非只是简单的转化率的呈现，科学的漏斗分析模型能够实现以下价值：</p>
+<p>1.企业可以监控用户在各个层级的转化情况，聚焦用户选购全流程中最有效转化路径；同时找到可优化的短板，提升用户体验。</p>
+<p>降低流失是运营人员的重要目标，通过不同层级的转化情况，迅速定位流失环节，持续地针对性分析找到可优化点，如此提升用户留存率。</p>
+<p>2.多维度切分与呈现用户转化情况，成单瓶颈无处遁形。</p>
+<p>科学的漏斗分析能够展现转化率趋势的曲线，能帮助企业精细地捕捉用户行为变化。提升了转化分析的精度和效率,对选购流程的异常定位和策略调整效果验证有科学指导意义。</p>
+<p>3.不同属性的用户群体漏斗比较，从差异角度窥视优化思路。</p>
+<p>漏斗对比分析是科学漏斗分析的重要一环。运营人员可以通过观察不同属性的用户群体（如新注册用户与老客户、不同渠道来源的客户）各环节转化率，各流程步骤转化率的差异对比，了解转化率最高的用户群体，分析漏斗合理性，并针对转化率异常环节进行调整。</p>
+<h3 id="三、在漏斗分析模型中，科学归因、属性关联的重要性"><a href="#三、在漏斗分析模型中，科学归因、属性关联的重要性" class="headerlink" title="三、在漏斗分析模型中，科学归因、属性关联的重要性"></a>三、在漏斗分析模型中，科学归因、属性关联的重要性</h3><p>先谈归因</p>
+<p>在科学的漏斗分析中，需要科学归因设置。每一次转化节点应根据事件功劳差异（事件对转化的功劳大小）而科学设置。企业一直致力定义最佳用户购买路径，并将资源高效集中于此。而在企业真实的漏斗分析中，业务流程转化并非理想中那么简单。</p>
+<p>以市场营销为例，市场活动、线上运营、邮件营销都可能触发用户购买。A 欲选购一款化妆品，通过市场活动知道了M 产品，后来在百度贴吧又了解了更多信息，但是始终没有下定决心购买。后来收到 M 公司的营销邮件，A 被打折信息及详实的客户评价所吸引，直接邮件内跳转至网站购买了该商品。</p>
+<p>那么，在漏斗设置时，转化归因应该“归”哪一个渠道呢？在这个案例中，运营人员愿意以实际转化的事件的属性为准。邮件营销的渠道在用户购买决策的全流程中对用户影响的“功劳”最大、权重较大，直接促进用户转化。在科学的漏斗分析模型中，用户群体筛选和分组时，以实际转化事件——邮件营销来源的用户群体的属性为准，则大大增大了漏斗分析的科学性。</p>
+<p>再一起看属性关联</p>
+<p>在进行漏斗分析时，尤其电商行业的数据分析场景中，运营人员在定义“转化”时，会要求漏斗转化的前后步骤有相同的属性值。比如同一 ID（包括品类 ID、商品 ID）才能作为转化条件——浏览 iphone6，购买同一款 iphone6 才能被定义为一次转化。</p>
+<p>因此，“属性关联”的设置功能是科学漏斗分析不可或缺的内容。</p>
+<h3 id="四、漏斗分析场景"><a href="#四、漏斗分析场景" class="headerlink" title="四、漏斗分析场景"></a>四、漏斗分析场景</h3><h4 id="场景一：电商行业不同客户群体的转化情况"><a href="#场景一：电商行业不同客户群体的转化情况" class="headerlink" title="场景一：电商行业不同客户群体的转化情况"></a>场景一：电商行业不同客户群体的转化情况</h4><p>某电商企业客户根据客户的消费能力，将客户划分为普通会员、黄金会员、钻石会员。为加强对用户的转化引导，F 欲针对不同用户群体采用不同的运营方式。<br><img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-19.png" alt=""></p>
+<p>图1 &nbsp;普通会员与钻石会员的漏斗转化情况对比</p>
+<p>通过对比，可明显看出，普通会员从“提交订单”到“支付订单”的转化率明显低于钻石会员。为找到“支付订单”阶段转化率变低的原因，F 公司运营人员应深度分析普通会员转化率情况，如对比不同付费渠道（PC 端、手机端等）的转化情况，找到优化的短板。另外，可以尝试支付订单流程的新手引导，帮助新手顺利完成购买。</p>
+<h4 id="场景二：零售行业——中商惠民科学评估站内推广位的效果"><a href="#场景二：零售行业——中商惠民科学评估站内推广位的效果" class="headerlink" title="场景二：零售行业——中商惠民科学评估站内推广位的效果"></a>场景二：零售行业——中商惠民科学评估站内推广位的效果</h4><p>首页推广位的效果监控是站内运营重要一环，数据的监测与分析是重要工作，它为站内优化、页面体验提升作出指导。运营人员可以通过用户的点击转化率与购买转化率可以判断页面不同推广位置效果。下图是中商惠民首页推广位“一元促销”、“清洁专场”两个 Banner 转化率情况对比。（注：为涉嫌商业机密，以下场景模拟真实应用场景而设，数据均为虚拟。）</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2018/05/6-20.jpg" alt="">
+
+<p>图2 &nbsp;“一元促销”、“清洁专场”两个Banner转化率情况对比</p>
+<p>除此之外，漏斗分析模型已经广泛应用于各行业的数据分析工作中，用以评估总体转化率、各个环节的转化率，以科学评估促销专题活动效果等，通过与其他数据分析模型结合进行深度用户行为分析，从而找到用户流失的原因，以提升用户量、活跃度、留存率，并提升数据分析与决策的科学性等。</p>
+<h2 id="点击分析模型"><a href="#点击分析模型" class="headerlink" title="点击分析模型"></a>点击分析模型</h2><p>点击分析模型在各行业内数据分析应用较为广泛，是重要的数据分析模型之一。下面就为大家详细解读一下点击分析模型：</p>
+<h3 id="一、点击图与热力图有何差异？"><a href="#一、点击图与热力图有何差异？" class="headerlink" title="一、点击图与热力图有何差异？"></a>一、点击图与热力图有何差异？</h3><p>热力图是以特殊高亮的形式显示访客热衷的页面区域和访客所在的地理区域的图示，如下图。同样，点击图也是特殊高亮的颜色形式的显示。不同的是，点击图是点击分析方法的效果呈现，在用户行为分析领域，点击分析被应用于显示页面或页面组（结构相同的页面，如商品详情页、官网博客等）区域中不同元素点击密度的图示。包括元素被点击的次数、占比、发生点击的用户列表、按钮的当前与历史内容等因素。<br><img src="https://www.sensorsdata.cn/blog/content/images/2018/05/400a86936f720b750da44112ac0554fd.jpg" alt=""></p>
+<p>图1 点击图 &nbsp;（图片来源于网络）</p>
+<h3 id="二、点击分析模型“分析”的是啥？"><a href="#二、点击分析模型“分析”的是啥？" class="headerlink" title="二、点击分析模型“分析”的是啥？"></a>二、点击分析模型“分析”的是啥？</h3><p>点击分析具有分析过程高效、灵活、易用，效果直观的特点。点击分析采用可视化的设计思想与架构，简洁直观的操作方式，直观呈现访客热衷的区域，帮助运营人员或管理者评估网页的设计的科学性。</p>
+<p>在追求精细化网站运营的路上，企业对用户点击行为的可视化分析提出了更高需求，理想的点击分析方法主要分析：</p>
+<p>1、精准评估用户与网站交互背后的深层关系</p>
+<p>除了展示单个页面或页面组的点击图，前沿的点击分析应该能够支持事件（元素）属性、用户属性的任意维度筛选下钻；运营人员可以按照事件属性和用户属性进行筛选，对特定环境下特定用户群体对特定元素的点击进行精细化分析；支持查看页面元素点击背后的用户列表，满足企业网站的精细化分析需求。</p>
+<p>2、实现网页内跳转点击分析，抽丝剥茧般完成网页深层次的点击分析</p>
+<p>前沿的点击分析应支持网页内点击跳转分析——在浏览页面点击图时，使用者能够像访问者一样，点击页面元素，即可跳转至新的分析页面，且新的分析页面自动延续上一页面的筛选条件。同一筛选条件下，运营人员可抽丝剥茧般完成网页深层次的点击分析，操作流畅，分析流程简易、高效。</p>
+<p>3、与其他分析模型配合，以全面视角探索数据价值，能够深度感知用户体验，实现科学决策</p>
+<p>无法精细化地深入分析，会让网页设计与优化丧失了科学性。点击图呈现用户喜爱点击的模块或聚焦的内容，是数据价值最上层表现。当“点击分析”与其他分析模块配合，交叉使用，将数据和分析结果以多种形式可视化展现，运营人员即可深度感知用户体验。例如，改版后，如何评估新版本对用户体验的影响？一处修改，是否影响其他元素的点击……等等。再如 A&#x2F;B 测试，反复验证优化效果选择最优方案等。</p>
+<h3 id="三、点击分析应用场景：电商界面的优化与改进；企业官网改版"><a href="#三、点击分析应用场景：电商界面的优化与改进；企业官网改版" class="headerlink" title="三、点击分析应用场景：电商界面的优化与改进；企业官网改版"></a>三、点击分析应用场景：电商界面的优化与改进；企业官网改版</h3><h4 id="场景一：电商界面的优化与改进——配合实时多维分析，验证方案科学与否"><a href="#场景一：电商界面的优化与改进——配合实时多维分析，验证方案科学与否" class="headerlink" title="场景一：电商界面的优化与改进——配合实时多维分析，验证方案科学与否"></a>场景一：电商界面的优化与改进——配合实时多维分析，验证方案科学与否</h4><p>以商品详情页的优化为例，电商产品人员可以 URL 规则建立了一个页面组，并选择任意一个商品详情页作为背景展示点击情况，“点击分析”对于相同结构的网页，如商品详情页、购物页面、博客文章等，提供了统一、便捷的点击分析方式。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-31.jpeg" alt="">
+
+<p>图 1 &nbsp;该网站中商品详情页的点击图情况</p>
+<p>（注：图片所涉及的数据，均为模拟业务应用场景下的虚拟数据）</p>
+<p>通过上图我们可以看到：</p>
+<p>用户在该页面频繁地点击商品的图片，和已购买的人数。</p>
+<p>显然，用户在购买前希望了解更多的商品信息，尤其是图片、已购买用户的评价，进而决定是否下单。然而，在更深入分析页面时发现，商品图片只有 1 张且不支持查看大图，又无法查看用户评价。通过查看网站的历史数据，每天大约有 50% 的用户来浏览的都是这样的商品详情页。因此为了优化目标页的用户体验，可以：</p>
+<p>要求商家发布商品时必须上传不少于 3 张照片；<br>支持所有类型的商品详情页都有已购买者的评价露出。<br>从商品详情页的点击图中，右侧边栏中“我的心愿单”这个按钮被用户，尤其老用户点击率很高。以此为参考，为页面改版找到一些方向：在合适的位置新增“加入心愿单”按钮。</p>
+<p>改版后，产品人员再次通过点击分析工具评估效果时发现，“加入心愿单”按钮的点击率达到 30%，而“立即购买”按钮的点击率只下降了 1%，图略。说明这次改版对“立即购买”按钮的点击率的冲击程度不大，并不会影响页面的最终转化。</p>
+<p>“加入心愿单”是否对用户转化造成影响？产品人员可通过用户路径“加入心愿单”操作的频率和人数，或者通过留存率判断用户黏性的强弱变化……</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-32-1.jpeg" alt="">
+
+<p>图 2 &nbsp;通过漏斗分析功能，查看改版后的总体转化率</p>
+<p>改版后客户的转化率为 3.17%，可与改版前的转化率相比，若变高，则说明此次是一次比较成功的改版。如此判断“加入心愿单”是否是用户真实存在的需求，是否能对增加用户忠诚度产生贡献。</p>
+<h4 id="场景二：企业官网改版——筛选细分访客，页面优化有的放矢"><a href="#场景二：企业官网改版——筛选细分访客，页面优化有的放矢" class="headerlink" title="场景二：企业官网改版——筛选细分访客，页面优化有的放矢"></a>场景二：企业官网改版——筛选细分访客，页面优化有的放矢</h4><p>企业官网是企业潜在客户的指路牌。某 To B 企业官网运营人员，根据用户的官网访问时长、用户行为路径、活跃度、注册与否等因素，将用户细分为“单纯浏览者”、“信息收集者”、“购买需求强烈者”三类。 运营人员事先按照自定义规则，将三类访客进行用户分群。接下来，在“点击分析”功能模块中，分别筛选出三类人群，并查看其页面点击情况。下面以“单纯浏览者”、“信息收集者”两类进行介绍。</p>
+<p>1.用户群体之“单纯浏览者”的点击分析与优化方法</p>
+<p>比如通过点击分析了解到，近 30 天，“单纯浏览者”对官网导航栏的点击情况。通过分析，若发现该类用户群体对“产品介绍”、“视频”点击率较高，这说明“产品介绍”、“视频”是初来乍到的访问者了解企业的“窗口”，而元素内容缺少“亮点”，导致访问者不愿意花时间停留。因此可尝试以下两方面优化：</p>
+<p>一方面，优化内容。让产品价值、优势、案例等内容尽可能醒目，以快速吸引浏览者注意；<br>另一方面，在导航栏中尝试增加社交因素。如建立论坛、设立产品博客，如此增强访问者对官网的黏性，提高网站的活跃用户数量。<br>&nbsp;2. 用户群体之“信息收集者”的点击分析与优化方向</p>
+<p>运营人员可以通过点击分析了解近 30 天，“信息收集者”对官网导航栏的点击情况，官网运营人员应该帮助该用户群体确定购买意向。例如，“信息收集者”群体对官网导航条中“文档”、“博客”兴趣很高，而行业解决方案的点击较少。事实上，行业解决方案是该类群体值得关注的价值点，由于点击较低，可以尝试将其调整至醒目位置，进行效果对比。</p>
+<p>综上，点击分析模型在各行业内数据分析中应用较为广泛，是数据分析重要分析模型。</p>
+<h2 id="用户行为路径分析"><a href="#用户行为路径分析" class="headerlink" title="用户行为路径分析"></a>用户行为路径分析</h2><p>用户行为路径分析同样是重要的数据分析模型，它为企业实现理想的数据驱动与布局调整提供科学指导，对精准勾勒用户画像也有重要参考价值。</p>
+<p>用户访问 APP／网络，如同参观画展，观众是感受和传达画展参展方和展品的目的受众体，图画的展现布局不同，每一位观众根据自身喜好形成特有的参观顺序。为让观众沿着最优访问路径前进，需要策展者结合观众需求进行布局调整。这种自主式的数据分析方法，让业务人员都能科学进行数据分析。</p>
+<h3 id="一、什么是用户行为路径？"><a href="#一、什么是用户行为路径？" class="headerlink" title="一、什么是用户行为路径？"></a>一、什么是用户行为路径？</h3><p>用户路径分析，顾名思义，用户在 APP 或网站中的访问行为路径。为了衡量网站优化的效果或营销推广的效果，以及了解用户行为偏好，时常要对访问路径的转换数据进行分析。</p>
+<p>以电商为例，买家从登录网站／APP 到支付成功要经过首页浏览、搜索商品、加入购物车、提交订单、支付订单等过程。而在用户真实的选购过程是一个交缠反复的过程，例如提交订单后，用户可能会返回首页继续搜索商品，也可能去取消订单，每一个路径背后都有不同的动机。与其他分析模型配合进行深入分析后，能为找到快速用户动机，从而引领用户走向最优路径或者期望中的路径。</p>
+<h3 id="二、用户路径分析模型的价值"><a href="#二、用户路径分析模型的价值" class="headerlink" title="二、用户路径分析模型的价值"></a>二、用户路径分析模型的价值</h3><p>用户路径的分析结果通常以桑基图形式展现，以目标事件为起点／终点，详细查看后续／前置路径，可以详细查看某个节点事件的流向，总的来说，科学的用户路径分析能够带来以下价值：</p>
+<h4 id="第一，可视化用户流，全面了解用户整体行为路径"><a href="#第一，可视化用户流，全面了解用户整体行为路径" class="headerlink" title="第一，可视化用户流，全面了解用户整体行为路径"></a>第一，可视化用户流，全面了解用户整体行为路径</h4><p>通过用户路径分析，可以将一个事件的上下游进行可视化展示。用户即可查看当前节点事件的相关信息，包括事件名、分组属性值、后续事件统计、流失、后续事件列表等。运营人员可通过用户整体行为路径找到不同行为间的关系，挖掘规律并找到瓶颈。</p>
+<h4 id="第二，定位影响转化的主次因素，产品设计的优化与改进有的放矢"><a href="#第二，定位影响转化的主次因素，产品设计的优化与改进有的放矢" class="headerlink" title="第二，定位影响转化的主次因素，产品设计的优化与改进有的放矢"></a>第二，定位影响转化的主次因素，产品设计的优化与改进有的放矢</h4><p>路径分析对产品设计的优化与改进有着很大的帮助，了解用户从登录到购买整体行为的主路径和次路径，根据用户路径中各个环节的转化率，发现用户的行为规律和偏好，也可以用于监测和定位用户路径走向中存在的问题，判断影响转化的主要因素和次要因素，也可以发现某些冷僻的功能点。</p>
+<h3 id="三、用户路径应用场景"><a href="#三、用户路径应用场景" class="headerlink" title="三、用户路径应用场景"></a>三、用户路径应用场景</h3><p>谈到用户路径的真实应用场景，许多企业通过第三方数据分析平台来实现，下面结合笔者实际工作中，所接触的企业案例的数据分析场景为例来介绍。</p>
+<p>（注：因涉嫌商业机密，以下场景模拟真实应用场景而设，数据均为虚拟。）</p>
+<h4 id="场景一：中商惠民：启动-APP-后，为何只有-30-商超客户交易成功？"><a href="#场景一：中商惠民：启动-APP-后，为何只有-30-商超客户交易成功？" class="headerlink" title="场景一：中商惠民：启动 APP 后，为何只有 30% 商超客户交易成功？"></a>场景一：中商惠民：启动 APP 后，为何只有 30% 商超客户交易成功？</h4><p>中商惠民是中国最大的社区 O2O 服务平台。在一次评估客户总体转化率过程中，通过漏斗分析发现，从登录惠配通 APP 后，提交订单的商超客户仅有 30%，接下来可以通过用户路径客户流失的原因所在。通过用户路径分析模型，清晰展示了商超客户的动作走向，为判断客户流失原因重要方式之一。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-33.png" alt="">
+
+<p>图片来源：神策数据产品</p>
+<p>中商惠民运营人员选取若干事件对客户购买路径进行深度分析。图中显示，用户登录 APP 后，约有 40% 的客户会点击 Banner，30% 的客户会直接进行商品搜索，约 10% 的用户会浏览商品列表，约 5% 的客户直接退出 APP。</p>
+<p>运营人员进一步看 4 类用户的提交订单的情况，直接进行“搜索商品”的用户进行提交订单比例最高，超过 90%；与其形成鲜明对比的是，尽管“点击 Banner ”是更多客户登录 APP 后的首选动作（约占总客户的 40%）但是这部分用户群体在浏览商品列表后，仅仅 30% 的用户提交订单，说明 Banner 内容布局有着比较糟糕的用户体验，则将此作为首选优化与改进的方向。</p>
+<h4 id="场景二：某电商：“未支付订单”超过-30-分钟自动取消，刺激用户支付"><a href="#场景二：某电商：“未支付订单”超过-30-分钟自动取消，刺激用户支付" class="headerlink" title="场景二：某电商：“未支付订单”超过 30 分钟自动取消，刺激用户支付"></a>场景二：某电商：“未支付订单”超过 30 分钟自动取消，刺激用户支付</h4><p>除了零售行业以外，用户行为路径在电商行业分析也应用广泛。某电商网站客户通过用户路径分析，看出有两条主要的路径：（图略，与上图效果类似。）</p>
+<p>一是启动 App-搜索商品-提交订单-支付订单；</p>
+<p>二是启动 App-未支付订单-搜索相似商品-取消订单。</p>
+<p>通过第一条用户路径相关数值显示，客户提交订单后，大约 75% 的用户会支付，而高达 25% 的用户没有支付订单；第二条用户路径显然是一条有明确目的——为未最终敲定的商品而来的用户，因为在打开 app 后直奔“未支付订单”，但是路径中显示此用户再次“搜索相似商品”，这一行为可以判断客户可能存在比价行为，表明价格一定程度上影响了这部分用户的支付欲望，这是一批“价格导向”的客户。</p>
+<p>对此，该电商运营人员采取针对性措施：</p>
+<p>“未支付订单”超过 30 分钟则自动取消；将支付页面附近放置优惠券领取。</p>
+<p>当该电商新版本上线后，再次通过用户路径分析模型，发现客户在提交订单后，由于 30 分钟的时间限制，有更多的客户愿意立即支付订单；同时未支付订单大大降低，说明在支付页面附近放置优惠券的方式刺激到对价格敏感的客户,因此这也是一次很成功的改版。</p>
+<p>总之，用户真实的选购过程是一个交缠反复的过程，每一个路径背后都有不同的动机。通过用户行为路径能够清晰看到用户行为特点与背后原因。若与其他分析模型配合，会产生更佳效果，通过数据分析能够快速找到用户动机，从而引领用户走向最优路径或者期望中的路径。</p>
+<h2 id="属性分析"><a href="#属性分析" class="headerlink" title="属性分析"></a>属性分析</h2><p>属性分析是实现用户行为精细化运营的必备分析方法之一。</p>
+<p>仅知道一幢房子的面积无法全面衡量其价值大小，而房子的位置、风格、是否学区、交通环境更是相关的属性。同样，用户各维度属性都是进行全面衡量用户画像不可或缺的内容。</p>
+<h3 id="一、属性分析的定义"><a href="#一、属性分析的定义" class="headerlink" title="一、属性分析的定义"></a>一、属性分析的定义</h3><p>顾名思义，属性分析根据用户自身属性对用户进行分类与统计分析，比如查看用户数量在注册时间上的变化趋势、查看用户按省份的分布情况。用户属性涉及用户信息，如姓名、年龄、家庭、婚姻状况、性别、最高教育程度等自然信息，也有产品相关属性，如用户常驻省市、用户等级、用户首次访问渠道来源等。</p>
+<h3 id="二、属性分析模型的价值"><a href="#二、属性分析模型的价值" class="headerlink" title="二、属性分析模型的价值"></a>二、属性分析模型的价值</h3><p>属性分析主要价值体现在丰富用户画像维度，让用户行为洞察粒度更细致。科学的属性分析方法，对于所有类型的属性都可以将“去重数”作为分析指标，数值类型的属性可以将“总和”“均值”“最大值”“最小值”作为分析指标，添加多个维度。数字类型的维度可以自定义区间，方便进行更加精细化的分析。</p>
+<h3 id="三、属性分析模型的应用场景"><a href="#三、属性分析模型的应用场景" class="headerlink" title="三、属性分析模型的应用场景"></a>三、属性分析模型的应用场景</h3><h4 id="场景一：按省份查看用户数"><a href="#场景一：按省份查看用户数" class="headerlink" title="场景一：按省份查看用户数"></a>场景一：按省份查看用户数</h4><p>如图 1 所示，运营人员可以很直观地查看用户在不同省份的具体分布情况。当然也可以按城市进行分析，这样有助于运营人员快速了解产品用户具体分布在哪些城市，是否为发达地区等，以判断用户的喜好程度等。<br><img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-41.png" alt=""></p>
+<p>图 1　 按省份查看用户数</p>
+<h4 id="场景-二：查看一个月未发生购买的客户，预警客户流失"><a href="#场景-二：查看一个月未发生购买的客户，预警客户流失" class="headerlink" title="场景 二：查看一个月未发生购买的客户，预警客户流失"></a>场景 二：查看一个月未发生购买的客户，预警客户流失</h4><p>由于重点客户资源的稀缺性，其黏性备受企业关注。图 2 所示的中商惠民“用户属性”分析模型，筛选出距上次购买已经超过一个月的重点客户。<br><img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-42---.png" alt=""></p>
+<p>图 2 准流失客户群预警</p>
+<p>该图显示有超过 166 个商超客户一个月未订货。点击 166 数字，即呈现 166 家重点客户明细。30 天未发生购买的原因很多，也许重点客户未流失，只是不再用 APP 下单，也许重点客户真的流失了。此时就需要业务代表进行召回动作，无论属于哪种情况，运营人员都可以通过查看用户行为（重点客户）序列，分别了解重点客户路径，找到重点客户订单量骤降的原因。</p>
+<p>我们逐一介绍了各大数据分析模型，实际上各分析模型应该是一个综合体，它们之间存在无法割裂的关系。各分析模型实现科学互动和配合，能够科学揭示出用户个人或群体行为的潜在规律，并据此做出理论推导，不断在工作实践中优化商业决策和产品智能。</p>
+<h2 id="用户分群"><a href="#用户分群" class="headerlink" title="用户分群"></a>用户分群</h2><p>用户分群是企业精细化，数据化运营的第一步。</p>
+<p>用户分群数据分析方法是进行用户画像的关键数据分析模型，这是企业进行数据分析、精细化运营的第一步。用户分群即用户信息标签化，通过用户的历史行为路径、行为特征、偏好等属性，将具有相同属性的用户划分为一个群体，并进行后续分析。</p>
+<h3 id="一、漏斗分析关注阶段差异，用户分群关注群体差异"><a href="#一、漏斗分析关注阶段差异，用户分群关注群体差异" class="headerlink" title="一、漏斗分析关注阶段差异，用户分群关注群体差异"></a>一、漏斗分析关注阶段差异，用户分群关注群体差异</h3><p>前面的文章我们讲了漏斗分析模型。通过漏斗分析模型，运营人员可以看到，用户在不同阶段所表现出的行为是不同的，譬如新用户的关注点在哪里？已购用户什么情况下会再次付费？然而，由于群体特征不同，行为会有很大差别，因此运营人员或者产品人员希望可以根据历史数据将用户进行划分，将具有一定规律特性的用户群体进行归类，进而再次观察该群体的具体行为。这就是用户分群的原理。</p>
+<h3 id="二、普通用户分群与预测分群"><a href="#二、普通用户分群与预测分群" class="headerlink" title="二、普通用户分群与预测分群"></a>二、普通用户分群与预测分群</h3><p>严格说来，用户分群分为普通分群和预测分群。普通分群是依据用户的属性特征和行为特征将用户群体进行分类；预测分群是根据用户以往的行为属性特征，运用机器学习算法来预测他们将来会发生某些事件的概率，分别从两个场景介绍下这两种用户分群方式。</p>
+<h4 id="普通用户分群——分析用户属性与行为特征"><a href="#普通用户分群——分析用户属性与行为特征" class="headerlink" title="普通用户分群——分析用户属性与行为特征"></a>普通用户分群——分析用户属性与行为特征</h4><p>以直播产品行业为例。高黏性与高频消费用户的行为观察是产品经理和运营人员工作重点。</p>
+<p>例如某运营人员可以筛选出过去 30 天内、等级 10 级以上、有“留言”和“点赞”行为，并且付费礼物送出次数超过 10 次的用户，视其为高黏性且高频消费用户，对其进行分群定义后展开数据分析。</p>
+<p>通过高黏性与高频消费用户近期的行为观察不同用户群体近期的行为表现，从而可以看出该用户群体的人均观看时长与其他用户存一些差别，如高频花费用户与非高频花费用户观看时长人均值对比。</p>
+<h4 id="预测用户分群——通过机器学习算法预测事件概率"><a href="#预测用户分群——通过机器学习算法预测事件概率" class="headerlink" title="预测用户分群——通过机器学习算法预测事件概率"></a>预测用户分群——通过机器学习算法预测事件概率</h4><p>互联网金融产品常常会用到预测用户分群的功能。互联网金融客户按照风险投资偏好这一属性分为保守、稳健和激进，按照投资行为可分为已投资和未投资。</p>
+<p>运营人员可以根据这一属性和行为将满足某种条件的用户群体提取出来，譬如激进型但未投资的这群用户，然后分析这一群体的行为特征从而优化产品促进用户投资，或者根据其浏览的项目页面推荐用户可能会感兴趣的项目。</p>
+<h3 id="三、用户分群分析模型行业价值与真实场景"><a href="#三、用户分群分析模型行业价值与真实场景" class="headerlink" title="三、用户分群分析模型行业价值与真实场景"></a>三、用户分群分析模型行业价值与真实场景</h3><p>用户分群正广泛应用于各行业领域的数据分析过程中。为各行业带来以下价值：</p>
+<h4 id="第一，帮助企业打破数据孤岛并真实了解用户"><a href="#第一，帮助企业打破数据孤岛并真实了解用户" class="headerlink" title="第一，帮助企业打破数据孤岛并真实了解用户"></a>第一，帮助企业打破数据孤岛并真实了解用户</h4><p>用户画像是用户分群的前提，对特定属性的用户群体进行持续深入的用户行为的洞察后，该用户群体的画像变得逐渐清晰。</p>
+<p>帮助企业了解某个指标数字背后的用户群体具备哪些特征：</p>
+<p>他们是谁？<br>行为特点有哪些？<br>偏好是什么？<br>潜在需求和行为喜好是什么？<br>这为后续的用户群体针对性分析。</p>
+<h4 id="第二，定位营销目标群体，帮助企业实现精准、高效营销"><a href="#第二，定位营销目标群体，帮助企业实现精准、高效营销" class="headerlink" title="第二，定位营销目标群体，帮助企业实现精准、高效营销"></a>第二，定位营销目标群体，帮助企业实现精准、高效营销</h4><p>清晰勾勒某特定群体在特定研究范围内的行为全貌，并定义目标人群，是运营人员信息推送的前提。运营人员根据需求对特定目标人群完成精准信息推送工作，如召回流失用户、刺激用户复购等等。当完成特定人群的精准信息推送工作，可再分析以实时全方位查看营销效果。帮助企业与用户实现精准高效的信息互通。</p>
+<h4 id="场景一：互金行业唤醒“沉睡”用户的精准推送与效果评估"><a href="#场景一：互金行业唤醒“沉睡”用户的精准推送与效果评估" class="headerlink" title="场景一：互金行业唤醒“沉睡”用户的精准推送与效果评估"></a>场景一：互金行业唤醒“沉睡”用户的精准推送与效果评估</h4><p>某互联网金融客户为“唤醒” 2017 年 1 月注册且浏览过征信页面（通过分析发现，用户浏览征信页面后，后期的留存率较高），但未进行投资的用户，并向该群体推送“将于 1 月 20 日起发行贺岁版理财，预期年化收益率高达 9.50%”的信息。为锁定目标人群，产品人员可以通过用户分群筛选营销目标群体。</p>
+<p>对完成信息推送后，运营人员可进行多维度分析，了解推送后效果。如该互联网金融客户完成精准推送后，用户可在投资流程转化漏斗中再次查看用户转化情况，评估推送或者产品优化效果。</p>
+<h4 id="场景二：企业级服务（To-B）“召回”流失客户的精准推送和效果评估"><a href="#场景二：企业级服务（To-B）“召回”流失客户的精准推送和效果评估" class="headerlink" title="场景二：企业级服务（To B）“召回”流失客户的精准推送和效果评估"></a>场景二：企业级服务（To B）“召回”流失客户的精准推送和效果评估</h4><p>某 To B 企业客户，以投资到期之后再次投资作为留存的标准，近 8 周用户流失情况如下。在完成筛选工作后，企业运营人员可在用户明细页面上，直接将该用户群体进行定义，在此基础上完成精细化推送工作。<br><img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-39.jpeg" alt=""><br>&nbsp;某 To B 企业 8 周内用户流失情况</p>
+<p>在该页面上，企业运营人员可以点击留存数值，即查看流失人群的详细信息，并可以直接创建用户分群命显示名为“流失用户”，并推送信息，以刺激其申请产品使用。</p>
+<p>在大数据时代，为适应不断变化的外部市场环境，提升客户黏性，企业不断加速数字化营销转型。其中，提升营销效率、提高营销精准度是企业首要战略目标。以上三个场景都将“以客户为中心”理念真正贯穿精准营销的全流程，重构企业核心竞争力。</p>
+<h2 id="分布分析模型"><a href="#分布分析模型" class="headerlink" title="分布分析模型"></a>分布分析模型</h2><p>分布分析模型在各行业内数据分析应用较为广泛，是重要的数据分析模型之一。本文将分别介绍分布分析的定义、特点与价值，以及应用场景几个方面。</p>
+<h3 id="一、分布分析的定义"><a href="#一、分布分析的定义" class="headerlink" title="一、分布分析的定义"></a>一、分布分析的定义</h3><p>分布分析是用户在特定指标下的频次、总额等的归类展现。它可以展现出单用户对产品的依赖程度，分析客户在不同地区、不同时段所购买的不同类型的产品数量、购买频次等，帮助运营人员了解当前的客户状态，以及客户的运转情况。如订单金额（100 以下区间、100 元～200 元区间、200 元以上区间等）、购买次数（5 次以下、5～10 次、10 以上）等用户的分布情况。</p>
+<h3 id="二、分布分析模型的特点与价值"><a href="#二、分布分析模型的特点与价值" class="headerlink" title="二、分布分析模型的特点与价值"></a>二、分布分析模型的特点与价值</h3><p>科学的分布分析模型支持按时间、次数、事件、指标进行用户条件筛选及数据统计。为不同角色的人员统计用户在一天&#x2F;周&#x2F;月中，有多少个自然时间段（小时&#x2F;天）进行了某项操作、进行某项操作的次数、进行事件指标。总之，分布分析价值主要体现在以下几个方面。</p>
+<h4 id="1．挖掘用户分布规律，优化产品策略。"><a href="#1．挖掘用户分布规律，优化产品策略。" class="headerlink" title="1．挖掘用户分布规律，优化产品策略。"></a>1．挖掘用户分布规律，优化产品策略。</h4><p>对同一指标下有关数据的统计与分析，帮助企业从中挖掘用户访问规律，企业可以将规律与实际产品策略相结合，进一步修正和重新制定产品策略。</p>
+<h4 id="2．运营并持续产品生命力，增加客户回访率。"><a href="#2．运营并持续产品生命力，增加客户回访率。" class="headerlink" title="2．运营并持续产品生命力，增加客户回访率。"></a>2．运营并持续产品生命力，增加客户回访率。</h4><p>彻底改变之前依靠随机抽样的回访率调查方式，如电话回访等，分布分析从多角度分析辅助企业，判断单用户对产品的依赖程度，以及产品对用户的价值与黏性。</p>
+<h4 id="3．快速识别核心用户群体，资源配置有的放矢。"><a href="#3．快速识别核心用户群体，资源配置有的放矢。" class="headerlink" title="3．快速识别核心用户群体，资源配置有的放矢。"></a>3．快速识别核心用户群体，资源配置有的放矢。</h4><p>核心用户群体是对企业价值贡献最大的用户群体，是企业最大的利润来源。不同用户群体对产品需求不一样，对用户群体进行差异性辨识，可以了解到用户群体对产品的依赖动力。分布分析通过不同维度筛选出核心用户群体，在此基础上，更好地配置优质资源，以最小成本实现企业利润最大化。</p>
+<h3 id="三、分布分析模型的应用场景"><a href="#三、分布分析模型的应用场景" class="headerlink" title="三、分布分析模型的应用场景"></a>三、分布分析模型的应用场景</h3><h4 id="场景一：电商行业常见的分布分析应用"><a href="#场景一：电商行业常见的分布分析应用" class="headerlink" title="场景一：电商行业常见的分布分析应用"></a>场景一：电商行业常见的分布分析应用</h4><p>电商用户的忠诚度如何、客单价情况如何等这些问题均可以通过分布分析功能进行快速诊断。以电商为例，重复购买次数、客单价分布等均是常用的衡量忠诚度的指标。以下从不同角度展现了分布分析的多维度查看。<br>图 1 可以看到用户每个月的购买频次基本稳定在 1～3 次之间，3 月有小的变动，其他几个月都比较稳定。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-23.png" alt="">
+
+<p>图 1 用户在购买一个月内进行支付订单的次数</p>
+<p>除了从用户行为日期去查看外，还可以对用户进一步细分，看看不同性别、不同渠道的用户的支付频次的差异，如图 2 所示，从性别来看，数据比较均匀。</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-24.png" alt="">
+图 2 用户一个月内进行支付订单的次数
+
+<p>如图 3 所示，从省份的角度看，该商品并没有地域偏爱。<br>用户购买的客单价分布在哪个区间，也是运营人员比较关心的。图 4 显示出用户的客单价很高，90% 的用户客单价在 500 元以上。<br><img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-25.png" alt=""><br>图 3 按省份查看用户一个月内支付订单次数</p>
+<img src="https://www.sensorsdata.cn/blog/content/images/2018/05/3-26.png" alt="">
+图 4 用户一个月内实际支付订单金额总和
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/cd70c25c/">https://leejs.cn/cd70c25c/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/">数据分析</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/82750b40/" title="vue3 双向绑定"><img class="cover" src="https://images-origin.wallwiz.link/590bc66690c79d0001e9cbad_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">vue3 双向绑定</div></div><div class="info-2"><div class="info-item-1">[TOC] 写在前面本文的目标是实现一个基本的vue3的响应式，包含最基础的情况的处理，本文是系列文章，如果你对vue3还不了解，那么请移步： 超详细整理vue3基础知识💥 手写mini-vue3第三弹！万字实现渲染器首次渲染流程 🎉 🎉  更新！更新！实现vue3虚拟DOM更新&amp;diff算法优化🎉 🎉 本文你将学到  一个基础的响应式实现 ✅ Proxy ✅ Reflect ✅ 嵌套effect的实现 ✅ computed ✅ watch ✅ 浅响应与深响应 ✅ 浅只读与深只读 ✅ 处理数组长度 ✅ ref ✅ toRefs ✅   一. 实现一个完善的响应式所谓的响应式数据的概念，其实最主要的目的就是为数据绑定执行函数，当数据发生变动的时候，再次触发函数的执行。 例如我们有一个对象data，我们想让它变成一个响应式数据，当data的数据发生变化时，自动执行effect函数，使nextVal变量的值也进行变化： 1234567891011121314// 定义一个对象let data = &#123;  name: &#x27;pino&#x27;, ...</div></div></div></a><a class="pagination-related" href="/e62c2eed/" title="go 语言学习列表"><img class="cover" src="https://images-origin.wallwiz.link/590bca5f90c79d0001e9cbff_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">go 语言学习列表</div></div><div class="info-2"><div class="info-item-1">  基础信息   镜像说明 前言    第一章. Go 起源，发展与普及   1.1. 起源与发展 1.2. 主要特性与发展的环境和影响因素    第二章. 安装与运行环境   2.1. 平台与架构 2.2. Go 环境变量 2.3. 在 Linux 上安装 Go 2.4. 在 Mac OS X 上安装 Go 2.5. 在 Windows 上安装 Go 2.6. 安装目录清单 2.7. Go 运行时（runtime） 2.8. Go 解释器    第三章. 编辑器、IDE 等工具   章节说明 3.1. Go 开发环境的基本要求 3.2. 编辑器和集成开发环境 3.3. 调试器 3.4. 构建并运行 Go 程序 3.5. 格式化代码 3.6. 生成代码文档 3.7. 其它工具 3.8. Go 性能说明 3.9. 与其它语言进行交互    第四章. 基本结构和基本数据类型   4.1. 文件名、关键字与标识符 4.2. Go 程序的基本结构和要素 4.3. 常量 4.4. 变量 4.5. 基本类型和运算符 4.6. 字符串 4.7. strings 和 strconv...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%95%99%E5%AD%98%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">留存分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E7%95%99%E5%AD%98%E5%88%86%E6%9E%90"><span class="toc-number">1.1.</span> <span class="toc-text">一、什么是留存分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%9B%B4%E6%8E%A5%E7%9C%8B%E6%B4%BB%E8%B7%83%E7%99%BE%E5%88%86%E6%AF%94%E4%B8%8D%E8%A1%8C%E5%90%97%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">二、直接看活跃百分比不行吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%95%99%E5%AD%98%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E7%89%B9%E7%82%B9%E4%B8%8E%E4%BB%B7%E5%80%BC"><span class="toc-number">1.3.</span> <span class="toc-text">三、留存分析模型特点与价值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E7%95%99%E5%AD%98%E5%88%86%E6%9E%90%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.4.</span> <span class="toc-text">四、留存分析应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E6%B8%B8%E6%88%8F%E8%A1%8C%E4%B8%9A%E6%8F%90%E5%8D%87%E6%B4%BB%E8%B7%83%E3%80%81%E7%95%99%E5%AD%98%E2%80%94%E2%80%94%E5%A6%82%E4%BD%95%E7%B2%BE%E5%87%86%E6%89%BE%E5%88%B0%E7%8E%A9%E5%AE%B6%E2%80%9C%E6%B5%81%E5%A4%B1%E7%82%B9%E2%80%9D%EF%BC%9F"><span class="toc-number">1.4.1.</span> <span class="toc-text">场景一：游戏行业提升活跃、留存——如何精准找到玩家“流失点”？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E4%BA%86%E8%A7%A3%E6%96%B0%E7%94%A8%E6%88%B7%E7%9A%84%E7%95%99%E5%AD%98"><span class="toc-number">1.4.2.</span> <span class="toc-text">场景二：了解新用户的留存</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%8C%E4%B8%BA%E4%BA%8B%E4%BB%B6%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">行为事件分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E8%A1%8C%E4%B8%BA%E4%BA%8B%E4%BB%B6%E5%88%86%E6%9E%90%EF%BC%9F"><span class="toc-number">2.1.</span> <span class="toc-text">一、什么是行为事件分析？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E8%A1%8C%E4%B8%BA%E4%BA%8B%E4%BB%B6%E5%88%86%E6%9E%90%E7%9A%84%E7%89%B9%E7%82%B9%E4%B8%8E%E4%BB%B7%E5%80%BC"><span class="toc-number">2.2.</span> <span class="toc-text">二、行为事件分析的特点与价值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%A1%8C%E4%B8%BA%E4%BA%8B%E4%BB%B6%E5%88%86%E6%9E%90%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.3.</span> <span class="toc-text">三、行为事件分析应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E4%BA%92%E9%87%91%E8%A1%8C%E4%B8%9A%E5%B8%B8%E8%A7%81%E7%9A%84%E8%A1%8C%E4%B8%BA%E4%BA%8B%E4%BB%B6%E5%88%86%E6%9E%90"><span class="toc-number">2.3.1.</span> <span class="toc-text">场景一：互金行业常见的行为事件分析</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%96%97%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">漏斗分析模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E6%BC%8F%E6%96%97%E5%88%86%E6%9E%90%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">一、什么是漏斗分析？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%96%97%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%89%B9%E7%82%B9%E4%B8%8E%E4%BB%B7%E5%80%BC"><span class="toc-number">3.2.</span> <span class="toc-text">二、漏斗分析模型的特点与价值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%9C%A8%E6%BC%8F%E6%96%97%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E4%B8%AD%EF%BC%8C%E7%A7%91%E5%AD%A6%E5%BD%92%E5%9B%A0%E3%80%81%E5%B1%9E%E6%80%A7%E5%85%B3%E8%81%94%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="toc-number">3.3.</span> <span class="toc-text">三、在漏斗分析模型中，科学归因、属性关联的重要性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%BC%8F%E6%96%97%E5%88%86%E6%9E%90%E5%9C%BA%E6%99%AF"><span class="toc-number">3.4.</span> <span class="toc-text">四、漏斗分析场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E7%94%B5%E5%95%86%E8%A1%8C%E4%B8%9A%E4%B8%8D%E5%90%8C%E5%AE%A2%E6%88%B7%E7%BE%A4%E4%BD%93%E7%9A%84%E8%BD%AC%E5%8C%96%E6%83%85%E5%86%B5"><span class="toc-number">3.4.1.</span> <span class="toc-text">场景一：电商行业不同客户群体的转化情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E9%9B%B6%E5%94%AE%E8%A1%8C%E4%B8%9A%E2%80%94%E2%80%94%E4%B8%AD%E5%95%86%E6%83%A0%E6%B0%91%E7%A7%91%E5%AD%A6%E8%AF%84%E4%BC%B0%E7%AB%99%E5%86%85%E6%8E%A8%E5%B9%BF%E4%BD%8D%E7%9A%84%E6%95%88%E6%9E%9C"><span class="toc-number">3.4.2.</span> <span class="toc-text">场景二：零售行业——中商惠民科学评估站内推广位的效果</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%B9%E5%87%BB%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">点击分析模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E7%82%B9%E5%87%BB%E5%9B%BE%E4%B8%8E%E7%83%AD%E5%8A%9B%E5%9B%BE%E6%9C%89%E4%BD%95%E5%B7%AE%E5%BC%82%EF%BC%9F"><span class="toc-number">4.1.</span> <span class="toc-text">一、点击图与热力图有何差异？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%82%B9%E5%87%BB%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E2%80%9C%E5%88%86%E6%9E%90%E2%80%9D%E7%9A%84%E6%98%AF%E5%95%A5%EF%BC%9F"><span class="toc-number">4.2.</span> <span class="toc-text">二、点击分析模型“分析”的是啥？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%82%B9%E5%87%BB%E5%88%86%E6%9E%90%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9A%E7%94%B5%E5%95%86%E7%95%8C%E9%9D%A2%E7%9A%84%E4%BC%98%E5%8C%96%E4%B8%8E%E6%94%B9%E8%BF%9B%EF%BC%9B%E4%BC%81%E4%B8%9A%E5%AE%98%E7%BD%91%E6%94%B9%E7%89%88"><span class="toc-number">4.3.</span> <span class="toc-text">三、点击分析应用场景：电商界面的优化与改进；企业官网改版</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E7%94%B5%E5%95%86%E7%95%8C%E9%9D%A2%E7%9A%84%E4%BC%98%E5%8C%96%E4%B8%8E%E6%94%B9%E8%BF%9B%E2%80%94%E2%80%94%E9%85%8D%E5%90%88%E5%AE%9E%E6%97%B6%E5%A4%9A%E7%BB%B4%E5%88%86%E6%9E%90%EF%BC%8C%E9%AA%8C%E8%AF%81%E6%96%B9%E6%A1%88%E7%A7%91%E5%AD%A6%E4%B8%8E%E5%90%A6"><span class="toc-number">4.3.1.</span> <span class="toc-text">场景一：电商界面的优化与改进——配合实时多维分析，验证方案科学与否</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E4%BC%81%E4%B8%9A%E5%AE%98%E7%BD%91%E6%94%B9%E7%89%88%E2%80%94%E2%80%94%E7%AD%9B%E9%80%89%E7%BB%86%E5%88%86%E8%AE%BF%E5%AE%A2%EF%BC%8C%E9%A1%B5%E9%9D%A2%E4%BC%98%E5%8C%96%E6%9C%89%E7%9A%84%E6%94%BE%E7%9F%A2"><span class="toc-number">4.3.2.</span> <span class="toc-text">场景二：企业官网改版——筛选细分访客，页面优化有的放矢</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E8%B7%AF%E5%BE%84%E5%88%86%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">用户行为路径分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E8%B7%AF%E5%BE%84%EF%BC%9F"><span class="toc-number">5.1.</span> <span class="toc-text">一、什么是用户行为路径？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%94%A8%E6%88%B7%E8%B7%AF%E5%BE%84%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BB%B7%E5%80%BC"><span class="toc-number">5.2.</span> <span class="toc-text">二、用户路径分析模型的价值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%EF%BC%8C%E5%8F%AF%E8%A7%86%E5%8C%96%E7%94%A8%E6%88%B7%E6%B5%81%EF%BC%8C%E5%85%A8%E9%9D%A2%E4%BA%86%E8%A7%A3%E7%94%A8%E6%88%B7%E6%95%B4%E4%BD%93%E8%A1%8C%E4%B8%BA%E8%B7%AF%E5%BE%84"><span class="toc-number">5.2.1.</span> <span class="toc-text">第一，可视化用户流，全面了解用户整体行为路径</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%EF%BC%8C%E5%AE%9A%E4%BD%8D%E5%BD%B1%E5%93%8D%E8%BD%AC%E5%8C%96%E7%9A%84%E4%B8%BB%E6%AC%A1%E5%9B%A0%E7%B4%A0%EF%BC%8C%E4%BA%A7%E5%93%81%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%BC%98%E5%8C%96%E4%B8%8E%E6%94%B9%E8%BF%9B%E6%9C%89%E7%9A%84%E6%94%BE%E7%9F%A2"><span class="toc-number">5.2.2.</span> <span class="toc-text">第二，定位影响转化的主次因素，产品设计的优化与改进有的放矢</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%94%A8%E6%88%B7%E8%B7%AF%E5%BE%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">5.3.</span> <span class="toc-text">三、用户路径应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E4%B8%AD%E5%95%86%E6%83%A0%E6%B0%91%EF%BC%9A%E5%90%AF%E5%8A%A8-APP-%E5%90%8E%EF%BC%8C%E4%B8%BA%E4%BD%95%E5%8F%AA%E6%9C%89-30-%E5%95%86%E8%B6%85%E5%AE%A2%E6%88%B7%E4%BA%A4%E6%98%93%E6%88%90%E5%8A%9F%EF%BC%9F"><span class="toc-number">5.3.1.</span> <span class="toc-text">场景一：中商惠民：启动 APP 后，为何只有 30% 商超客户交易成功？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E6%9F%90%E7%94%B5%E5%95%86%EF%BC%9A%E2%80%9C%E6%9C%AA%E6%94%AF%E4%BB%98%E8%AE%A2%E5%8D%95%E2%80%9D%E8%B6%85%E8%BF%87-30-%E5%88%86%E9%92%9F%E8%87%AA%E5%8A%A8%E5%8F%96%E6%B6%88%EF%BC%8C%E5%88%BA%E6%BF%80%E7%94%A8%E6%88%B7%E6%94%AF%E4%BB%98"><span class="toc-number">5.3.2.</span> <span class="toc-text">场景二：某电商：“未支付订单”超过 30 分钟自动取消，刺激用户支付</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E5%88%86%E6%9E%90"><span class="toc-number">6.</span> <span class="toc-text">属性分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B1%9E%E6%80%A7%E5%88%86%E6%9E%90%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">6.1.</span> <span class="toc-text">一、属性分析的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%B1%9E%E6%80%A7%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BB%B7%E5%80%BC"><span class="toc-number">6.2.</span> <span class="toc-text">二、属性分析模型的价值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B1%9E%E6%80%A7%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">6.3.</span> <span class="toc-text">三、属性分析模型的应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E6%8C%89%E7%9C%81%E4%BB%BD%E6%9F%A5%E7%9C%8B%E7%94%A8%E6%88%B7%E6%95%B0"><span class="toc-number">6.3.1.</span> <span class="toc-text">场景一：按省份查看用户数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF-%E4%BA%8C%EF%BC%9A%E6%9F%A5%E7%9C%8B%E4%B8%80%E4%B8%AA%E6%9C%88%E6%9C%AA%E5%8F%91%E7%94%9F%E8%B4%AD%E4%B9%B0%E7%9A%84%E5%AE%A2%E6%88%B7%EF%BC%8C%E9%A2%84%E8%AD%A6%E5%AE%A2%E6%88%B7%E6%B5%81%E5%A4%B1"><span class="toc-number">6.3.2.</span> <span class="toc-text">场景 二：查看一个月未发生购买的客户，预警客户流失</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E5%88%86%E7%BE%A4"><span class="toc-number">7.</span> <span class="toc-text">用户分群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%BC%8F%E6%96%97%E5%88%86%E6%9E%90%E5%85%B3%E6%B3%A8%E9%98%B6%E6%AE%B5%E5%B7%AE%E5%BC%82%EF%BC%8C%E7%94%A8%E6%88%B7%E5%88%86%E7%BE%A4%E5%85%B3%E6%B3%A8%E7%BE%A4%E4%BD%93%E5%B7%AE%E5%BC%82"><span class="toc-number">7.1.</span> <span class="toc-text">一、漏斗分析关注阶段差异，用户分群关注群体差异</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E5%88%86%E7%BE%A4%E4%B8%8E%E9%A2%84%E6%B5%8B%E5%88%86%E7%BE%A4"><span class="toc-number">7.2.</span> <span class="toc-text">二、普通用户分群与预测分群</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E5%88%86%E7%BE%A4%E2%80%94%E2%80%94%E5%88%86%E6%9E%90%E7%94%A8%E6%88%B7%E5%B1%9E%E6%80%A7%E4%B8%8E%E8%A1%8C%E4%B8%BA%E7%89%B9%E5%BE%81"><span class="toc-number">7.2.1.</span> <span class="toc-text">普通用户分群——分析用户属性与行为特征</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E7%94%A8%E6%88%B7%E5%88%86%E7%BE%A4%E2%80%94%E2%80%94%E9%80%9A%E8%BF%87%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95%E9%A2%84%E6%B5%8B%E4%BA%8B%E4%BB%B6%E6%A6%82%E7%8E%87"><span class="toc-number">7.2.2.</span> <span class="toc-text">预测用户分群——通过机器学习算法预测事件概率</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%94%A8%E6%88%B7%E5%88%86%E7%BE%A4%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E8%A1%8C%E4%B8%9A%E4%BB%B7%E5%80%BC%E4%B8%8E%E7%9C%9F%E5%AE%9E%E5%9C%BA%E6%99%AF"><span class="toc-number">7.3.</span> <span class="toc-text">三、用户分群分析模型行业价值与真实场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%EF%BC%8C%E5%B8%AE%E5%8A%A9%E4%BC%81%E4%B8%9A%E6%89%93%E7%A0%B4%E6%95%B0%E6%8D%AE%E5%AD%A4%E5%B2%9B%E5%B9%B6%E7%9C%9F%E5%AE%9E%E4%BA%86%E8%A7%A3%E7%94%A8%E6%88%B7"><span class="toc-number">7.3.1.</span> <span class="toc-text">第一，帮助企业打破数据孤岛并真实了解用户</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%EF%BC%8C%E5%AE%9A%E4%BD%8D%E8%90%A5%E9%94%80%E7%9B%AE%E6%A0%87%E7%BE%A4%E4%BD%93%EF%BC%8C%E5%B8%AE%E5%8A%A9%E4%BC%81%E4%B8%9A%E5%AE%9E%E7%8E%B0%E7%B2%BE%E5%87%86%E3%80%81%E9%AB%98%E6%95%88%E8%90%A5%E9%94%80"><span class="toc-number">7.3.2.</span> <span class="toc-text">第二，定位营销目标群体，帮助企业实现精准、高效营销</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E4%BA%92%E9%87%91%E8%A1%8C%E4%B8%9A%E5%94%A4%E9%86%92%E2%80%9C%E6%B2%89%E7%9D%A1%E2%80%9D%E7%94%A8%E6%88%B7%E7%9A%84%E7%B2%BE%E5%87%86%E6%8E%A8%E9%80%81%E4%B8%8E%E6%95%88%E6%9E%9C%E8%AF%84%E4%BC%B0"><span class="toc-number">7.3.3.</span> <span class="toc-text">场景一：互金行业唤醒“沉睡”用户的精准推送与效果评估</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%9C%8D%E5%8A%A1%EF%BC%88To-B%EF%BC%89%E2%80%9C%E5%8F%AC%E5%9B%9E%E2%80%9D%E6%B5%81%E5%A4%B1%E5%AE%A2%E6%88%B7%E7%9A%84%E7%B2%BE%E5%87%86%E6%8E%A8%E9%80%81%E5%92%8C%E6%95%88%E6%9E%9C%E8%AF%84%E4%BC%B0"><span class="toc-number">7.3.4.</span> <span class="toc-text">场景二：企业级服务（To B）“召回”流失客户的精准推送和效果评估</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B"><span class="toc-number">8.</span> <span class="toc-text">分布分析模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%86%E5%B8%83%E5%88%86%E6%9E%90%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">8.1.</span> <span class="toc-text">一、分布分析的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%88%86%E5%B8%83%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%89%B9%E7%82%B9%E4%B8%8E%E4%BB%B7%E5%80%BC"><span class="toc-number">8.2.</span> <span class="toc-text">二、分布分析模型的特点与价值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%BC%8E%E6%8C%96%E6%8E%98%E7%94%A8%E6%88%B7%E5%88%86%E5%B8%83%E8%A7%84%E5%BE%8B%EF%BC%8C%E4%BC%98%E5%8C%96%E4%BA%A7%E5%93%81%E7%AD%96%E7%95%A5%E3%80%82"><span class="toc-number">8.2.1.</span> <span class="toc-text">1．挖掘用户分布规律，优化产品策略。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%BC%8E%E8%BF%90%E8%90%A5%E5%B9%B6%E6%8C%81%E7%BB%AD%E4%BA%A7%E5%93%81%E7%94%9F%E5%91%BD%E5%8A%9B%EF%BC%8C%E5%A2%9E%E5%8A%A0%E5%AE%A2%E6%88%B7%E5%9B%9E%E8%AE%BF%E7%8E%87%E3%80%82"><span class="toc-number">8.2.2.</span> <span class="toc-text">2．运营并持续产品生命力，增加客户回访率。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%BC%8E%E5%BF%AB%E9%80%9F%E8%AF%86%E5%88%AB%E6%A0%B8%E5%BF%83%E7%94%A8%E6%88%B7%E7%BE%A4%E4%BD%93%EF%BC%8C%E8%B5%84%E6%BA%90%E9%85%8D%E7%BD%AE%E6%9C%89%E7%9A%84%E6%94%BE%E7%9F%A2%E3%80%82"><span class="toc-number">8.2.3.</span> <span class="toc-text">3．快速识别核心用户群体，资源配置有的放矢。</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%88%86%E5%B8%83%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">8.3.</span> <span class="toc-text">三、分布分析模型的应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A%E7%94%B5%E5%95%86%E8%A1%8C%E4%B8%9A%E5%B8%B8%E8%A7%81%E7%9A%84%E5%88%86%E5%B8%83%E5%88%86%E6%9E%90%E5%BA%94%E7%94%A8"><span class="toc-number">8.3.1.</span> <span class="toc-text">场景一：电商行业常见的分布分析应用</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>前端 性能优化 二 | Lee Blog</title><meta name="author" content="李鹏辉,ahuinet@163.com"><meta name="copyright" content="李鹏辉"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前端性能优化到底是在优化什么？其实前端性能优化核心就是两点：  保证资源更快的 加载速度：达到越快渲染越快，视图展现就越快 保证视图更快的..."><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://leejs.cn/dc3335a5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '前端 性能优化 二',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images-origin.wallwiz.link/59c1325eccb8f80001ef5d43_1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Lee Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">前端 性能优化 二</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-heartbeat"></i><span> Media</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">前端 性能优化 二</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-30T07:16:56.000Z" title="发表于 2022-09-30 15:16:56">2022-09-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-09T12:25:34.480Z" title="更新于 2025-01-09 20:25:34">2025-01-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前端性能优化到底是在优化什么？"><a href="#前端性能优化到底是在优化什么？" class="headerlink" title="前端性能优化到底是在优化什么？"></a>前端性能优化到底是在优化什么？</h1><p>其实前端性能优化核心就是两点：</p>
+<ul>
+<li><strong>保证资源更快的 加载速度</strong>：达到越快渲染越快，视图展现就越快</li>
+<li><strong>保证视图更快的 渲染速度&#x2F;交互速度</strong>：用户与页面交互，前提是页面要渲染出来，其次是页面需要尽早反馈，目的就是保证用户良好的体验性</li>
+</ul>
+<p>而这些核心内容都可以从下面这个老生常谈的问题中延伸开来。</p>
+<blockquote>
+<p><strong>从输入 <code>URL</code> 到页面加载完成发生了什么？</strong></p>
+</blockquote>
+<p>相信到现在为止，大家对这个问题的回答可以说是能够做到滔滔不绝了吧（<del><code>如果不能，请忽略</code></del>）！不过每个人回答的方向和重点应该都不一样，比如之前在 <code>B 站</code> 听 <code>winter</code> 大佬对这个问题的看法和解析的角度是更深、更广的。</p>
+<p>在这还是要简单的总结一下核心内容：</p>
+<ul>
+<li>进行 <code>DNS</code> 解析</li>
+<li>建立 <code>TCP</code> 连接</li>
+<li>客户端发送 <code>HTTP</code> 请求</li>
+<li>服务端响应 <code>HTTP</code> 资源</li>
+<li>浏览器获取响应内容，进行解析和渲染</li>
+</ul>
+<p>以上任意一点都可进行无限扩展、延伸，但点到为止才是现在真正需要的。</p>
+<h1 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h1><h2 id="RAIL-模型"><a href="#RAIL-模型" class="headerlink" title="RAIL 模型"></a>RAIL 模型</h2><p><code>Google</code> 为前端页面性能的评估提出了 <code>RAIL</code> 模型，核心内容如下：</p>
+<ul>
+<li><strong><code>Response</code> 响应</strong></li>
+<li><strong><code>Animation</code> 动画</strong></li>
+<li><strong><code>Idle</code> 空闲</strong></li>
+<li><strong><code>Load</code> 加载</strong></li>
+</ul>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ef50ba21dad84cb2948cf34b12bde9cf~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1d5b6aae0781485faee0c29c8f633454~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h2 id="常规性能指标"><a href="#常规性能指标" class="headerlink" title="常规性能指标"></a>常规性能指标</h2><p>性能指标其实有不少的内容，但在这我们指列举比较常用的几种：</p>
+<ul>
+<li>首次绘制（<code>First Paint，FP</code>）<ul>
+<li>在渲染进程确认要渲染当前响应资源后，渲染进程会先创建一个空白页面，通常把创建空白页面的这个时间点称为 <code>First Paint</code>，简称 <code>FP</code></li>
+<li>所谓的 <strong>白屏时间</strong> 其实指的就是创建这个空白页面到浏览器开始渲染非空白内容的时间，比如页面背景发生变化等</li>
+</ul>
+</li>
+<li>首次内容绘制（<code>First Contentful Paint，FCP</code>）<ul>
+<li>当用户看见一些 “内容” 元素被绘制在页面上的时间点，和白屏是不一样，它可以是 <strong><code>文本</code></strong> 首次绘制，或 <code>SVG</code> 首次出现，或 <code>Canvas</code> 首次绘制等，即当页面中绘制了第一个 <strong>像素</strong> 时，这个时间点称为 <code>First Content Paint</code>，简称 <code>FCP</code></li>
+</ul>
+</li>
+<li>首屏时间 &#x2F; 最大内容绘制（<code>Largest Contentful Paint, LCP</code>）<ul>
+<li><code>LCP</code> 是一种新的性能度量标准，<code>LCP</code> 侧重于用户体验的性能度量标准，与现有度量标准相比，更容易理解与推理，当首屏内容完全绘制完成时，这个时间点称为 <code>Largest Content Paint</code>，简称 <code>LCP</code></li>
+<li><strong>最大内容绘制应在 <code>2.5s</code> 内完成</strong></li>
+</ul>
+</li>
+<li>首次输入延迟（<code>First Input Delay, FID</code>）<ul>
+<li><code>FID</code> 测量的是当用户第一次在页面上交互的时候（<strong>点击链接</strong>、<strong>点击按钮</strong> 或 <strong>自定义基于 <code>js</code> 的事件</strong>），到浏览器实际开始处理这个事件的时间</li>
+<li><strong>首次输入延迟应在 <code>100ms</code> 内完成</strong></li>
+</ul>
+</li>
+<li>累积布局偏移（<code>Cumulative Layout Shift, CLS</code>)<ul>
+<li><code>CLS</code> 是为了测量 <strong>视觉稳定性</strong>，以便提供良好的用户体验</li>
+<li><strong>累积布局偏移应保持在 <code>0.1</code> 或更少</strong></li>
+</ul>
+</li>
+<li>首字节达到时间（<code>Time to First Byte，TTFB</code>）<ul>
+<li>指的是浏览器开始收到服务器响应数据的时间（<strong>后台处理时间 + 重定向时间</strong>），是反映服务端响应速度的重要指标</li>
+<li><strong><code>TTFB</code> 时间如果超过 <code>500ms</code>，用户在打开网页的时就会感觉到明显的等待</strong></li>
+</ul>
+</li>
+</ul>
+<h1 id="性能指标工具"><a href="#性能指标工具" class="headerlink" title="性能指标工具"></a>性能指标工具</h1><p>通过上述内容了解了性能指标的相关内容和一些阀值，那么接下来的问题是我们怎么获取一个网站的具体性能指标数据呢？</p>
+<p>为了方便还是得使用工具或者说是 <code>API</code>，当然可以 <strong>自定义页面性能指标</strong> 的计算方式，比如有些就是通过计算当前页面 <code>DOM</code> 的 <strong>总节点数</strong> 和 <strong>嵌套层级</strong> 来计算一个网站的分数等，这里就不再额外介绍。</p>
+<h2 id="Performance-面板（Google）"><a href="#Performance-面板（Google）" class="headerlink" title="Performance 面板（Google）"></a>Performance 面板（Google）</h2><p>具体参数介绍可以看 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7052918009555320839#heading-14"><code>Big shark@LX</code></a> 大佬的文章，里面介绍的非常详细，这里只列举一些核心点。</p>
+<h3 id="火焰图"><a href="#火焰图" class="headerlink" title="火焰图"></a>火焰图</h3><h4 id="Networks-指标"><a href="#Networks-指标" class="headerlink" title="Networks 指标"></a>Networks 指标</h4><p>通过 <code>Networks</code> 指标可以查看到对应服务器加载资源的相关信息：</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/32819d3302c042a68f8417452a8b6f47~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>可以将鼠标 <strong>移动</strong> 或 <strong>点击</strong> 到具体的请求上查看加载时间和加载速度，如下：</p>
+<p><strong>鼠标移入：</strong></p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ee81a69ca54a43ec9d0104af1976f389~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p><strong>鼠标点击：</strong></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ffcad197c6bd43729c328bda6b3fec4a~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h3 id="Frames-指标"><a href="#Frames-指标" class="headerlink" title="Frames 指标"></a>Frames 指标</h3><p>通过 <code>Frames</code> 指标可以查看页面每一帧渲染时 <code>CPU</code> 所消耗的时间和持续时间 <code>Duration</code> 的信息，如下：</p>
+<p><strong>图一：</strong></p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/39b714717abe4a28a49ba4f0c9f1cd16~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p><strong>图二：</strong></p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/82e05fe423034338ba63af5563fdacf5~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h3 id="Timings-指标"><a href="#Timings-指标" class="headerlink" title="Timings 指标"></a>Timings 指标</h3><p>通过 <code>Timings</code> 指标可以查看在上面列举的一些性能指标的值，如下：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6cc0b70535904cf386e100c4b6974b15~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<ul>
+<li><strong>首次绘制（<code>First Paint，FP</code>）</strong></li>
+<li><strong>首次内容绘制（<code>First Contentful Paint，FCP</code>）</strong></li>
+<li><strong>首屏时间 &#x2F; 最大内容绘制（<code>Largest Contentful Paint, LCP</code>）</strong></li>
+<li><strong><code>HTML</code> 文档被完全加载 和 解析完成的时间（<code>DOMContentLoaded, DCL</code>）</strong></li>
+</ul>
+<h3 id="Main-指标"><a href="#Main-指标" class="headerlink" title="Main 指标"></a>Main 指标</h3><p><code>Main</code> 指标包含了加载过程的三个阶段：</p>
+<ul>
+<li><p>导航阶段</p>
+<ul>
+<li>主要是处理响应头的数据，并执行一些老页面退出之前的清理操作</li>
+</ul>
+</li>
+<li><p>解析 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HTML</span><br></pre></td></tr></table></figure>
+
+<p> 文件阶段</p>
+<ul>
+<li>主要是解析 <code>HTML</code> 数据、解析 <code>CSS</code> 数据、执行 <code>JavaScript</code> 来生成 <code>DOM</code> 和 <code>CSSOM</code></li>
+</ul>
+</li>
+<li><p>生成位图阶段</p>
+<ul>
+<li>主要是将生成的 <code>DOM</code> 和 <code>CSSOM</code> 合并，包括了布局 (<code>Layout</code>)、分层、绘制、合成等一系列操作</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c1b0ccd835a148ac8688fefd4e2a6ad9~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h2 id="Lighthouse-面板（Google）"><a href="#Lighthouse-面板（Google）" class="headerlink" title="Lighthouse 面板（Google）"></a>Lighthouse 面板（Google）</h2><p><code>Performance</code> 面板最大的优点就是各种数据信息非常的全，但这也是它最大的缺点，数据信息庞大到需要自行过滤，对于不熟悉的开发者来说，还是需要一定的学习成本的。</p>
+<p>相反，<code>Lighthouse</code> 面板中的信息就相对简洁一些，除了检测结果以外，还会提供对应的改进方案，真是考虑得妥妥的，主要检测五个方面的内容：</p>
+<ul>
+<li><strong>Performance（性能）</strong></li>
+<li><strong>Accessibility（可访问性）</strong></li>
+<li><strong>Best practice（最佳实践）</strong></li>
+<li><strong>SEO（搜索引擎优化）</strong></li>
+<li><strong>Progressive Web App（渐进式 Web 应用）</strong></li>
+</ul>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d1f35f41e077439386e03af148e56852~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>可以通过 <code>Analyze page load</code> 按钮来开始对页面应用进行检测，这里以掘金首页为例：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e1adf55dda6c46bbb82f6b5fbe0e8b5a~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>下面以 <strong>Performance 性能</strong> 为例简单看一下具体包含的内容，由于篇幅有限，其他内容可自行测试并进行阅读。</p>
+<h3 id="Performance-性能（举一反三）"><a href="#Performance-性能（举一反三）" class="headerlink" title="Performance 性能（举一反三）"></a>Performance 性能（举一反三）</h3><p>从性能指标的数据来看，只有 <strong>累积布局偏移（<code>Cumulative Layout Shift, CLS</code>)</strong> 满足要求，其他指标显示 <strong>黄色</strong> 和 <strong>红色</strong>，意味着仍有改进的空间，特别是 <strong>首屏时间</strong> 是 <code>2.9s</code> 已经是超过了对应的阈值 <code>2.5s</code>。</p>
+<p>性能指标数据如下图所示：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ecf42aeeaea643afa4f06dd8854a457f~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>甚至还提供了对应的诊断结果，比如提到的图片没有设置对应的宽高：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0f7b9461dc014443a565817f65d286fc~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h3 id="Using-the-Node-CLI"><a href="#Using-the-Node-CLI" class="headerlink" title="Using the Node CLI"></a>Using the Node CLI</h3><p>甚至还支持在 <code>Node</code> 环境运行，感兴趣的自行去 <code>npm</code> 中查看 <a href="https://link.juejin.cn/?target=https://www.npmjs.com/package/lighthouse"><strong>文档</strong></a> 即可，这里不过多介绍。 <img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/49142b7f6775419681a9a33487a2818f~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h1 id="性能指标数据收集"><a href="#性能指标数据收集" class="headerlink" title="性能指标数据收集"></a>性能指标数据收集</h1><p>上述性能指标工具的能力已经足够强大，覆盖信息也很全面，但如果我们需要将页面性能指标数据收集并上报又该怎么办呢？</p>
+<p>首先排除的肯定是通过 <strong>性能指标工具</strong> 的方式来收集，一旦要检测性能指标数据意味着得是不同的客户端统计数据的结果合集（<del>除非你愿意一台一台客户端来手动记录和收集数据，呸，你愿意你领导还不愿意呢</del>），最理想的方式当然是自动收集和上报，那就意味着这应该是代码要干的活！！！</p>
+<p>既然有这样的需求，那么必定有对应的解决方案，您接着往下看！</p>
+<h2 id="Performance-API"><a href="#Performance-API" class="headerlink" title="Performance API"></a>Performance API</h2><p>实际上在浏览器端的全局对象 <code>window</code> 上有一个名为 <code>performance</code> 的属性，它是一个用于支持 <code>IE9</code> 以上及 <code>webkit</code> 内核浏览器中用于记录页面 <strong>加载</strong> 和 <strong>解析</strong> 过程中关键时间点的机制，其兼容性在 <a href="https://link.juejin.cn/?target=https://caniuse.com/?search=performance"><strong><code>caniuse</code></strong></a> 中的表现如下：</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95bd0412104649c184842a479c06e1c9~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>下面就简单介绍一下和 <code>window.performance</code> 相关一些核心属性和方法。</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e907aa407422438fb3b405cc6c404539~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h3 id="performance-timing-属性"><a href="#performance-timing-属性" class="headerlink" title="performance.timing 属性"></a>performance.timing 属性</h3><p><code>performance.timing</code> 属性中提供了很多关键的时间信息，我们可以通过这些时间节点来简单的计算出需要的性能指标数据（不一定准确），计算方式如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123;</span><br><span class="line"> domainLookupStart,</span><br><span class="line"> domainLookupEnd,</span><br><span class="line"> navigationStart,</span><br><span class="line"> loadEventEnd,</span><br><span class="line"> responseStart,</span><br><span class="line"> responseEnd,</span><br><span class="line"> connectStart,</span><br><span class="line"> connectEnd,</span><br><span class="line"> redirectStart,</span><br><span class="line"> redirectEnd,</span><br><span class="line"> domContentLoadedEventEnd,</span><br><span class="line"> domComplete,</span><br><span class="line">&#125; = performance.<span class="property">timing</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DNS 查询时间</span></span><br><span class="line"><span class="variable constant_">DNS</span> = domainLookupEnd - domainLookupStart</span><br><span class="line"></span><br><span class="line"><span class="comment">// TCP 建立连接时间</span></span><br><span class="line"><span class="variable constant_">TCP</span> = connectEnd - connectStart</span><br><span class="line"></span><br><span class="line"><span class="comment">// 页面重定向时间</span></span><br><span class="line"><span class="title class_">Redirect</span> = redirectEnd - redirectStart</span><br><span class="line"></span><br><span class="line"><span class="comment">// 首字节到底时间</span></span><br><span class="line"><span class="variable constant_">TTFB</span> = responseStart - navigationStart</span><br><span class="line"></span><br><span class="line"><span class="comment">// 首次渲染时间</span></span><br><span class="line"><span class="variable constant_">FP</span> = responseStart - navigationStart</span><br><span class="line"></span><br><span class="line"><span class="comment">// DOM 解析时间</span></span><br><span class="line"><span class="variable constant_">DOM</span> = domComplete - responseEnd</span><br><span class="line"></span><br><span class="line"><span class="comment">// 首屏时间</span></span><br><span class="line"><span class="variable constant_">LCP</span> = loadEventEnd - navigationStart</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="performance-getEntries-方法"><a href="#performance-getEntries-方法" class="headerlink" title="performance.getEntries() 方法"></a>performance.getEntries() 方法</h3><p><code>performance.getEntries()</code> 方法可以获取所有资源请求的时间数据，如下：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/87b0729f40f8431d9353d34af9fa290b~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>点击可查看具体的资源信息，其他属性和上述内容有重复，就不在额外介绍计算方式了，具体如下：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f210fcecb2f2435984c635daf23d8be8~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h3 id="performance-now-方法"><a href="#performance-now-方法" class="headerlink" title="performance.now() 方法"></a>performance.now() 方法</h3><p><code>performance.now()</code> 方法可以精确计算程序执行时间，它会返回以微秒（<strong>百万分之一秒</strong>）为单位的时间，即更加精准，这也是它和 <code>Date.now()</code> 是不同点：</p>
+<ul>
+<li><p><strong><code>Date.now()</code></strong> 返回自 1970年1月1日 00:00:00 (UTC) 到 <strong>当前时间</strong> 的 <strong>毫秒数</strong></p>
+<ul>
+<li>意味着 <strong><code>Date.now()</code></strong> 依赖于系统的当前时间，而系统时间可以被认为修改，因此它的毫秒数并不准确</li>
+</ul>
+</li>
+<li><p><strong><code>performance.now()</code></strong> 的时间是以恒定速率递增的，不受系统时间的影响</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Date.now()</span></span><br><span class="line"><span class="keyword">let</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">const</span> begin = <span class="title class_">Date</span>.<span class="title function_">now</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27; a + b = &#x27;</span>, a + b);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;time = &#x27;</span>, <span class="title class_">Date</span>.<span class="title function_">now</span>() - begin); <span class="comment">// 2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// performance.now()</span></span><br><span class="line"><span class="keyword">let</span> a = <span class="number">2</span>, b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">const</span> begin = performance.<span class="title function_">now</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27; a + b = &#x27;</span>, a + b);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;time = &#x27;</span>, performance.<span class="title function_">now</span>() - begin); <span class="comment">// 0.10000002384185791</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Web-Vitals"><a href="#Web-Vitals" class="headerlink" title="Web Vitals"></a>Web Vitals</h2><p><a href="https://link.juejin.cn/?target=https://www.npmjs.com/package/web-vitals"><strong><code>web-vitals</code></strong></a> 库是 <code>Google</code> 推出的一个小型（约 <code>1.5K</code>）模块化库，用于测量真实用户的所有 <code>Web Vitals</code> 相关的指标，其重要核心指标信息如下（一图胜千言）：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b4041541bd5e4dc98871c4c71020c2ed~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>接下来，让我们通过 <code>npx create-react-app my-react-app</code> 来创建一个 <code>react</code> 项目，然后观察一下它的项目结构：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba8b6e3ef8f54ce0bc11ed7b11723fa6~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<p>是不是超级显眼的 <strong><code>reportWebVitals.js</code></strong>，在进入文件查看你会发现我们需要的核心性能指标都在里面：</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7e6c2372f6f74ecba86a1a52afc45ba2~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>就针对优化方案进行总结，核心的方向还是上篇文章中提到的内容：</p>
+<ul>
+<li><strong><code>保证资源更快的 加载速度</code></strong>：达到越快渲染越快，视图展现就越快</li>
+<li><strong><code>保证视图更快的 渲染速度/交互速度</code></strong>：用户与页面交互，前提是页面要渲染出来，其次是页面需要尽早反馈，目的就是保证用户良好的体验性</li>
+</ul>
+<p>其实将上述两点再进行翻译，那么其实指的就是 <strong>网络层面的优化</strong> 和 <strong>浏览器层面的优化</strong>，这样看来其实前端性能优化方向还是很明确的，只不过明确的方向中还是会涉及不同方面的具体优化手段。</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9bdfc777905c4ec187c1a215b5610f86~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="0B249F1E.jpg"></p>
+<p>还是不得不回顾 <strong>从输入 <code>URL</code> 到页面加载完成</strong> 的核心过程：</p>
+<ul>
+<li>进行 <code>DNS</code> 解析</li>
+<li>建立 <code>TCP</code> 连接</li>
+<li>客户端发送 <code>HTTP</code> 请求</li>
+<li>服务端响应 <code>HTTP</code> 资源</li>
+<li>浏览器获取响应内容，进行解析和渲染</li>
+</ul>
+<p>从上述的内容来看，不难发现每一步都是需要消耗一定的时间，那么优化的方向就可以围绕着这些内容来考虑。</p>
+<p><strong>长文预警❗️❗️❗️ 长文预警❗️❗️❗️ 长文预警❗️❗️❗️ 长文预警❗️❗️❗️</strong></p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e87115adb8094617aa6770462e9d53ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="1.gif"></p>
+<h1 id="如何保证资源更快的加载速度？"><a href="#如何保证资源更快的加载速度？" class="headerlink" title="如何保证资源更快的加载速度？"></a>如何保证资源更快的加载速度？</h1><p>下面内容主要针对 <strong><code>DNS</code> 解析</strong>、<strong><code>TCP</code> 连接</strong>、<strong><code>HTTP</code> 请求&#x2F;响应</strong> 等阶段来谈的优化，核心优化核心其实就是 <strong>网络层面</strong>。</p>
+<h2 id="使用-dns-prefetch-减少-DNS-的查询时间"><a href="#使用-dns-prefetch-减少-DNS-的查询时间" class="headerlink" title="使用 dns-prefetch 减少 DNS 的查询时间"></a>使用 <code>dns-prefetch</code> 减少 DNS 的查询时间</h2><p><code>dns-prefetch</code> 能够 <strong>提前解析</strong> 后续可能会用到的 <strong>不同域的域名</strong>，使解析结果 <strong>缓存到系统缓存</strong> 中，缩短 <code>DNS</code> 解析时间以提高网站的访问速度。</p>
+<p>比如在掘金中的体现如下：</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0915524494ac40529e5197492e65b08d~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<blockquote>
+<p>【<strong>扩展</strong>】 <strong><code>DNS</code> 解析的核心过程</strong></p>
+</blockquote>
+<p>当浏览器访问一个域名时需解析一次 <code>DNS</code>，以获得对应域名的 <code>IP</code> 地址：</p>
+<ul>
+<li><strong>浏览器</strong> 会从自身的 <strong>缓存中</strong> 查询是否存在对应域名的 <code>IP</code> 地址，若存在返回，若不存在进入下一步</li>
+<li>客户机查询操作系统中的 <strong><code>/etc/hosts</code></strong> 文件中查询是否有对应域名的 <code>IP</code> 地址，若存在则返回，若不存在进入下一步</li>
+<li>客户机请求 <strong>本地域名服务器（LDNS）</strong> 进行解析，本地域名服务器收到客户机的请求后，先查询自己的缓存信息是否有对应域名的 <code>IP</code> 地址，若存在返回结果，没有则进行下一步</li>
+<li>本地域名服务器请求 <strong>根域名服务器</strong> 解析该域名，根域名告诉本地域名服务器去找对应的 <strong>一级域名服务器</strong></li>
+<li>本地域名服务器请求一级域名服务器解析这个域名，一级域名服务器告诉它去找对应的 <strong>二级域名服务器</strong></li>
+<li>本地域名服务器请求二级域名服务器解析这个域名，二级域名服务器告诉它去找对应的 <strong>子域名服务器</strong></li>
+<li>本地域名服务器请求子域名服务器解析这个域名，<strong>子域名服务器返回对应的 IP 地址</strong></li>
+<li>本地域名服务器将 <code>IP</code> 地址记录到缓存中，并返回给客户机（会缓存起来），客户机根据收到的 <code>IP</code> 地址访问该网站</li>
+</ul>
+<h2 id="使用-preconnect-提前建立连接"><a href="#使用-preconnect-提前建立连接" class="headerlink" title="使用 preconnect 提前建立连接"></a>使用 <code>preconnect</code> 提前建立连接</h2><p><code>preconnect</code> 的作用是提前和第三方资源建立连接，设置了它浏览器就会做好早期的连接工作，但这个连接通常只会维持 <code>10 s</code>。</p>
+<p>比如在当前域请求一个资源前，可能会涉及 <code>DNS</code> 寻址、<code>TLS</code> 握手、<code>TCP</code> 握手、重定向等，这过程也会花费一定的时间。</p>
+<p>比如在掘金中的体现如下：</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62852721b2234e65858eb9d8db10eec8~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<h2 id="使用-preload-prefetch-预先加载资源"><a href="#使用-preload-prefetch-预先加载资源" class="headerlink" title="使用 preload / prefetch 预先加载资源"></a>使用 <code>preload / prefetch</code> 预先加载资源</h2><h3 id="preload"><a href="#preload" class="headerlink" title="preload"></a>preload</h3><p><code>preload</code> 的作用是提前加载页面对应的 <strong>关键资源</strong> 加快页面的渲染，<code>preload</code> 的优先级顺序和 <code>as</code> 属性相关，<a href="https://link.juejin.cn/?target=https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload"><strong>具体可见</strong></a>。</p>
+<blockquote>
+<p>【<strong>注意</strong>】<code>as</code> 属性一定要设置，除了上面提到的设置优先级外，还涉及到浏览识别的问题：如果没有设置 <code>as</code> 属性，后续遇到该请求就会被作为一个 <code>XHR</code> 请求，把意味着资源预加载的功能可能会失效，因为可能会每次都发起新的请求获取</p>
+</blockquote>
+<p>比如在掘金中的体现如下：</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4050cfe8ecf7411facaaa041339b39cd~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p>比如在 <code>vue-cli</code> 的默认 <code>webpack</code> 配置，如下：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/98e69fea1ff64fe8aa4481cda4d6cdca~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<h3 id="prefetch"><a href="#prefetch" class="headerlink" title="prefetch"></a>prefetch</h3><p><code>preload</code> 是对资源的预加载，它虽提前加载但只在需要执行时执行，即这个资源一定是当前页面所需要的资源，如果是需要为下一个页面提前加载资源，那么应该使用 <code>prefetch</code>，它会在 <strong>浏览器空闲时</strong> 下载资源。</p>
+<p>比如在 <code>vue-cli</code> 的默认 <code>webpack</code> 配置，如下：</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9ac9bfdabc2e466cb3e05a282b381213~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<h2 id="压缩资源体积"><a href="#压缩资源体积" class="headerlink" title="压缩资源体积"></a>压缩资源体积</h2><p>资源是需要通过 <code>http</code> 数据包的方式在网络中进行传输的，那么只要能减少传输数据包的体积，也是能够使得资源更快到达客户端，这也是压缩资源体积的核心目的。</p>
+<h3 id="HTTP-压缩"><a href="#HTTP-压缩" class="headerlink" title="HTTP 压缩"></a>HTTP 压缩</h3><p>HTTP 压缩中一个典型代表就是 <code>gzip</code>，它是一种优秀的压缩算法，可对 <code>http</code> 请求中的一些文件资源进行压缩处理，一般来讲是要在服务端处理的，可通过在响应头中设置 <code>Content-encoding: gzip</code> 表示当前资源使用的压缩方式（如：<code>gzip、deflate、br</code> 等），便于客户端使用正确的方式解压。</p>
+<blockquote>
+<p>【<strong>注意</strong>】<code>gzip</code> 并不是万能的，它不能保证针对每个文件的压缩都能使其体积变小，关于 <code>Content-Encoding</code> 的内容 <a href="https://link.juejin.cn/?target=https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Encoding"><strong>可点此查阅</strong></a>，或者可参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904148622639111"><strong>content-encoding 除了gzip之外，你还知道哪些？</strong></a></p>
+</blockquote>
+<p>比如在京东中的体现:</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c5a42ccd8d8144adb50d3acdec9da5da~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<p>比如在掘金中的体现：</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2ee2a833f35d40b39e30d3cd09906a01~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<h3 id="Webpack-压缩"><a href="#Webpack-压缩" class="headerlink" title="Webpack 压缩"></a>Webpack 压缩</h3><p><strong>有 <code>HTTP</code> 压缩 不就够了吗？为什么还需要 <code>Webpack</code> 压缩？</strong></p>
+<p>首先必须要明确的是压缩的过程本身就是会消耗时间的，如果所有资源都等到被访问的时候再由服务端进行压缩，在压缩完成之前客户端还是得处于等待状态，即仍 <strong>不能保证资源以最快的速度到达客户端</strong>。</p>
+<p>那么优化方案就是将压缩资源的时间放到打包构建中，毕竟只有真正需要发布线上生产环境时才需要执行一系列的打包优化的操作，而这相比于 <strong><code>http</code></strong> 的 <strong>请求&#x2F;响应</strong> 速度，稍微延长产物打包时间没有什么大问题。</p>
+<p>下面会列举一些 <strong>Webpack</strong> 插件，但并不会去讲其中的具体用法，因为这些只是达到目的的不同方案而已，每个方案要是细讲都可以独占一篇文章，在这是没有必要的，具体用法可自行查阅。</p>
+<blockquote>
+<p><strong>使用 <code>CompressionPlugin</code> 压缩文件</strong></p>
+</blockquote>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cdb388cd47a049cb89eac2eca383f1a9~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<p><a href="https://link.juejin.cn/?target=https://webpack.docschina.org/awesome-webpack/%23Webpack-Plugins"><strong><code>webpack</code> 文档</strong></a> 提供插件合集中就包含了该插件，它的作用就是：<strong><code>Prepare compressed versions of assets to serve them with Content-Encoding.</code></strong></p>
+<blockquote>
+<p><strong>使用 <code>HtmlWebpackPlugin</code> 压缩 <code>HTML</code> 文件</strong></p>
+</blockquote>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/46fc48a1ac4740e094280840e14a0904~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<p>通常我们需要 <a href="https://link.juejin.cn/?target=https://github.com/jantimon/html-webpack-plugin"><strong><code>HtmlWebpackPlugin</code></strong></a> 插件来生成对应 <code>HTML</code> 或 对已有的 <code>HTML</code> 模板自动注入 <code>webpack bundles</code> 资源，除此之外，它还可配置 <code>minify</code> 选项实现压缩模板的目的。</p>
+<p>可以在 <code>vue</code> 项目下执行 <strong><code>vue inspect --mode production &gt; webpack.config.js</code></strong> 来查看脚手架的默认 <code>webpack</code> 配置内容，比如：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e370965e70f3446c972844caceaf094f~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<blockquote>
+<p><strong>使用 <code>SplitChunksPlugin</code> 自定义分包策略</strong></p>
+</blockquote>
+<p><code>Webpack</code> 默认会将尽可能多的模块代码打包在一起，这种默认规则的带来的优点和缺点都很明显:</p>
+<ul>
+<li>优点：<strong>能减少最终页面的 <code>HTTP</code> 请求数</strong></li>
+<li>缺点：<ul>
+<li><strong>页面初始代码包过大，影响首屏渲染性能</strong></li>
+<li><strong>无法有效应用浏览器缓存</strong></li>
+</ul>
+</li>
+</ul>
+<p><a href="https://link.juejin.cn/?target=https://webpack.docschina.org/plugins/split-chunks-plugin/"><strong><code>SplitChunksPlugin</code></strong></a> 是 <code>Webpack 4</code> 之后内置实现的最新分包方案，与 <code>Webpack 3</code> 中的 <code>CommonsChunkPlugin</code> 相比，它能够基于一些更灵活、合理的启发式规则将 <code>Module</code> 编排进不同的 <code>Chunk</code>，最终构建出 <strong>性能更佳、缓存更友好</strong> 的应用产物。</p>
+<p>比如在 <code>vue-cli</code> 的默认 <code>webpack</code> 配置，如下：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0a2594b60028491a80e34e8e0be3d6fb~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<blockquote>
+<p><strong>使用 <code>MiniCssExtractPlugin</code> 抽离和压缩 <code>CSS</code></strong></p>
+</blockquote>
+<p><a href="https://link.juejin.cn/?target=https://webpack.docschina.org/plugins/mini-css-extract-plugin%23root"><strong><code>MiniCssExtractPlugin</code></strong></a> 会将 <code>CSS</code> 提取到单独的文件中，为每个包含 <code>CSS</code> 的 <code>JS</code> 文件创建一个 <code>CSS</code> 文件，并且支持 <code>CSS</code> 和 <code>SourceMaps</code> 的 <strong>按需加载</strong> 。</p>
+<p>比如在 <code>vue-cli</code> 的默认 <code>webpack</code> 配置，如下：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1cd8f08a792248d6a151ff04b3cfaeb7~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/51874cb7334f4a40981352438a563ef0~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<blockquote>
+<p><strong>使用 <code>ImageMinimizerWebpackPlugin</code> 压缩图片资源</strong></p>
+</blockquote>
+<p>图片仍是一个 <code>Web</code> 应用中的必不可少的资源，而图片资源的体积也是首屏页面加载的瓶颈之一，因此，压缩图片也是性能优化需要考虑的内容。</p>
+<p><a href="https://link.juejin.cn/?target=https://webpack.docschina.org/plugins/image-minimizer-webpack-plugin/%23root"><strong><code>ImageMinimizerWebpackPlugin</code></strong></a> 可用于使用 <strong>优化&#x2F;压缩</strong> 所有图像，它可以支持 <strong>无损（不损失质量）</strong>、<strong>有损（质量下降）</strong> 两种模式的压缩方式。</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c22c0109afb14db4bc06a0fd923ea0ff~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<blockquote>
+<p><strong>通过 <code>Tree Shaking</code> 移除无用代码</strong></p>
+</blockquote>
+<p><a href="https://link.juejin.cn/?target=https://webpack.docschina.org/guides/tree-shaking/%23root"><strong><code>Tree Shaking</code></strong></a> 依赖于 <code>ES6</code> 模块语法的 <a href="https://link.juejin.cn/?target=http://exploringjs.com/es6/ch_modules.html%23static-module-structure"><strong>静态结构</strong></a> 特性（如： <a href="https://link.juejin.cn/?target=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import"><code>import</code></a> 和 <a href="https://link.juejin.cn/?target=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export"><code>export</code></a>），当 <code>webpack</code> 的模式 <code>mode</code> 为 <code>&quot;production&quot;</code> 时，就可以启用 <a href="https://link.juejin.cn/?target=https://webpack.docschina.org/concepts/mode/%23usage"><strong>更多优化项</strong></a>，包括 <strong>压缩代码</strong> 与 <strong>Tree Shaking</strong>。</p>
+<p>但同时我们就必须保证：</p>
+<ul>
+<li>尽量使用 <code>ES6</code> 模块语法，即 <code>import</code> 和 <code>export</code></li>
+<li>保证没有 <strong>编译器</strong>（如：<code>babel</code>）将对应的 <code>ES6</code> 模块语法转换为 <code>CommonJS</code> 的语法（如：<code>@babel/preset-env</code> 的默认行为）</li>
+<li>可在项目的 <code>package.json</code> 文件中添加 <code>&quot;sideEffects&quot;</code> 属性，标识当前内容是否存在副作用操作</li>
+<li>可在通过 <code>/*#__PURE__*/</code> 注释，将函数调用标记为无副作用</li>
+</ul>
+<h2 id="减少-http-请求数量"><a href="#减少-http-请求数量" class="headerlink" title="减少 http 请求数量"></a>减少 http 请求数量</h2><p><strong>不同协议</strong> 下 <strong>请求数量</strong> 仍然可能成为 <strong>请求&#x2F;响应</strong> 慢的原因：</p>
+<ul>
+<li>合并公共资源，如 雪碧图 等</li>
+<li>内置模块资源，如 生成 <code>base64</code> 图片、通过 <code>symbol</code> 引用 <code>svg</code> 等</li>
+<li>合并代码块，如构建工具分包策略配合 公共组件封装、组件复用逻辑抽离 等</li>
+<li>按需加载资源，如 路由懒加载、图片懒加载、上拉加载、分页加载 等</li>
+</ul>
+<h2 id="减少不必要的-cookie"><a href="#减少不必要的-cookie" class="headerlink" title="减少不必要的 cookie"></a>减少不必要的 cookie</h2><p>不必要的 <code>cookie</code> 来回传输会造成带宽浪费：</p>
+<ul>
+<li>减少 <code>cookie</code> 存储的内容</li>
+<li>对于静态资源采用 <code>CDN</code> 托管（即非同域），不同域名默认不携带 <code>cookie</code></li>
+</ul>
+<h2 id="CDN-托管静态资源-HTTP-缓存"><a href="#CDN-托管静态资源-HTTP-缓存" class="headerlink" title="CDN 托管静态资源 + HTTP 缓存"></a>CDN 托管静态资源 + HTTP 缓存</h2><p><strong><code>CDN</code> 加速的本质是缓存加速</strong>，将服务器上存储的静资源容缓存在 <code>CDN</code> 节点上，当后续访问这些静态内容时，无需访问服务器源站，选择就近访问 <code>CDN</code> 节点即可，从而达到加速的效果，同时减轻服务器源站的压力。</p>
+<p>在掘金中体现如下：</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/53608c5ad7ab4ee9b0daee811fcb226d~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="img"></p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8c1051501e47461aaeb45ae368585881~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp" alt="image.png"></p>
+<h2 id="协议升级为-Http2-0"><a href="#协议升级为-Http2-0" class="headerlink" title="协议升级为 Http2.0"></a>协议升级为 Http2.0</h2><blockquote>
+<p><strong><code>http1.x</code> 存在的问题：</strong> <code>HTTP</code> 的底层协议是 <code>TCP</code>，而 <code>TCP</code> 是面向连接即需要 <strong>三次握手</strong> 才能建立连接，其中：</p>
+</blockquote>
+<ul>
+<li><p><code>http1.0</code> 中使用的是 <strong>短连接</strong>，即 <strong>一次请求&#x2F;响应</strong> 结束后就会断开连接，这个过程比较耗时</p>
+</li>
+<li><pre><code>http1.1
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"> 中使用的是 </span><br><span class="line"></span><br><span class="line">长连接</span><br><span class="line"></span><br><span class="line">，在 </span><br><span class="line"></span><br><span class="line">请求/响应头</span><br><span class="line"></span><br><span class="line"> 中设置 </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+Connection: keep-alive
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"> 即可开启，优点是 </span><br><span class="line"></span><br><span class="line">长连接</span><br><span class="line"></span><br><span class="line"> 允许多个请求共用一个 </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+TCP
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   连接，缺点是带来了 </span><br><span class="line"></span><br><span class="line">  队头阻塞</span><br><span class="line"></span><br><span class="line">  ：</span><br><span class="line"></span><br><span class="line">  - 每个 `TCP` 连接中的多个请求，需要进行排队，只有队头的请求被响应，才能继续处理下一个请求</span><br><span class="line">  - 其中一个缓解方案就是如果当前 `TCP` 连接中发生 **队头阻塞**，那就将部分请求放到其他 `TCP` 连接中</span><br><span class="line">  - 浏览器一般会限制同一个域名建立 `6-8` 个 `TCP` 链接，这也就是为什么需要为应用划分子域名、静态资源托管 `CDN` 的原因之一</span><br><span class="line"></span><br><span class="line">- `http1.x` 中 `header` 部分的内容可能会很大，而且每一个请求可能都需要携带大量 **重复** `header` 的 **文本内容**，而这些也是导致 **请求/响应** 慢的原因之一</span><br><span class="line"></span><br><span class="line">&gt; **以上问题 `http2.0` 都能够解决：**</span><br><span class="line"></span><br><span class="line">- 针对 **TCP 连接数** 被限制的问题，`http2.0` 采用 **多路复用** 一个域名只对应一个 `TCP` 连接</span><br><span class="line"></span><br><span class="line">- 针对 **http 队头阻塞** 问题，`http2.0` 中通过二进制分帧层为每个 **请求/响应** 添加 `stream id` 保证 **请求/响应** 一一对应，即不必等待前面的请求处理完成，并且还可以为每个请求添加 **优先级**</span><br><span class="line"></span><br><span class="line">- 针对 </span><br><span class="line"></span><br><span class="line">  `header`</span><br><span class="line"></span><br><span class="line">   数据大的问题，</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+http2.0
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">中传输的 </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+header
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"> 帧经过处理后会用 </span><br><span class="line"></span><br><span class="line">二进制</span><br><span class="line"></span><br><span class="line"> 的方式表示，替换了原本的 </span><br><span class="line"></span><br><span class="line">文本格式</span><br><span class="line"></span><br><span class="line">，并使用 </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+HPACK
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   算法进行压缩</span><br><span class="line"></span><br><span class="line">  - **接收/发送** 两端会维护一个 **索引表**，通过下标来标识 `header`，针对后续重复的 `header` 信息就可以用对应的索引来代替</span><br><span class="line"></span><br><span class="line">- 针对传统的 **请求 —&gt; 响应** 模式，`http2.0` 中提供了 **服务端推送** 的能力，让服务端能够主动向客户端推送关键资源，加快资源加载</span><br><span class="line"></span><br><span class="line">比如在掘金中的体现：</span><br><span class="line"></span><br><span class="line">![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b6db14af77a04c5d9ccecf6e450c680e~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp?)</span><br><span class="line"></span><br><span class="line"># 如何保证视图更快的渲染和交互？</span><br><span class="line"></span><br><span class="line">保证资源快速到达客户端后，接下来就需要针对 **浏览器的解析和渲染** 进行优化，当然还包括后续的页面交互的优化，这其实就是 **浏览器层面** 的优化。</span><br><span class="line"></span><br><span class="line">浏览器渲染 `HTML` 文件的核心过程：</span><br><span class="line"></span><br><span class="line">- **HTML 解释器**：将 **`HTML`** 文档经过词法分析输出 **`DOM Tree`**</span><br><span class="line"></span><br><span class="line">- **CSS 解释器**：解析 **`CSS`** 文档，生成样式规则 **`CSSOM`**</span><br><span class="line"></span><br><span class="line">- **样式计算**：将 **`DOM Tree`** 和 **`CSSOM`** 合并生成 **`Render Tree`**</span><br><span class="line"></span><br><span class="line">- **布局计算**：计算 **`Render Tree`** 节点在页面中的坐标位置，创建 **`Layout Tree`**</span><br><span class="line"></span><br><span class="line">- **划分图层**：页面中有很多复杂的效果，如一些复杂的 `3D` 变换、页面滚动，或使用 `z-index` 做 `z` 轴排序等，为了更加方便地实现这些效果，渲染引擎还需要为特定的节点生成专用的图层，生成对应的图层树 **`Layer Tree`**</span><br><span class="line"></span><br><span class="line">- 图层绘制</span><br><span class="line"></span><br><span class="line">  ：</span><br><span class="line"></span><br><span class="line">  - 染引擎实现图层的绘制时，会把一个图层的绘制拆分成很多小的 **绘制指令**，并将这些指令按照顺序组成一个 **待绘制列表**</span><br><span class="line">  - 当图层的绘制列表准备好后，**主线程** 会把 **待绘制列表** 提交（`commit`）给 **合成线程**</span><br><span class="line"></span><br><span class="line">- 栅格化 raster</span><br><span class="line"></span><br><span class="line">  ：</span><br><span class="line"></span><br><span class="line">  - 由于视口有限，用户只能看到页面的很小一部分，没必要绘制出所有图层内容，因此 **合成线程** 会将 **图层（layer）** 划分为 **图块（tile）**</span><br><span class="line">  - **渲染进程** 把 **生成图块的指令** 发送给 `GPU` 并执行生成图块的 **位图**</span><br><span class="line"></span><br><span class="line">- 合成和显示</span><br><span class="line"></span><br><span class="line">  ：</span><br><span class="line"></span><br><span class="line">  - 一旦所有图块都被光栅化，**合成线程** 就会生成一个绘制图块的命令 —— `DrawQuad`，然后将该命令提交给 **浏览器进程**</span><br><span class="line">  - **浏览器进程** 里面有一个 **viz 组件**，会根据 `DrawQuad` 命令，将其页面内容绘制到内存中，最后再将内存显示在屏幕上</span><br><span class="line"></span><br><span class="line">## 渲染层面</span><br><span class="line"></span><br><span class="line">### 减少阻塞渲染的因素</span><br><span class="line"></span><br><span class="line">真正渲染视图之前，必然要生成 **`DOM Tree`** 和 **`CSSOM`**，因此必须保证 **HTML 解释器** 和 **CSS 解释器** 都尽早处理完成，同时 **`JavaScript`** 的加载和执行可能会阻塞这个过程：</span><br><span class="line"></span><br><span class="line">- `HTML` 文档中首次渲染的节点数量要尽量少，避免深层次的嵌套结构，避免大量使用慢标签（如：`iframe`）等</span><br><span class="line">- `CSS` 资源放文档头部，降低 `CSS` 复杂度，比如 合理使用 `CSS` 选择器</span><br><span class="line">- `JavaScript` 资源放文档底部，合理使用 `defer、async` 的加载方式</span><br><span class="line"></span><br><span class="line">### 懒加载</span><br><span class="line"></span><br><span class="line">懒加载主要是针对数量大、资源加载慢的情况，比如图片资源、大量列表数据展示等：</span><br><span class="line"></span><br><span class="line">- **图片资源**：优先加载在可视区范围内的图片，可视区外的图片 **`延后加载`**，或者说当移入的可视区时再加载</span><br><span class="line">- **列表数据**：列表数据通常数据里量大，不可能一次渲染完所有数据，一般通过 **`分页加载、上拉加载`** 等方式分批次渲染</span><br><span class="line"></span><br><span class="line">### 白屏优化</span><br><span class="line"></span><br><span class="line">白屏是由于 `SPA` 应用需要等待 `JavaScript` 加载并执行完成后才会生成具体的页面结构内容导致的，即初始化模板中没有任何有意义需要被渲染的 `HTML` 结构：</span><br><span class="line"></span><br><span class="line">- 添加 **白屏 `loading`**，可在模板中添加默认的 `loading` 效果，等到真正页面内容被渲染就可以替换 `loading` 内容</span><br><span class="line">- 添加 **骨架屏**，和上述方案一致，在真正页面内容展示出来之前，先展示默认的视图内容，避免白屏</span><br><span class="line"></span><br><span class="line">### 服务端渲染（server-side rendering）</span><br><span class="line"></span><br><span class="line">现代框架默认是属于客户端应用框架，即组件的代码会在浏览器中运行，然后向页面输出 **DOM** 元素，也叫 **客户端渲染（client-side rendering，CSR）**：</span><br><span class="line"></span><br><span class="line">- 优点</span><br><span class="line">  - **`用户体验更好`**，基于 **前端路由** 的方式并不会真正进行 **页面跳转**，即不会使页面重新刷新、加载，带来更高的流畅度</span><br><span class="line">  - **`占用服务端资源少`**，**CSR 渲染** 是交由客户端进行处理，服务端不需要关心渲染计算的过程，减轻了服务端的压力</span><br><span class="line">- 缺点</span><br><span class="line">  - **`&quot;白屏&quot; 时间较长`**，主要是因为 **CSR** 渲染需要 `*.js` 的支持，而 `*.js` 又必须保证 `*.html` 被接收和解析， `*.html` 又强依赖于当前的 **网络环境**，因此，在差网环境下回导致 **白屏时间过长**，特别是在移动网络环境下</span><br><span class="line">  - **`对 SEO 的支持不友好`**，因为 **白屏时间较长** 导致在一段时间内没有重要的内容能够交由 **搜索引擎** 进行分析、分类、打标签等，并且 **搜索引擎** 并不会等待页面渲染完成，因此对 **SEO** 优化并不友好</span><br><span class="line"></span><br><span class="line">**服务端渲染（server-side rendering，SSR）** 可将相同组件在服务渲染成相应的 `HTML` 字符串，并发送给浏览器进行渲染，即客户端不需要等待所有的 **JavaScript** 都被下载并执行之后才显示，所以用户可以更快看到完整的渲染好的内容。</span><br><span class="line"></span><br><span class="line">### 预渲染（prerender）</span><br><span class="line"></span><br><span class="line">上述 **服务端渲染（server-side rendering，SSR）** 虽然能够解决一些客户端存在的问题，但它也带来了别的问题：</span><br><span class="line"></span><br><span class="line">- **`需要保证开发一致性`**，比如 **服务端** 和 **客户端** 能够执行的组件生命周期钩子不同，一些外部库在 **服务端渲染** 应用中可能需要经过特殊处理</span><br><span class="line">- **`需要更多的构建设定和部署要求`**，一个完全静态的 **SPA** 可以部署在任意的静态文件服务器，但服务端渲染应用需要一个能够运行 **Node.js** 服务器的环境</span><br><span class="line">- **`更多的服务端负载`**，在 **Node.js** 中渲染一个完整的应用，会比仅供应静态文件产生更密集的 **CPU** 运算，并且需要考虑访问流量过大的情况等</span><br><span class="line"></span><br><span class="line">因此，并不是所有应用都合适 **服务端渲染**，如果只是希望通过 **SSR** 来改善一些 **推广页面** (如 `/`、`/about`、`/contact` 等) 的 **SEO**，那么应该优先考虑 **预渲染** 的方式：</span><br><span class="line"></span><br><span class="line">- **预渲染** 是在打包构建过程中（离屏状态），针对对应的 `routes` 路由预先生成对应的页面内容</span><br><span class="line">- **预渲染** 需要和 **打包构建工具（webpack、rollup 等）** 进行配合，如 [**`webpack`**](https://link.juejin.cn/?target=https%3A%2F%2Fwebpack.js.org%2F)，就可通过 [**`prerender-spa-plugin`**](https://link.juejin.cn/?target=https%3A%2F%2Fgithub.com%2Fchrisvfritz%2Fprerender-spa-plugin) 来支持 **预渲染**</span><br><span class="line"></span><br><span class="line">## 交互层面</span><br><span class="line"></span><br><span class="line">### 减少回流/重绘</span><br><span class="line"></span><br><span class="line">**重绘**：页面中元素样式的改变并不影响它在文档流中的位置时（如：`color、background-color、visibility` 等），浏览器会将新样式赋予给元素并 **重新绘制**</span><br><span class="line"></span><br><span class="line">**回流**：当 `Render Tree` 中部分或全部元素的 **尺寸、结构、某些属性** 发生改变时，浏览器 **重新渲染** 部分或全部文档</span><br><span class="line"></span><br><span class="line">- 减少对 `DOM` 进行频繁操作</span><br><span class="line"></span><br><span class="line">- 使经常变动的元素脱离文档流，如具有持续性的动画效果，会一直触发回流和重绘</span><br><span class="line"></span><br><span class="line">- 避免访问或减少访问会导致浏览器 </span><br><span class="line"></span><br><span class="line">  强制刷新队列</span><br><span class="line"></span><br><span class="line">   的属性，如：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+offsetTop、offsetLeft、offsetWidth
+</code></pre>
+<p> 等</p>
+<ul>
+<li>【<strong>扩展</strong>】浏览器的渲染队列机制会通过 <strong>队列</strong> 将会触发 <strong>回流或重绘</strong> 的操作进行存储，等到一定的时间或一定的数量时再执行这些操作</li>
+</ul>
+</li>
+<li><p>避免对 <code>css</code> 进行单个修改，如在 <code>JavaScript</code> 修改多个样式时，尽量使用 <code>css</code> 选择器实现样式的集中变更</p>
+</li>
+<li><p>使用 <code>will-change</code> 开启 <code>GPU</code> 加速，<code>will-change</code> 指定的属性使得浏览器可在元素属性真正发生变化之前提前做好对应的优化</p>
+</li>
+<li><p>预先设定图片尺寸，避免图片资源加载完成后引发回流</p>
+</li>
+</ul>
+<h3 id="防抖-节流"><a href="#防抖-节流" class="headerlink" title="防抖&#x2F;节流"></a>防抖&#x2F;节流</h3><p><strong>防抖</strong>：多次频繁触发执行操作，以 <strong>最后一次</strong> 为准，忽略中间过程</p>
+<p><strong>节流</strong>：在指定的时间间隔内，<strong>只允许</strong> 执行一次对应的操作</p>
+<p>合理使用 <strong><code>防抖/节流</code></strong> 优化应用中的操作，比如 <strong><code>节流</code></strong> 可用于优化 滚动事件、模糊搜索等，<strong><code>防抖</code></strong> 可用于优化一些按钮点击操作等。</p>
+<h3 id="Web-Worker"><a href="#Web-Worker" class="headerlink" title="Web Worker"></a>Web Worker</h3><p><code>JavaScript</code> 是单线程的，如果存在需要大量计算的场景（如视频解码），<code>UI</code> 线程就会被阻塞，甚至浏览器直接卡死。</p>
+<p><code>Web Worker</code> 可以使脚本运行在新的线程中，它们独立于主线程，可以进行大量的计算活动，而不会影响主线程的 <code>UI</code> 渲染，但不能滥用 <code>Web Worker</code> 。</p>
+<h3 id="虚拟列表"><a href="#虚拟列表" class="headerlink" title="虚拟列表"></a>虚拟列表</h3><p>最常用的还是 <strong>分页加载</strong> 的方式：</p>
+<ul>
+<li>基于 <code>table</code> 表格的渲染，只会渲染固定数量的 <code>DOM</code></li>
+<li>基于 <code>上拉加载</code> 列表的渲染，随着加载数据的增多，对应的 <code>DOM</code> 节点也会增多，达到某个限制页面一定会发生卡顿</li>
+</ul>
+<p><strong>虚拟列表</strong> 核心就是固定渲染的 <strong><code>DOM</code></strong> 数，通过动态切换数据内容实现视图的更新，并保证文档中真实 <strong><code>DOM</code></strong> 的数量不随着数据量增大而增大（其实和 <code>table</code> 分页很像，但它支持滚动）。</p>
+<p>想了解其核心实现的，可查看 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7129919300994859015"><strong>虚拟滚动是怎么做性能优化的?</strong></a></p>
+<h3 id="大文件分片上传"><a href="#大文件分片上传" class="headerlink" title="大文件分片上传"></a>大文件分片上传</h3><p>大部分的项目总少不了文件上传功能，但对大文件的上传还是有必要进行优化，所谓的 <strong>断点续传</strong>、<strong>秒传</strong> 都要基于 <strong>分片上传</strong> 这个核心功能。</p>
+<p>想了解其核心实现的，可查看 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7074534222748188685"><strong>请问：怎么实现大文件快速上传？</strong></a></p>
+<h3 id="Excel-导入-导出"><a href="#Excel-导入-导出" class="headerlink" title="Excel 导入&#x2F;导出"></a>Excel 导入&#x2F;导出</h3><p>针对 <strong>Excel 导入&#x2F;导出</strong> 的功能相信很多人第一印象是后端的活，但大多数情况下，后端接口的处理速度会受各种影响，导致速度方面不是很理想，有时候也是需要前端来进行优化处理的，比如导入时前端不发送文件只发送解析后的 <code>JSON</code> 数据，导出时不需要单独发送额外接口，直接使用当前展示数据实现导出等。</p>
+<p>想了解其核心实现的，可查看 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7135945969425711111"><strong>给我实现一个前端的 Excel 导入和导出功能</strong></a></p>
+<h3 id="Vue-项目的优化"><a href="#Vue-项目的优化" class="headerlink" title="Vue 项目的优化"></a>Vue 项目的优化</h3><p>这部分内容相信大家都不陌生，下面就简单列举一些内容（包括但不限于）：</p>
+<ul>
+<li>减少响应式数据的生成，对于纯展示、又需要使用在 <code>template</code> 模板中使用的数据，可使用 <code>Object.freeze()</code> 进行冻结，避免被转为 <strong>不必要的响应式数据</strong></li>
+<li><code>Vue</code> 组件初始化是比较损耗性能的，使用 <strong>函数式组件</strong> 减少组件初始化的过程，适用于实现没有业务逻辑只展示内容的简单组件</li>
+<li>合理使用 <code>v-show</code> 和 <code>v-if</code>、为 <code>v-for</code> 组件设定唯一 <code>key</code>（非 <code>index</code>）、<code>v-for</code> 和 <code>v-if</code> 不要一起使用等</li>
+<li>使用 <code>KeepAlive</code> 复用组件，避免组件重复的创建、销毁带来的性能损耗</li>
+<li>使用 <code>() =&gt; import(xxx)</code> 方式实现路由懒加载</li>
+<li>使用 <code>ESM</code> 的方式封装自定义工具库等</li>
+<li>针对第三方库做到按需引入</li>
+<li>合理使用闭包，避免造成内存泄漏</li>
+<li>及时清除组件中的副作用，比如 <code>setTimeout、setInterval、addEventListener</code> 等</li>
+</ul>
+<p>基于 <code>vue.config.js</code> 或 <code>webpack</code> 进行优化，具体可见 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7078491632605069348"><strong>如何优化你的 vue-cli 项目？</strong></a></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>以上优化方案对应到 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7137058832592666655/"><strong>上一篇</strong></a> 中提到的性能指标，如下：</p>
+<ul>
+<li><strong>首字节达到时间（<code>Time to First Byte，TTFB</code>）</strong></li>
+<li><strong>首次绘制（<code>First Paint，FP</code>）</strong></li>
+<li><strong>首次内容绘制（<code>First Contentful Paint，FCP</code>）</strong></li>
+<li><strong>首屏时间 &#x2F; 最大内容绘制（<code>Largest Contentful Paint, LCP</code>）</strong></li>
+<li><strong>累积布局偏移（<code>Cumulative Layout Shift, CLS</code>)</strong></li>
+<li><strong>首次输入延迟（<code>First Input Delay, FID</code>）</strong></li>
+</ul>
+<p>关键资源越早到达客户端，证明 <code>TTFB</code> 时间越短，而这也能间接的减少 <code>FP</code> 和 <code>FCP</code> 的时间；对资源进行了压缩处理意味着能够尽可能提升 <code>LCP</code> 的时间；减少了页面的 <strong>回流&#x2F;重绘</strong> 就能使得 <code>CLS</code> 的数值越小，视图越趋于稳定；<code>FID</code> 是一个用于跟踪浏览器对用户输入做出反应之前的延迟时间的指标，包括点击和敲击，保证资源的快速加载和页面尽早渲染，其对应的数值就越小，视图响应就越快。</p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p><strong>前端性能优化</strong> 的范围实在太大，以上列举的优化主要围绕着 <strong>资源加载、页面渲染&#x2F;交互</strong> 两个大的方向，而具体的优化方案其实有很多（包括但不限于上述内容），很多内容随着关注的方向不同而不同。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://leejs.cn">李鹏辉</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://leejs.cn/dc3335a5/">https://leejs.cn/dc3335a5/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://leejs.cn" target="_blank">Lee Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a></div><div class="post-share"><div class="social-share" data-image="https://images-origin.wallwiz.link/59c1325eccb8f80001ef5d43_1" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/8aca716b/" title="VUE3 项目搭建"><img class="cover" src="https://images-origin.wallwiz.link/58860f906e9f6a00013b94fa_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">VUE3 项目搭建</div></div><div class="info-2"><div class="info-item-1">前言Vue 3 正式版已经发布有一段时间了，随着 Vite 脚手架注定成为下一代前端工具链，许多用户都想基于 Vite 来构建 Vue 项目，如果想基于 Vite 构建 Vue 3 项目，社区模板完全满足您的需求，如果想构建 Vite 3 + Vue 3 + JavaScript 项目，那社区模板不太能满足您的需求，因为社区模板提供 Vue 3 项目几乎是基于 Vite 2 + TypeScript 构建，对于不熟悉 TypeScript 语言的用户不是很友好，因此接下来从 0 开始手把手带大家搭建一套规范的 Vite 3 + Vue 3 + JavaScript 前端工程化项目环境。 本文章篇幅较长，从以下几个方面展开：  基础搭建 代码规范 提交规范 自动部署   本项目完整代码托管在 GitHub 仓库[1]，欢迎点亮小星星 🌟🌟  技术栈 ⚡️ Vite 3[2] - 构建工具（就是快！） 🖖 Vue 3[3] - 渐进式 JavaScript 框架 🚦 Vue Router[4] - 官方路由管理器 📦 Pinia[5] - 值得你喜欢的 Vue...</div></div></div></a><a class="pagination-related" href="/aa6a8b54/" title="好文 可复制的沟通力"><img class="cover" src="https://images-origin.wallwiz.link/58860e96dc1d3f00010ad1e2_1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">好文 可复制的沟通力</div></div><div class="info-2"><div class="info-item-1">01...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/616f4683/" title="性能优化"><img class="cover" src="https://images-origin.wallwiz.link/59c13437ccb8f80001ef65ea_1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-30</div><div class="info-item-2">性能优化</div></div><div class="info-2"><div class="info-item-1">前言项目的性能决定了用户对项目的整体感观度，优秀的性能可以保证项目的流畅与自然给用户愉快的体验感受。当我们开发完成一个项目以后最重要的环节就是要保证项目拥有一个良好的性能，所以开发完成以后需要我们针对项目做好性能优化。 那么，要使一个项目拥有良好的性能，我们需要怎么去做性能优化呢？ 第一步就是定义好性能指标，而为网站量身定制一套最佳指标也是性能优化中最重要的一个环节。 性能是相对的首先我们要知道如何评价一个页面性能的好坏。 性能是 相对...</div></div></div></a><a class="pagination-related" href="/3152193188/" title="浏览器 地址栏回车 性能优化"><img class="cover" src="https://images-origin.wallwiz.link/58860e926e9f6a00013b9386_1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-02</div><div class="info-item-2">浏览器 地址栏回车 性能优化</div></div><div class="info-2"><div class="info-item-1">Enter1. 输入地址比如： didiorg.com&#x2F;   2. DNS（Domain Name System，）解析：浏览器查找域名的 IP 地址本地 hosts 文件 &#x3D;&gt; 本地 DNS 服务器 &#x3D;&gt; DNS 根服务器本地 DNS 服务器 &#x3D;&gt; com 域服务器本地 DNS 服务器 &#x3D;&gt; 域名解析服务器 　这个过程很有意思，本地 DNS 服务器访问根服务器，当根胳没有的时候，并不是根服务器去访问 com 域服务器，这个时候，DNS 根服务器只会告诉 本地 DNS 服务器他没有， 叫他再去访问 com 域服务器。 　更有意思的是， 当本地 DNS 服务器访问 com 域服务器的时候，com 域服务器也不会直接给 本地 DNS 服务器 一个 IP 地址， 而是告诉本地 DNS 服务器想要查找的那个域名的域名解析服务器的地址 然后， 本地 DNS 服务器通过刚才拿到的址， 再去访问域名解析服务器，从那里拿到 IP 地址。 3. 浏览器向服务器发 http 请求拿到 ip 后，浏览器会向服务器80端口发起...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">李鹏辉</div><div class="author-info-description">学习 生活 成长</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%88%B0%E5%BA%95%E6%98%AF%E5%9C%A8%E4%BC%98%E5%8C%96%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">前端性能优化到底是在优化什么？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="toc-number">2.</span> <span class="toc-text">性能指标</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RAIL-%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.1.</span> <span class="toc-text">RAIL 模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="toc-number">2.2.</span> <span class="toc-text">常规性能指标</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87%E5%B7%A5%E5%85%B7"><span class="toc-number">3.</span> <span class="toc-text">性能指标工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Performance-%E9%9D%A2%E6%9D%BF%EF%BC%88Google%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">Performance 面板（Google）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%81%AB%E7%84%B0%E5%9B%BE"><span class="toc-number">3.1.1.</span> <span class="toc-text">火焰图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Networks-%E6%8C%87%E6%A0%87"><span class="toc-number">3.1.1.1.</span> <span class="toc-text">Networks 指标</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Frames-%E6%8C%87%E6%A0%87"><span class="toc-number">3.1.2.</span> <span class="toc-text">Frames 指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Timings-%E6%8C%87%E6%A0%87"><span class="toc-number">3.1.3.</span> <span class="toc-text">Timings 指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Main-%E6%8C%87%E6%A0%87"><span class="toc-number">3.1.4.</span> <span class="toc-text">Main 指标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lighthouse-%E9%9D%A2%E6%9D%BF%EF%BC%88Google%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">Lighthouse 面板（Google）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Performance-%E6%80%A7%E8%83%BD%EF%BC%88%E4%B8%BE%E4%B8%80%E5%8F%8D%E4%B8%89%EF%BC%89"><span class="toc-number">3.2.1.</span> <span class="toc-text">Performance 性能（举一反三）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Using-the-Node-CLI"><span class="toc-number">3.2.2.</span> <span class="toc-text">Using the Node CLI</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87%E6%95%B0%E6%8D%AE%E6%94%B6%E9%9B%86"><span class="toc-number">4.</span> <span class="toc-text">性能指标数据收集</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Performance-API"><span class="toc-number">4.1.</span> <span class="toc-text">Performance API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#performance-timing-%E5%B1%9E%E6%80%A7"><span class="toc-number">4.1.1.</span> <span class="toc-text">performance.timing 属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#performance-getEntries-%E6%96%B9%E6%B3%95"><span class="toc-number">4.1.2.</span> <span class="toc-text">performance.getEntries() 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#performance-now-%E6%96%B9%E6%B3%95"><span class="toc-number">4.1.3.</span> <span class="toc-text">performance.now() 方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Vitals"><span class="toc-number">4.2.</span> <span class="toc-text">Web Vitals</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E8%B5%84%E6%BA%90%E6%9B%B4%E5%BF%AB%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%80%9F%E5%BA%A6%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">如何保证资源更快的加载速度？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-dns-prefetch-%E5%87%8F%E5%B0%91-DNS-%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%97%B6%E9%97%B4"><span class="toc-number">5.1.</span> <span class="toc-text">使用 dns-prefetch 减少 DNS 的查询时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-preconnect-%E6%8F%90%E5%89%8D%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5"><span class="toc-number">5.2.</span> <span class="toc-text">使用 preconnect 提前建立连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-preload-prefetch-%E9%A2%84%E5%85%88%E5%8A%A0%E8%BD%BD%E8%B5%84%E6%BA%90"><span class="toc-number">5.3.</span> <span class="toc-text">使用 preload &#x2F; prefetch 预先加载资源</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#preload"><span class="toc-number">5.3.1.</span> <span class="toc-text">preload</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#prefetch"><span class="toc-number">5.3.2.</span> <span class="toc-text">prefetch</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E8%B5%84%E6%BA%90%E4%BD%93%E7%A7%AF"><span class="toc-number">5.4.</span> <span class="toc-text">压缩资源体积</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP-%E5%8E%8B%E7%BC%A9"><span class="toc-number">5.4.1.</span> <span class="toc-text">HTTP 压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Webpack-%E5%8E%8B%E7%BC%A9"><span class="toc-number">5.4.2.</span> <span class="toc-text">Webpack 压缩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%8F%E5%B0%91-http-%E8%AF%B7%E6%B1%82%E6%95%B0%E9%87%8F"><span class="toc-number">5.5.</span> <span class="toc-text">减少 http 请求数量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%8F%E5%B0%91%E4%B8%8D%E5%BF%85%E8%A6%81%E7%9A%84-cookie"><span class="toc-number">5.6.</span> <span class="toc-text">减少不必要的 cookie</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CDN-%E6%89%98%E7%AE%A1%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90-HTTP-%E7%BC%93%E5%AD%98"><span class="toc-number">5.7.</span> <span class="toc-text">CDN 托管静态资源 + HTTP 缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E5%8D%87%E7%BA%A7%E4%B8%BA-Http2-0"><span class="toc-number">5.8.</span> <span class="toc-text">协议升级为 Http2.0</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E6%8A%96-%E8%8A%82%E6%B5%81"><span class="toc-number">5.8.1.</span> <span class="toc-text">防抖&#x2F;节流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Web-Worker"><span class="toc-number">5.8.2.</span> <span class="toc-text">Web Worker</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%88%97%E8%A1%A8"><span class="toc-number">5.8.3.</span> <span class="toc-text">虚拟列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%96%87%E4%BB%B6%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0"><span class="toc-number">5.8.4.</span> <span class="toc-text">大文件分片上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Excel-%E5%AF%BC%E5%85%A5-%E5%AF%BC%E5%87%BA"><span class="toc-number">5.8.5.</span> <span class="toc-text">Excel 导入&#x2F;导出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BC%98%E5%8C%96"><span class="toc-number">5.8.6.</span> <span class="toc-text">Vue 项目的优化</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">7.</span> <span class="toc-text">最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/873586f3/" title="readme"><img src="https://images-origin.wallwiz.link/58860f1c6e9f6a00013b944b_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="readme"/></a><div class="content"><a class="title" href="/873586f3/" title="readme">readme</a><time datetime="2025-01-09T12:29:34.000Z" title="发表于 2025-01-09 20:29:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/0/" title="无标题"><img src="https://images-origin.wallwiz.link/58860ead6e9f6a00013b93b1_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/0/" title="无标题">无标题</a><time datetime="2025-01-09T12:25:34.447Z" title="发表于 2025-01-09 20:25:34">2025-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/a70288e8/" title="Docker常见命令"><img src="https://images-origin.wallwiz.link/58860ebbbcf65400017a550f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker常见命令"/></a><div class="content"><a class="title" href="/a70288e8/" title="Docker常见命令">Docker常见命令</a><time datetime="2024-09-06T02:36:57.000Z" title="发表于 2024-09-06 10:36:57">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/undefined/" title="class-transformer"><img src="https://images-origin.wallwiz.link/58860b456e9f6a00013b8f0f_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="class-transformer"/></a><div class="content"><a class="title" href="/undefined/" title="class-transformer">class-transformer</a><time datetime="2024-04-08T03:27:34.000Z" title="发表于 2024-04-08 11:27:34">2024-04-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/5feabfc2/" title="浏览器indexDB"><img src="https://images-origin.wallwiz.link/58860ea56e9f6a00013b93a3_1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器indexDB"/></a><div class="content"><a class="title" href="/5feabfc2/" title="浏览器indexDB">浏览器indexDB</a><time datetime="2024-03-07T11:59:05.000Z" title="发表于 2024-03-07 19:59:05">2024-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By 李鹏辉</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
